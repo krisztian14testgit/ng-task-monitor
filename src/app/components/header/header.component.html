@@ -1,1 +1,17 @@
-<p>header works!</p>
+<mat-grid-list cols="8" rowHeight="">
+    <mat-grid-tile colspan="7" rowspan="2">
+        <div name="title">Title of</div>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="1" rowspan="1">
+        <app-menu-item [title]="'Option'"
+                        [subMenuItems_dict]="optionItemList_dict">
+        </app-menu-item>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="1" rowspan="1">
+        <app-menu-item [title]="'Menu'"
+                        [subMenuItems_dict]="menusItemList_dict"
+                        [isDisplayedKeys]="true">
+        </app-menu-item>
+    </mat-grid-tile>
+
+</mat-grid-list>
