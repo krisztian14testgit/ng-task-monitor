@@ -8,7 +8,7 @@
   <ng-container *ngIf="isDisplayedKeys">
     <!-- label key -->
     <div *ngFor="let labelKey of subMenuKeys">
-      <span>{{labelKey}}</span>
+      <div class="menu-label">{{labelKey}}</div>
       <hr> <!--line -->
       <!-- sub-menus -->
       <button *ngFor="let menuItem of subMenuItems_dict[labelKey]" mat-menu-item>{{menuItem.name}}</button>
