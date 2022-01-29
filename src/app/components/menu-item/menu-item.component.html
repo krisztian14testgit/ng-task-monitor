@@ -6,12 +6,12 @@
 <!-- nested menu template -->
 <mat-menu #beforeMenu="matMenu" xPosition="before">
   <ng-container *ngIf="isDisplayedKeys">
-    <!-- topic key -->
-    <div *ngFor="let topicKey of subMenuKeys">
-      <span>{{topicKey}}</span>
+    <!-- label key -->
+    <div *ngFor="let labelKey of subMenuKeys">
+      <span>{{labelKey}}</span>
       <hr> <!--line -->
       <!-- sub-menus -->
-      <button *ngFor="let menuItem of subMenuItems_dict[topicKey]" mat-menu-item>{{menuItem.name}}</button>
+      <button *ngFor="let menuItem of subMenuItems_dict[labelKey]" mat-menu-item>{{menuItem.name}}</button>
     </div>
   </ng-container>
 

@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 
 /**
- * Displays the menu with nested menus.
+ * Displays the menu with nested menus with labels.
  */
 @Component({
   selector: 'app-menu-item',
@@ -9,8 +9,11 @@ import { Component, Input, OnChanges } from '@angular/core';
   styleUrls: ['./menu-item.component.css']
 })
 export class MenuItemComponent implements OnChanges {
+  /** The title of the menu. */
   @Input() public title!: string;
-  @Input() public subMenuItems_dict!: {[topic: string]: { key: string, name: string}[] };
+  /** The structure of the sub-menu with label in dictionary. */
+  @Input() public subMenuItems_dict!: {[label: string]: { key: string, name: string}[] };
+  /** Showing labels of the sub-menus if it is true otherwise it hides the labels. */
   @Input() public isDisplayedKeys = true;
 
   public subMenuValues: {key: string, name: string}[] = [];
