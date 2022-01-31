@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -7,9 +6,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  constructor(private readonly router: Router) {}
+  constructor() {}
 
   ngOnInit(): void {
-    console.log('router=', this.router.url);
   }
 }

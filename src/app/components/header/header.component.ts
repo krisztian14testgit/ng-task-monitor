@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NavigationEnd, NavigationStart, Router, Event } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -10,7 +11,7 @@ export class HeaderComponent implements OnInit {
   public menusItemList_dict: {[label: string]: { key: string, name: string}[] };
   public optionItemList_dict: {[label: string]: { key: string, name: string}[] };
 
-  constructor() {
+  constructor(private readonly router: Router) {
     this.menusItemList_dict = {
       Tasks: [
         {key: "inprogress", name: "In-Progress"},
@@ -29,7 +30,19 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  /** Subscribes on the url chaging event to get info url change detection.  */
   ngOnInit(): void {
+    this.router.events.subscribe((event: Event) => {
+      if (event instanceof NavigationStart) {
+        // Show progress spinner or progress bar
+        console.log('Route change detected');
+      }
+
+      if (event instanceof NavigationEnd) {
+        // Hide progress spinner or progress bar 
+        console.log('Navigated route:', event.url);
+      }
+    });
   }
 
 }
