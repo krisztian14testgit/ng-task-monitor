@@ -1,3 +1,8 @@
 .fields-max-width {
     width: 100%;
 }
+
+/* input text will be green if class contains ng-valid */
+.input-valid mat-label {
+   color: #1ec413;
+}

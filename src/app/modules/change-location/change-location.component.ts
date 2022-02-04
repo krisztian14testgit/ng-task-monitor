@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MyValidator } from 'src/app/validators/my-validator';
 
 @Component({
   selector: 'app-change-location',
@@ -28,10 +29,12 @@ export class ChangeLocationComponent implements OnInit {
     this.locationForm = new FormGroup({
       taskDataPath: new FormControl('', [
         Validators.required, 
-        Validators.pattern('')]),
+        Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.LibraryPath))
+      ]),
       appSettingPath: new FormControl('alma', [
         Validators.required,
-        Validators.pattern('')])
+        Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.LibraryPath))
+      ])
     });
   }
 
