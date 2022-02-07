@@ -1,0 +1,28 @@
+<!-- menu title -->
+<button mat-raised-button
+        mat-button [matMenuTriggerFor]="beforeMenu">
+        {{title}}
+</button>
+<!-- nested menu template -->
+<mat-menu #beforeMenu="matMenu" xPosition="before">
+  <ng-container *ngIf="isDisplayedKeys">
+    <!-- label key -->
+    <div *ngFor="let labelKey of subMenuKeys">
+      <div class="menu-label">{{labelKey}}</div>
+      <hr> <!--line -->
+      <!-- sub-menus -->
+      <a *ngFor="let menuItem of subMenuItems_dict[labelKey]" mat-menu-item
+        [routerLink]="['/' + menuItem.key]" routerLinkActive="activated-route">
+        {{menuItem.name}}
+      </a>
+    </div>
+  </ng-container>
+
+  <!-- Display sub-menu without topic key -->
+  <ng-container *ngIf="!isDisplayedKeys">
+    <a *ngFor="let menuItem of subMenuValues" mat-menu-item
+      [routerLink]="'/' + menuItem.key" routerLinkActive="activated-route">
+      {{menuItem.name}}
+    </a>
+  </ng-container>
+</mat-menu>

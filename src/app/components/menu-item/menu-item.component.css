@@ -1,0 +1,8 @@
+.menu-label {
+    padding-left: 10px;
+    background-color: lightgray;
+}
+
+.activated-route {
+    color: darkblue
+}

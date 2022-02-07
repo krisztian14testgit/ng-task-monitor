@@ -1,0 +1,41 @@
+<!-- Task data storage card -->
+<mat-card>
+    <mat-card-title>
+        <label for="storedData">Where would you like to store data?</label>
+    </mat-card-title>
+    <hr>
+    <mat-card-content>
+        <form name="locationForm">
+            <mat-form-field class="fields-max-width" appearance="fill"
+                            [ngClass]="{'input-valid': taskDataControl.valid}">
+                <mat-label>Task folder path</mat-label>
+                <input type="text" matInput [formControl]="taskDataControl"
+                        placeholder="C:/users/userName/Document/">
+                <mat-error *ngIf="taskDataControl.invalid && (taskDataControl.dirty || taskDataControl.touched)">
+                    <strong>Please enter a valid path!</strong>
+                </mat-error>
+            </mat-form-field>
+        </form>
+    </mat-card-content>
+</mat-card>
+
+<!-- App settings card -->
+<mat-card>
+    <mat-card-title>
+        <label for="storedData">Where would you like to store App data?</label>
+    </mat-card-title>
+    <hr>
+    <mat-card-content>
+        <form name="locationForm">
+            <mat-form-field class="fields-max-width" appearance="fill"
+                            [ngClass]="{'input-valid': appSettingControl.valid}">
+                <mat-label>Defalult app folder</mat-label>
+                <input type="text" matInput [formControl]="appSettingControl"
+                        placeholder="C:/users/userName/Document/">
+                <mat-error *ngIf="appSettingControl.invalid && (appSettingControl.dirty || appSettingControl.touched)">
+                    <strong>Please enter a valid path!</strong>
+                </mat-error>
+            </mat-form-field>
+        </form>
+    </mat-card-content>
+</mat-card>
