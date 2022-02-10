@@ -3,8 +3,11 @@ const fs = require('fs');
 const fsPath = require('path');
 
 /**
- * FileHandler instance can read and write the file by the given path.
+ * FileHandler instance can read and write the file by the given path 
+ * base on NodeJs fs module.
  * It is also able to make prev checking before writing file.
+ * 
+ * @Todo using NodeJs file disciptor and path
  */
 export class FileHandler {
     /** 
@@ -17,8 +20,9 @@ export class FileHandler {
      * Writes the file with given content.
      * The previous content of the file won't be lose, it is preserved!
      * @param content The given text will be stored.
+     * @returns Promise: boolean
      */
-    public writeFile(content: string): void {
+    public writeFile(content: string): Promise<boolean> {
         this.checkPath();
         
         // get content from file, beacuse not lose previous content.
@@ -28,11 +32,14 @@ export class FileHandler {
         }
         
         // flag: w => Reading and writing, positioning the stream at the beginning of the file. The file is created if it does not exist.
-        fs.writeFile(this.path, content, {flag: 'w+'}, (err: Error) => {
+        return fs.writeFile(this.path, content, {flag: 'w+'}, (err: Error) => {
             if (err) {
                 console.error(err);
-                return;
+                return false;
             }
+
+            //file written successfully
+            return true;
         });
     }
 
@@ -74,7 +81,7 @@ export class FileHandler {
         return fs.stat(this.path, (err: Error, stats: any) => {
             if (err) {
                 console.error(err);
-                return;
+                return false;
             }
 
             return stats.isDirectory();
