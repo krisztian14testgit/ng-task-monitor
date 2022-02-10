@@ -9,24 +9,24 @@ import { MyValidator } from 'src/app/validators/my-validator';
 })
 export class ChangeLocationComponent implements OnInit {
   /** Stores the form validation behaviour. */
-  public locationForm!: FormGroup;
+  private _locationForm!: FormGroup;
 
   //#region Properties
   /** Returns the reference of taskData FormControl. */
   public get taskDataControl(): FormControl {
-    return this.locationForm.get('taskDataPath') as FormControl;
+    return this._locationForm.get('taskDataPath') as FormControl;
   }
 
   /** Returns the reference of appSetting FormControl. */
   public get appSettingControl(): FormControl {
-    return this.locationForm.get('appSettingPath') as FormControl;
+    return this._locationForm.get('appSettingPath') as FormControl;
   }
 
   constructor() { }
 
   /** Initialization the locationFrom instance from the FormGroup. */
   ngOnInit(): void {
-    this.locationForm = new FormGroup({
+    this._locationForm = new FormGroup({
       taskDataPath: new FormControl('', [
         Validators.required, 
         Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.LibraryPath))
@@ -36,6 +36,14 @@ export class ChangeLocationComponent implements OnInit {
         Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.LibraryPath))
       ])
     });
+  }
+
+  /**
+   * This is an key-up event function.
+   * @event keyup
+   */
+  public onChangePath(controlValue: string): void {
+    console.log('taskPath=', controlValue);
   }
 
 }
