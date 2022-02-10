@@ -1,6 +1,6 @@
 // nodejs: fs, path module importing
-import * as fs from 'fs';
-import * as fsPath from 'path';
+const fs = require('fs');
+const os = require('os');
 
 /**
  * FileHandler instance can read and write the file by the given path 
@@ -9,12 +9,16 @@ import * as fsPath from 'path';
  * 
  * @Todo using NodeJs file disciptor and path
  */
-export class NodeJSFileHandler {
+class NodeJSFileHandler {
+
+    path = '';
     /** 
      * Set the path of the location where you want to read/write your created file. 
      * @param path: The path of the directory.
      */
-    constructor(public path: string) {}
+    constructor(path = '') {
+        this.path = path;
+    }
 
     /**
      * Writes the file with given content.
@@ -22,7 +26,7 @@ export class NodeJSFileHandler {
      * @param content The given text will be stored.
      * @returns Promise: boolean
      */
-    public writeFile(content: string): Promise<boolean> {
+    writeFile(content = '') {
         this.checkPath();
         
         // get content from file, beacuse not lose previous content.
@@ -33,7 +37,7 @@ export class NodeJSFileHandler {
         
         // flag: w => Reading and writing, positioning the stream at the beginning of the file. The file is created if it does not exist.
         return new Promise((resolve, reject) => {
-            fs.writeFile(this.path, content, {flag: 'w+'}, (err: NodeJS.ErrnoException | null) => {
+            fs.writeFile(this.path, content, {flag: 'w+'}, err => {
                 if (err) {
                     console.error(err);
                     return reject(false);
@@ -50,7 +54,7 @@ export class NodeJSFileHandler {
      * Returns the read content of the file by adjusted path.
      * @returns string
      */
-    public readFile(): string {
+    readFile() {
         this.checkPath();
         try {
             const data = fs.readFileSync(this.path, 'utf-8');
@@ -63,26 +67,26 @@ export class NodeJSFileHandler {
     }
 
     /**
-     * Returns the calculated path of the given piece/incomplete path.
-     * @param path The location path.
-     * @returns string of the full path.
+     * Return the path to the home directory of the current user.
+     * @returns string path
+     * @memberof NodeJs.os
      */
-    public static getFullPathFromPieces(piecePath: string): string {
-        return fsPath.normalize(piecePath);
+    static getHomeDir() {
+        return os.homedir();
     }
 
     /** Throwing error if the local path is empty. */
-    private checkPath(): void {
+    checkPath() {
         if (this.path.trim() === '') {
             throw console.error('File path is empty! Set it in the constructor!');
         }
     }
 
-    private isPathEndFolder(): Promise<boolean> {
+    _isPathEndFolder() {
         this.checkPath();
         return new Promise((resolve, reject) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            fs.stat(this.path, (err: NodeJS.ErrnoException | null, stats: any) => {
+            fs.stat(this.path, (err, stats) => {
                 if (err) {
                     console.error(err);
                     return reject(false);
