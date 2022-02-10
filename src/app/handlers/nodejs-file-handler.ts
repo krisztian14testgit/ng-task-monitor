@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const fs = require('fs');
-const fsPath = require('path');
+// nodejs: fs, path module importing
+import * as fs from 'fs';
+import * as fsPath from 'path';
 
 /**
  * FileHandler instance can read and write the file by the given path 
@@ -9,7 +9,7 @@ const fsPath = require('path');
  * 
  * @Todo using NodeJs file disciptor and path
  */
-export class FileHandler {
+export class NodeJSFileHandler {
     /** 
      * Set the path of the location where you want to read/write your created file. 
      * @param path: The path of the directory.
@@ -32,14 +32,17 @@ export class FileHandler {
         }
         
         // flag: w => Reading and writing, positioning the stream at the beginning of the file. The file is created if it does not exist.
-        return fs.writeFile(this.path, content, {flag: 'w+'}, (err: Error) => {
-            if (err) {
-                console.error(err);
-                return false;
-            }
+        return new Promise((resolve, reject) => {
+            fs.writeFile(this.path, content, {flag: 'w+'}, (err: NodeJS.ErrnoException | null) => {
+                if (err) {
+                    console.error(err);
+                    return reject(false);
+                }
+    
+                //file written successfully
+                return resolve(true);
+            });        
 
-            //file written successfully
-            return true;
         });
     }
 
@@ -64,8 +67,8 @@ export class FileHandler {
      * @param path The location path.
      * @returns string of the full path.
      */
-    public getFullPathFromPieces(path: string) {
-        return fsPath.normalize(path);
+    public static getFullPathFromPieces(piecePath: string): string {
+        return fsPath.normalize(piecePath);
     }
 
     /** Throwing error if the local path is empty. */
@@ -77,14 +80,16 @@ export class FileHandler {
 
     private isPathEndFolder(): Promise<boolean> {
         this.checkPath();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return fs.stat(this.path, (err: Error, stats: any) => {
-            if (err) {
-                console.error(err);
-                return false;
-            }
-
-            return stats.isDirectory();
+        return new Promise((resolve, reject) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            fs.stat(this.path, (err: NodeJS.ErrnoException | null, stats: any) => {
+                if (err) {
+                    console.error(err);
+                    return reject(false);
+                }
+    
+                return resolve(stats.isDirectory());
+            });
         });
     }
 }
