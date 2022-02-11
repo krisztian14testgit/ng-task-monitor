@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Observable, from } from 'rxjs';
-import { FileHandler } from 'src/app/handlers/file-handler';
+import { HttpClient } from '@angular/common/http';
+import { Observable, from, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+
 import { LocationSetting } from './location-setting';
+import ServiceBase from 'src/app/services/service-base';
 
 export enum LocationPath {
   AppSettingPath,
@@ -11,22 +14,24 @@ export enum LocationPath {
 @Injectable()
 export class LocationService {
 
-  private _defaultPath: string;
-  private _locSetting!: LocationSetting | {[prop: string]: string};
+  private readonly _defaultPath: string;
+  private readonly _locSetting!: LocationSetting | {[prop: string]: string};
+  private readonly _locationUrl = 'localhost:8080/location';
 
-  constructor(private _fileHandler: FileHandler) {
+  constructor(private readonly http: HttpClient) {
     this._defaultPath = 'C:/Users/../Documents/';
 
     this._locSetting = new LocationSetting();
-    this._locSetting.appSettingPath = this.DefaultFullPath;
-    this._locSetting.taskPath = this.DefaultFullPath;
+    this._locSetting.appSettingPath = this._defaultPath;
+    this._locSetting.taskPath = this._defaultPath;
    }
 
-  public get DefaultFullPath(): string {
-    return this._fileHandler.getFullPathFromPieces(this._defaultPath);
+  public getLocationSetting(): Observable<LocationSetting> {
+    // return this.http.get<LocationSetting>(this._locationUrl, {headers: ServiceBase.HttpHeaders});
+    return of(this._locSetting as LocationSetting);
   }
 
-  public savePath(pathType: LocationPath, path: string): Observable<boolean> {
+  public saveLocation(pathType: LocationPath, path: string): Observable<boolean> {
     let keyProperty = LocationPath[pathType]; // get enum name
     
     const firstChar = keyProperty[0].toLowerCase();
@@ -39,9 +44,9 @@ export class LocationService {
     }*/
     // avoiding if condition
     (this._locSetting as {[prop: string]: string})[keyProperty] = path;
-    const jsonText = JSON.stringify(this._locSetting);
+    // const jsonText = JSON.stringify(this._locSetting);
+    return this.http.post(this._locationUrl, this._locSetting, {headers: ServiceBase.HttpHeaders})
+    .pipe(map(response => true));
     
-    // convert Promsie to Observable
-    return from(this._fileHandler.writeFile(jsonText));
   }
 }
