@@ -1,5 +1,6 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
+// chrome_bin setting: https://gist.github.com/kenvontucky/f5c4bdd2fa515f56a7ed0fe343984e95
 const process = require('process');
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
