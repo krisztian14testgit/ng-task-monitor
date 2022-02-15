@@ -1,6 +1,8 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChangeLocationComponent } from './change-location.component';
+import { LocationService } from './services/location/location-service';
 
 describe('ChangeLocationComponent', () => {
   let component: ChangeLocationComponent;
@@ -8,7 +10,11 @@ describe('ChangeLocationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ChangeLocationComponent ]
+      declarations: [ ChangeLocationComponent ],
+      providers: [
+        {provide: LocationService, useValue: undefined}
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();
   });
