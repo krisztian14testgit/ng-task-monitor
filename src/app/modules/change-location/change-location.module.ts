@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { ChangeLocationRoutingModule } from './change-location-routing.module';
 import { ChangeLocationComponent } from './change-location.component';
+import { LocationService } from './services/location/location-service';
 
 
 @NgModule({
@@ -19,6 +20,9 @@ import { ChangeLocationComponent } from './change-location.component';
     ReactiveFormsModule,
     MatCardModule,
     MatInputModule
+  ],
+  providers: [
+    LocationService
   ]
 })
 export class ChangeLocationModule { }
