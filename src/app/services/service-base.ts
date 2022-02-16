@@ -23,6 +23,6 @@ export default class ServiceBase {
      */
     public static get HttpHeaders() {
         // deep copy
-        return {...this._httpHeaders};
+        return this._httpHeaders;
     }
 }
