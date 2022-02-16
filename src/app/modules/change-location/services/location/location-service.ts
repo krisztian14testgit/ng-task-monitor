@@ -16,7 +16,7 @@ export class LocationService {
 
   private readonly _defaultPath: string;
   private readonly _locSetting!: LocationSetting | {[prop: string]: string};
-  private readonly _locationUrl = 'localhost:8080/location';
+  private readonly _locationUrl = 'http://localhost:8080/location';
 
   constructor(private readonly http: HttpClient) {
     this._defaultPath = 'C:/Users/../Documents/';
@@ -33,7 +33,7 @@ export class LocationService {
 
   public saveLocation(pathType: LocationPath, path: string): Observable<boolean> {
     let keyProperty = LocationPath[pathType]; // get enum name
-    
+
     const firstChar = keyProperty[0].toLowerCase();
     keyProperty = firstChar + keyProperty.substring(1);
 
@@ -44,9 +44,8 @@ export class LocationService {
     }*/
     // avoiding if condition
     (this._locSetting as {[prop: string]: string})[keyProperty] = path;
-    // const jsonText = JSON.stringify(this._locSetting);
+    
     return this.http.post(this._locationUrl, this._locSetting, {headers: ServiceBase.HttpHeaders})
     .pipe(map(response => true));
-    
   }
 }
