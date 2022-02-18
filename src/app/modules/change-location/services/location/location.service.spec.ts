@@ -10,7 +10,7 @@ import { LocationSetting } from './location-setting';
 describe('LocationService', () => {
   let service: LocationService;
   let mockHttp: HttpTestingController;
-  const locationUrl = 'localhost:8080/location';
+  const locationUrl = 'http://localhost:8080/location';
   const fakedPath = 'C:/Users/../Documents/';
 
   beforeEach(() => {
