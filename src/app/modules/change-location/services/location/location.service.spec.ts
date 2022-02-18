@@ -1,6 +1,6 @@
 import { inject, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { LocationPath, LocationService } from './location-service';
+import { LocationPath, LocationService } from './location.service';
 import { LocationSetting } from './location-setting';
 
 /**

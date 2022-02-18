@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 
 import { MyValidator } from 'src/app/validators/my-validator';
-import { LocationPath, LocationService } from './services/location/location-service';
+import { LocationPath, LocationService } from './services/location/location.service';
 import { LocationSetting } from './services/location/location-setting';
 
 @Component({
