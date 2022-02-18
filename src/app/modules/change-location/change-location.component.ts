@@ -46,7 +46,7 @@ export class ChangeLocationComponent implements OnInit {
    * Saving the tyoed folder path if it is valid.
    *  
    * @event keyup
-   * @param keyLocation is string, value can be LocationPath
+   * @param keyLocation is string, value can be LocationPath(AppSettingPath, TaskPath)
    * @param formControlRef the reference of the given formControl.
    */
   public onChangePath(keyLocation: string, formControlRef: FormControl): void {
