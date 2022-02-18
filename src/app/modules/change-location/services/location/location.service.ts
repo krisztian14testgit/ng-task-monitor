@@ -32,6 +32,8 @@ export class LocationService {
     */
   public getLocationSetting(): Observable<LocationSetting> {
     // return this.http.get<LocationSetting>(this._locationUrl, {headers: ServiceBase.HttpHeaders});
+    
+    // TODO: temporary solution until the micro service is not done
     return of(this._locSetting as LocationSetting);
   }
 
