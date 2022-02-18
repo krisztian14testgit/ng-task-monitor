@@ -26,14 +26,27 @@ export class LocationService {
     this._locSetting.taskPath = this._defaultPath;
    }
 
+   /**
+    * Returns the stored paths of AppSettingPath and TaskPath in the LocationSetting construction.
+    * @returns LocationSetting instance
+    */
   public getLocationSetting(): Observable<LocationSetting> {
     // return this.http.get<LocationSetting>(this._locationUrl, {headers: ServiceBase.HttpHeaders});
     return of(this._locSetting as LocationSetting);
   }
 
+  /**
+   * Saves the given path by pathType.
+   * Returns true the saving process is succed.
+   * 
+   * @param pathType It can be LocationPath.AppSettingPath or LocationPath.TaskPath.
+   * @param path The path to be stored.
+   * @returns boolean
+   */
   public saveLocation(pathType: LocationPath, path: string): Observable<boolean> {
     let keyProperty = LocationPath[pathType]; // get enum name
 
+    // first char to be lowerCase
     const firstChar = keyProperty[0].toLowerCase();
     keyProperty = firstChar + keyProperty.substring(1);
 
@@ -46,6 +59,6 @@ export class LocationService {
     (this._locSetting as {[prop: string]: string})[keyProperty] = path;
     
     return this.http.post(this._locationUrl, this._locSetting, {headers: ServiceBase.HttpHeaders})
-    .pipe(map(response => true));
+    .pipe(map(_ => true));
   }
 }
