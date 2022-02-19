@@ -1,19 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 
 import { MyValidator } from 'src/app/validators/my-validator';
 import { LocationPath, LocationService } from './services/location/location.service';
 import { LocationSetting } from './services/location/location-setting';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-change-location',
   templateUrl: './change-location.component.html',
   styleUrls: ['./change-location.component.css']
 })
-export class ChangeLocationComponent implements OnInit {
+export class ChangeLocationComponent implements OnInit, OnDestroy {
   /** Stores the form validation behaviour. */
   private _locationForm!: FormGroup;
+  private _locationService$!: Subscription;
 
   //#region Properties
   /** Returns the reference of taskData FormControl. */
@@ -33,11 +35,16 @@ export class ChangeLocationComponent implements OnInit {
 
   /** Set the location paths by the location service which come from server. */
   ngOnInit(): void {
-    this.locationService.getLocationSetting()
+    this._locationService$ = this.locationService.getLocationSetting()
     .subscribe((locSetting: LocationSetting) => {
       this.appSettingControl.setValue(locSetting.appSettingPath);
       this.taskDataControl.setValue(locSetting.taskPath);
     });
+  }
+
+  /** Unsubscription from the API streams */
+  ngOnDestroy(): void {
+    this._locationService$.unsubscribe();
   }
 
   /**
