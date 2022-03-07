@@ -4,7 +4,7 @@ import { debounceTime } from 'rxjs/operators';
 
 import { MyValidator } from 'src/app/validators/my-validator';
 import { LocationPath, LocationService } from './services/location/location.service';
-import { LocationSetting } from './services/location/location-setting';
+import { LocationSetting } from './services/location/location-setting.model';
 import { Subscription } from 'rxjs';
 
 @Component({

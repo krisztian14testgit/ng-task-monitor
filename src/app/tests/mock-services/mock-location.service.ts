@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from 'rxjs';
-import { LocationSetting } from "src/app/modules/change-location/services/location/location-setting";
+import { LocationSetting } from "src/app/modules/change-location/services/location/location-setting.model";
 import { LocationPath } from "src/app/modules/change-location/services/location/location.service";
 
 /**

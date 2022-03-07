@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { LocationSetting } from './location-setting';
+import { LocationSetting } from './location-setting.model';
 import ServiceBase from 'src/app/services/service-base';
 
 export enum LocationPath {
