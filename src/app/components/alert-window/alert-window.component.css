@@ -1,0 +1,15 @@
+.alert-window {
+    width: auto;
+    border: 2px solid white;
+    border-radius: 10px;
+}
+
+.alert-close {
+    float: right;
+    padding-right: 10px;
+    cursor: pointer;
+}
+
+.alert-msg {
+    padding-left: 10px;
+}
