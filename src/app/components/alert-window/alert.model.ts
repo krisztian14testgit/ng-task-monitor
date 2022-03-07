@@ -30,7 +30,7 @@ export class AlertOptions {
      * The key-value pairs of the that key-words which alert message can contains.
      * If given sub-words are included in text then the window skin become those color which you set in the 'alertTypeColors' property.
      */
-    alertTypeSubWords: {[prop: string]: string[]} = {};
+    alertTypeFitlerWords: {[prop: string]: string[]} = {};
     /**
      * The skins of the alert window. 
      * The order is important in array by the index of the AlertType enum.
