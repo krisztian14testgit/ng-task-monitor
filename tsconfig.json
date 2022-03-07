@@ -6,6 +6,7 @@
     "outDir": "./dist",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "strictPropertyInitialization": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
