@@ -1,37 +1,81 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { debounceTime } from 'rxjs/operators';
+
 import { MyValidator } from 'src/app/validators/my-validator';
+import { LocationPath, LocationService } from './services/location/location.service';
+import { LocationSetting } from './services/location/location-setting.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-change-location',
   templateUrl: './change-location.component.html',
   styleUrls: ['./change-location.component.css']
 })
-export class ChangeLocationComponent implements OnInit {
+export class ChangeLocationComponent implements OnInit, OnDestroy {
   /** Stores the form validation behaviour. */
-  public locationForm!: FormGroup;
+  private _locationForm!: FormGroup;
+  private _locationService$!: Subscription;
 
   //#region Properties
   /** Returns the reference of taskData FormControl. */
   public get taskDataControl(): FormControl {
-    return this.locationForm.get('taskDataPath') as FormControl;
+    return this._locationForm.get('taskDataPath') as FormControl;
   }
 
   /** Returns the reference of appSetting FormControl. */
   public get appSettingControl(): FormControl {
-    return this.locationForm.get('appSettingPath') as FormControl;
+    return this._locationForm.get('appSettingPath') as FormControl;
+  }
+  //#endregion
+
+  constructor(private readonly locationService: LocationService) {
+    this.createLocationFormValidation();
   }
 
-  constructor() { }
+  /** Set the location paths by the location service which come from server. */
+  ngOnInit(): void {
+    this._locationService$ = this.locationService.getLocationSetting()
+    .subscribe((locSetting: LocationSetting) => {
+      this.appSettingControl.setValue(locSetting.appSettingPath);
+      this.taskDataControl.setValue(locSetting.taskPath);
+    });
+  }
+
+  /** Unsubscription from the API streams */
+  ngOnDestroy(): void {
+    this._locationService$.unsubscribe();
+  }
+
+  /**
+   * This is an key-up event function.
+   * It runs when the typing is occured.
+   * Saving the tyoed folder path if it is valid.
+   *  
+   * @event keyup
+   * @param keyLocation is string, value can be LocationPath(AppSettingPath, TaskPath)
+   * @param formControlRef the reference of the given formControl.
+   */
+  public onChangePath(keyLocation: string, formControlRef: FormControl): void {
+    const waitSeconds = 2000;
+    // converting string to enum value
+    if (formControlRef.valid) {
+      const locKey = LocationPath[keyLocation as keyof typeof LocationPath];
+      this.locationService.saveLocation(locKey, formControlRef.value)
+      .pipe(debounceTime(waitSeconds))
+      .subscribe();
+    }
+    
+  }
 
   /** Initialization the locationFrom instance from the FormGroup. */
-  ngOnInit(): void {
-    this.locationForm = new FormGroup({
+  private createLocationFormValidation(): void {
+    this._locationForm = new FormGroup({
       taskDataPath: new FormControl('', [
         Validators.required, 
         Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.LibraryPath))
       ]),
-      appSettingPath: new FormControl('alma', [
+      appSettingPath: new FormControl('', [
         Validators.required,
         Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.LibraryPath))
       ])
