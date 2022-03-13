@@ -1,4 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+
+import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { AlertLabel, AlertOptions, AlertType } from './alert.model';
 
 @Component({
@@ -13,11 +15,13 @@ export class AlertWindowComponent implements OnInit, OnChanges {
   public alertLabel: AlertLabel;
   public isDisplayed: boolean;
 
-  private readonly options: AlertOptions;
-  private timeoutRef!: any;
+  private readonly _options: AlertOptions;
+  private _timeoutRef!: any;
+  /** Alert window closing secunds: 3sec  */
+  private readonly _closeSec = 3000;
 
-  constructor() {
-    this.options = {
+  constructor(private readonly alertMessageService: AlertMessageService) {
+    this._options = {
       alertTypeFitlerWords: {
         'success-words': ['success', 'done'],
         'error-words': ['failed'],
@@ -29,11 +33,18 @@ export class AlertWindowComponent implements OnInit, OnChanges {
     };
 
     this.alertLabel = new AlertLabel();
-    this.setLabelBy(this.options.defaultAlertType);
+    this.setLabelBy(this._options.defaultAlertType);
     this.isDisplayed = false;
   }
 
+  /** Subscription on the alertMessage service to get multicasted message from other component. */
   ngOnInit(): void {
+    this.alertMessageService.getMessage()
+    .subscribe(([message, alertType]) => {
+      this.alertMsg = message;
+      this.show(alertType);
+      this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
+    });
   }
 
   /**
@@ -42,19 +53,24 @@ export class AlertWindowComponent implements OnInit, OnChanges {
    */
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['alertMsg'].previousValue !== this.alertMsg) {
-      const alertType = this.getAlertTypeFromMessage(this.alertMsg);
-      this.setLabelBy(alertType);
       this.show();
-
-      const closeSec = 3000; // 3 sec
-      this.closeAutomatically(closeSec, [AlertType.Success, AlertType.Info]);
+      this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
     }
   }
 
   /**
-   * Shows the Alert Window
+   * Shows the Alert Window.
+   * Setting up alert's label by the given alertMSG.
+   * If the alertType is adjusted the alert window skin changes.
+   *
+   * @param alertType it can be Info, Error, Succes, Warning via AlertType enum.
    */
-  public show(): void {
+  public show(alertType?: AlertType): void {
+    if (!alertType) {
+      alertType = this.getAlertTypeFromMessage(this.alertMsg);
+    }
+    
+    this.setLabelBy(alertType);
     this.isDisplayed = true;
   }
 
@@ -69,8 +85,8 @@ export class AlertWindowComponent implements OnInit, OnChanges {
   }
   
   private setLabelBy(alertType: AlertType): void {
-    this.alertLabel.color = this.options.alertTypeColors[alertType as number];
-    this.alertLabel.name = this.options.alertTypeLabels[alertType as number];
+    this.alertLabel.color = this._options.alertTypeColors[alertType as number];
+    this.alertLabel.name = this._options.alertTypeLabels[alertType as number];
     this.alertLabel.type = alertType;
   }
 
@@ -85,9 +101,9 @@ export class AlertWindowComponent implements OnInit, OnChanges {
    */
   private closeAutomatically(closeSec: number, closeTypes: AlertType[]): void {
     // clear previous timeout process.
-    clearTimeout(this.timeoutRef);
+    clearTimeout(this._timeoutRef);
     if (closeTypes.includes(this.alertLabel.type)) {
-      this.timeoutRef = setTimeout(() => { this.onClose(); }, closeSec);
+      this._timeoutRef = setTimeout(() => { this.onClose(); }, closeSec);
     }
     
   }
@@ -128,12 +144,12 @@ export class AlertWindowComponent implements OnInit, OnChanges {
    * @returns enum: number
    */
   private getAlertTypeFromMessage(alertMsg: string): AlertType {
-    const alertTypeArray = Object.keys(this.options.alertTypeFitlerWords);
+    const alertTypeArray = Object.keys(this._options.alertTypeFitlerWords);
     
     // alertType can be: success-words, error-words and so on.
     for (const alertType of alertTypeArray) {
       // wordKey: ['success', 'done'] from 'success-words' key
-      const wordKeys = this.options.alertTypeFitlerWords[alertType];
+      const wordKeys = this._options.alertTypeFitlerWords[alertType];
 
       for (const key of wordKeys ) {
         if (alertMsg.includes(key)) {
@@ -143,7 +159,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
     }
 
     // return default AlertType if alertTypeSubWords does NOT contains the key-words.
-    return this.options.defaultAlertType;
+    return this._options.defaultAlertType;
   }
 
 }
