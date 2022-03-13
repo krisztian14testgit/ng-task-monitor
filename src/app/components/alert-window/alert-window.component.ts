@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { AlertLabel, AlertOptions, AlertType } from './alert.model';
 
 @Component({
@@ -6,7 +6,7 @@ import { AlertLabel, AlertOptions, AlertType } from './alert.model';
   templateUrl: './alert-window.component.html',
   styleUrls: ['./alert-window.component.css']
 })
-export class AlertWindowComponent implements OnInit, OnChanges, OnDestroy {
+export class AlertWindowComponent implements OnInit, OnChanges {
   /** Contains the given/adjusted alert message. */
   @Input() public alertMsg = '';
 
@@ -51,10 +51,6 @@ export class AlertWindowComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    clearTimeout(this.timeoutRef);
-  }
-
   /**
    * Shows the Alert Window
    */
@@ -88,6 +84,8 @@ export class AlertWindowComponent implements OnInit, OnChanges, OnDestroy {
    * if closeTypes: [AlertType.Success, AlertType.Info] then type of alertLabel is the same the it will close automatically.
    */
   private closeAutomatically(closeSec: number, closeTypes: AlertType[]): void {
+    // clear previous timeout process.
+    clearTimeout(this.timeoutRef);
     if (closeTypes.includes(this.alertLabel.type)) {
       this.timeoutRef = setTimeout(() => { this.onClose(); }, closeSec);
     }
