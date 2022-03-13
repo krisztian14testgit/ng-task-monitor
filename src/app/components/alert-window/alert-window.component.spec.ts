@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 
 import { AlertWindowComponent } from './alert-window.component';
 
@@ -8,7 +9,10 @@ describe('AlertWindowComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AlertWindowComponent ]
+      declarations: [ AlertWindowComponent ],
+      providers: [
+        {provide: AlertMessageService}
+      ]
     })
     .compileComponents();
   });
