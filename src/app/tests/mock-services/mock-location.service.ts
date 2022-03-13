@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from 'rxjs';
-import { LocationSetting } from "src/app/modules/change-location/services/location/location-setting.model";
-import { LocationPath } from "src/app/modules/change-location/services/location/location.service";
+import { LocationPath, LocationSetting } from "src/app/modules/change-location/services/location/location-setting.model";
 
 /**
  * Contains the Mocked class with mocked methods which are base on LocationService.

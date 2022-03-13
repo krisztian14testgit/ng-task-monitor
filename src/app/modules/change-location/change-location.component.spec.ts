@@ -3,8 +3,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChangeLocationComponent } from './change-location.component';
-import { LocationPath, LocationService } from './services/location/location.service';
+import { LocationService } from './services/location/location.service';
 import { MockLocationService } from 'src/app/tests/mock-services/mock-location.service';
+import { LocationPath } from './services/location/location-setting.model';
 
 
 describe('ChangeLocationComponent', () => {
