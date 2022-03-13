@@ -13,6 +13,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { MenuItemComponent } from './components/menu-item/menu-item.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { AlertWindowComponent } from './components/alert-window/alert-window.component';
+import { AlertMessageService } from './services/alert-message/alert-message.service';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,9 @@ import { AlertWindowComponent } from './components/alert-window/alert-window.com
     MatButtonModule,
     MatGridListModule
   ],
-  providers: [],
+  providers: [
+    AlertMessageService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
