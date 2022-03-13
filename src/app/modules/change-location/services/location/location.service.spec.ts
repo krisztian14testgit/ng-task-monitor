@@ -1,4 +1,4 @@
-import { inject, TestBed } from '@angular/core/testing';
+import { fakeAsync, inject, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { LocationService } from './location.service';
 import { LocationPath, LocationSetting } from './location-setting.model';
@@ -27,7 +27,7 @@ describe('LocationService', () => {
     expect(instanceObj).toBeTruthy();
   }));
 
-  it('should get location setting', () => {
+  it('should get location setting', fakeAsync(() => {
     service.getLocationSetting()
     .subscribe((locSetting: LocationSetting) => {
       expect(locSetting).toBeDefined();
@@ -43,9 +43,9 @@ describe('LocationService', () => {
     dummyData.appSettingPath = fakedPath;
     dummyData.taskPath = fakedPath;
     req.flush(dummyData);
-  });
+  }));
 
-  it('should save location setting', () => {
+  it('should save location setting', fakeAsync(() => {
     service.saveLocation(LocationPath.AppSettingPath, fakedPath)
     .subscribe(isTrue => expect(isTrue).toBeTrue());
 
@@ -54,9 +54,9 @@ describe('LocationService', () => {
 
     // sent dummy data
     req.flush(true); // saving was success
-  });
+  }));
 
-  it('should save location setting is failed, 503', () => {
+  it('should save location setting is failed, 503', fakeAsync(() => {
     service.saveLocation(LocationPath.AppSettingPath, fakedPath)
     .subscribe(_ => {}, (err) =>  {
       expect(err.status).toBe(503);
@@ -68,5 +68,5 @@ describe('LocationService', () => {
 
     // sent dummy data
     req.flush(false, {status: 503, statusText: 'Bad request'});
-  });
+  }));
 });
