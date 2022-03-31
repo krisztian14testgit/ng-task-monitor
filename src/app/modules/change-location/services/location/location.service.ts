@@ -3,13 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { LocationSetting } from './location-setting.model';
+import { LocationPath, LocationSetting } from './location-setting.model';
 import ServiceBase from 'src/app/services/service-base';
-
-export enum LocationPath {
-  AppSettingPath,
-  TaskPath
-}
 
 @Injectable()
 export class LocationService {

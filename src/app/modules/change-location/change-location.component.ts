@@ -1,11 +1,13 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 import { MyValidator } from 'src/app/validators/my-validator';
-import { LocationPath, LocationService } from './services/location/location.service';
-import { LocationSetting } from './services/location/location-setting.model';
-import { Subscription } from 'rxjs';
+import { LocationSetting, LocationPath } from './services/location/location-setting.model';
+import { LocationService } from './services/location/location.service';
+import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
+import { AlertType } from 'src/app/components/alert-window/alert.model';
 
 @Component({
   selector: 'app-change-location',
@@ -16,6 +18,12 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   /** Stores the form validation behaviour. */
   private _locationForm!: FormGroup;
   private _locationService$!: Subscription;
+  /**
+   * The represent the saving process state.
+   * * Saving finish: false
+   * * Saving during: true
+  */
+  private _isSavingDone = false;
 
   //#region Properties
   /** Returns the reference of taskData FormControl. */
@@ -29,7 +37,8 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   }
   //#endregion
 
-  constructor(private readonly locationService: LocationService) {
+  constructor(private readonly locationService: LocationService,
+              private readonly alertMessageService: AlertMessageService) {
     this.createLocationFormValidation();
   }
 
@@ -47,25 +56,73 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     this._locationService$.unsubscribe();
   }
 
+  @HostListener('window:keydown.enter', ['$event'])
+  public onEnterSaving(): void {
+    if (!this._isSavingDone) {
+      
+      if (this.taskDataControl.dirty) {
+        this._isSavingDone = true;
+        // update value to be checked
+        this.taskDataControl.updateValueAndValidity();
+        this.saveLocationPath(LocationPath.TaskPath, this.taskDataControl);
+      }
+
+      if (this.appSettingControl.dirty) {
+        this._isSavingDone = true;
+        // update value to be checked
+        this.appSettingControl.updateValueAndValidity();
+        this.saveLocationPath(LocationPath.AppSettingPath, this.appSettingControl);
+      }
+    }
+  }
+
   /**
    * This is an key-up event function.
    * It runs when the typing is occured.
-   * Saving the tyoed folder path if it is valid.
+   * Running it after evey button is pressed.
+   * Saving the typed folder path if it is valid.
    *  
    * @event keyup
-   * @param keyLocation is string, value can be LocationPath(AppSettingPath, TaskPath)
+   * @param keyLocation It is string, value can be LocationPath(AppSettingPath, TaskPath)
    * @param formControlRef the reference of the given formControl.
    */
   public onChangePath(keyLocation: string, formControlRef: FormControl): void {
-    const waitSeconds = 2000;
-    // converting string to enum value
     if (formControlRef.valid) {
-      const locKey = LocationPath[keyLocation as keyof typeof LocationPath];
-      this.locationService.saveLocation(locKey, formControlRef.value)
-      .pipe(debounceTime(waitSeconds))
-      .subscribe();
+      // converting string to enum value, too slow
+      // const locKey = LocationPath[keyLocation as keyof typeof LocationPath];
+      let locKey = undefined;
+      if (keyLocation === 'TaskPath') {
+        locKey = LocationPath.TaskPath;
+      }
+      if (keyLocation === 'AppSettingPath') {
+        locKey = LocationPath.AppSettingPath;
+      }
+
+      if (locKey) {
+        this.saveLocationPath(locKey, formControlRef);
+      }
     }
+  }
+
+  /**
+   * Sending the adjusted locaiton path to the server.
+   * @param keyLocation It is enum type, value can be LocationPath(AppSettingPath, TaskPath)
+   */
+  private saveLocationPath(keyLocation: LocationPath, formControlRef: FormControl): void {
+    const waitSeconds = 2000;
     
+    this.locationService.saveLocation(keyLocation, formControlRef.value)
+    .pipe(debounceTime(waitSeconds))
+    .subscribe(() => {
+      // saving was success
+      this.alertMessageService.sendMessage('Path was saved!', AlertType.Success);
+    }, () => {
+      // saving was unccess
+      this.alertMessageService.sendMessage('Path saving was failed!', AlertType.Error);
+    }, () => {
+      // finally branch
+      this._isSavingDone = false;
+    });
   }
 
   /** Initialization the locationFrom instance from the FormGroup. */
@@ -81,5 +138,4 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
       ])
     });
   }
-
 }
