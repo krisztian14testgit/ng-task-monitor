@@ -60,12 +60,17 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  public fillInRouterDictFrom(labelDict: {[label: string]: { key: string, name: string}[] }): void {
-    Object.values(labelDict).forEach(list => {
-      for (const item of list) {
+  /**
+   * Sets up the this.routerDict by menuKey from the menuItemList.
+   * @param labelDict Contains the structure of the menu with labels and its sub-menu items
+   */
+  private fillInRouterDictFrom(labelDict: {[label: string]: { key: string, name: string}[] }): void {
+    const listInList = Object.values(labelDict);
+    for (let index = 0, k = listInList.length; index < k; index++) {
+      for (const item of listInList[index]) {
         this.routerDict[item.key] = item.name;
       }
-    });
+    }
   }
 
 }
