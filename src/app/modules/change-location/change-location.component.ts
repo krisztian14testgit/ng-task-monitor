@@ -18,6 +18,12 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   /** Stores the form validation behaviour. */
   private _locationForm!: FormGroup;
   private _locationService$!: Subscription;
+  /**
+   * The represent the saving process state.
+   * * Saving finish: false
+   * * Saving during: true
+  */
+  private _isSavingDone = false;
 
   //#region Properties
   /** Returns the reference of taskData FormControl. */
@@ -52,16 +58,21 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
 
   @HostListener('window:keydown.enter', ['$event'])
   public onEnterSaving(): void {
-    if (this.taskDataControl.dirty) {
-      // update value to be checked
-      this.taskDataControl.updateValueAndValidity();
-      this.saveLocationPath(LocationPath.TaskPath, this.taskDataControl);
-    }
+    if (!this._isSavingDone) {
+      
+      if (this.taskDataControl.dirty) {
+        this._isSavingDone = true;
+        // update value to be checked
+        this.taskDataControl.updateValueAndValidity();
+        this.saveLocationPath(LocationPath.TaskPath, this.taskDataControl);
+      }
 
-    if (this.appSettingControl.dirty) {
-      // update value to be checked
-      this.appSettingControl.updateValueAndValidity();
-      this.saveLocationPath(LocationPath.AppSettingPath, this.appSettingControl);
+      if (this.appSettingControl.dirty) {
+        this._isSavingDone = true;
+        // update value to be checked
+        this.appSettingControl.updateValueAndValidity();
+        this.saveLocationPath(LocationPath.AppSettingPath, this.appSettingControl);
+      }
     }
   }
 
@@ -91,7 +102,6 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
         this.saveLocationPath(locKey, formControlRef);
       }
     }
-    // enter hostListener handling --> saving
   }
 
   /**
@@ -106,6 +116,12 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     .subscribe(() => {
       // saving was success
       this.alertMessageService.sendMessage('Path was saved!', AlertType.Success);
+    }, () => {
+      // saving was unccess
+      this.alertMessageService.sendMessage('Path saving was failed!', AlertType.Error);
+    }, () => {
+      // finally branch
+      this._isSavingDone = false;
     });
   }
 
