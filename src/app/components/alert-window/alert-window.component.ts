@@ -17,6 +17,8 @@ export class AlertWindowComponent implements OnInit, OnChanges {
 
   private readonly _options: AlertOptions;
   private _timeoutRef!: any;
+  /** Stores type of the window. Default type is AlertyType.Info. */
+  private _alertType: AlertType;
   /** Alert window closing secunds: 3sec  */
   private readonly _closeSec = 3000;
 
@@ -35,6 +37,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
     this.alertLabel = new AlertLabel();
     this.setLabelBy(this._options.defaultAlertType);
     this.isDisplayed = false;
+    this._alertType = AlertType.Info;
   }
 
   /** Subscription on the alertMessage service to get multicasted message from other component. */
@@ -42,7 +45,10 @@ export class AlertWindowComponent implements OnInit, OnChanges {
     this.alertMessageService.getMessage()
     .subscribe(([message, alertType]) => {
       this.alertMsg = message;
-      this.show(alertType);
+      if (alertType) {
+        this._alertType = alertType;
+      }
+      this.show();
       this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
     });
   }
@@ -53,6 +59,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
    */
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['alertMsg'].previousValue !== this.alertMsg) {
+      this._alertType = this.getAlertTypeFromMessage(this.alertMsg);
       this.show();
       this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
     }
@@ -61,16 +68,10 @@ export class AlertWindowComponent implements OnInit, OnChanges {
   /**
    * Shows the Alert Window.
    * Setting up alert's label by the given alertMSG.
-   * If the alertType is adjusted the alert window skin changes.
-   *
-   * @param alertType it can be Info, Error, Succes, Warning via AlertType enum.
+   * If the _alertType is adjusted the alert window skin changes.
    */
-  public show(alertType?: AlertType): void {
-    if (!alertType) {
-      alertType = this.getAlertTypeFromMessage(this.alertMsg);
-    }
-    
-    this.setLabelBy(alertType);
+  public show(): void {
+    this.setLabelBy(this._alertType);
     this.isDisplayed = true;
   }
 
