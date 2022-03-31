@@ -55,19 +55,20 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     if (this.taskDataControl.dirty) {
       // update value to be checked
       this.taskDataControl.updateValueAndValidity();
-      this.saveLocationPath('TaskPath', this.taskDataControl);
+      this.saveLocationPath(LocationPath.TaskPath, this.taskDataControl);
     }
 
     if (this.appSettingControl.dirty) {
       // update value to be checked
       this.appSettingControl.updateValueAndValidity();
-      this.saveLocationPath('AppSettingPath', this.appSettingControl);
+      this.saveLocationPath(LocationPath.AppSettingPath, this.appSettingControl);
     }
   }
 
   /**
    * This is an key-up event function.
    * It runs when the typing is occured.
+   * Running it after evey button is pressed.
    * Saving the typed folder path if it is valid.
    *  
    * @event keyup
@@ -76,20 +77,31 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
    */
   public onChangePath(keyLocation: string, formControlRef: FormControl): void {
     if (formControlRef.valid) {
-      this.saveLocationPath(keyLocation, formControlRef);
+      // converting string to enum value, too slow
+      // const locKey = LocationPath[keyLocation as keyof typeof LocationPath];
+      let locKey = undefined;
+      if (keyLocation === 'TaskPath') {
+        locKey = LocationPath.TaskPath;
+      }
+      if (keyLocation === 'AppSettingPath') {
+        locKey = LocationPath.AppSettingPath;
+      }
+
+      if (locKey) {
+        this.saveLocationPath(locKey, formControlRef);
+      }
     }
     // enter hostListener handling --> saving
   }
 
   /**
    * Sending the adjusted locaiton path to the server.
-   * @param keyLocation It is string, value can be LocationPath(AppSettingPath, TaskPath)
+   * @param keyLocation It is enum type, value can be LocationPath(AppSettingPath, TaskPath)
    */
-  private saveLocationPath(keyLocation: string, formControlRef: FormControl): void {
+  private saveLocationPath(keyLocation: LocationPath, formControlRef: FormControl): void {
     const waitSeconds = 2000;
-    // converting string to enum value
-    const locKey = LocationPath[keyLocation as keyof typeof LocationPath];
-    this.locationService.saveLocation(locKey, formControlRef.value)
+    
+    this.locationService.saveLocation(keyLocation, formControlRef.value)
     .pipe(debounceTime(waitSeconds))
     .subscribe(() => {
       // saving was success
