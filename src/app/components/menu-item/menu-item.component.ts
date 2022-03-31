@@ -32,7 +32,10 @@ export class MenuItemComponent implements OnChanges {
 
     if (!this.isDisplayedKeys) {
       // get sub-array into one array: [ [a,b], [c,d] ] => [a,b,c,d]
-      Object.values(this.subMenuItems_dict).forEach(getList => this.subMenuValues = [...this.subMenuValues, ...getList]);
+      const subMenulistInList = Object.values(this.subMenuItems_dict);
+      for (const getList of subMenulistInList) {
+        this.subMenuValues = [...this.subMenuValues, ...getList];
+      }
     }
   }
 
