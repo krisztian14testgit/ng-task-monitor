@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { environment } from 'src/environments/environment';
 import { LocationPath, LocationSetting } from './location-setting.model';
 import ServiceBase from 'src/app/services/service-base';
 
@@ -11,7 +12,7 @@ export class LocationService {
 
   private readonly _defaultPath: string;
   private readonly _locSetting!: LocationSetting | {[prop: string]: string};
-  private readonly _locationUrl = 'http://localhost:8080/location';
+  private readonly _locationUrl = `${environment.host}location`;
 
   constructor(private readonly http: HttpClient) {
     this._defaultPath = 'C:/Users/../Documents/';
