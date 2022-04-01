@@ -15,14 +15,22 @@ export enum TaskStatus {
  */
 export class Task {
     /** The idetifier of the task. */
-    id = '';
+    id: string;
     /** The label/short name of the task. */
-    name = '';
+    name: string;
     /** The desscription of the task. */
-    description = '';
+    description: string;
     /** Stores the working/inProgress hours in Number(like double in C#). */
-    timeHours = 0.0;
-    private _status = TaskStatus.Started;
+    timeHours: number;
+    private _status: TaskStatus;
+
+    constructor(id = '', name = '', description = '', timeHours = 0.0) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.timeHours = timeHours;
+        this._status = TaskStatus.Started;
+    }
 
     /**
      * The current status of the task.
