@@ -4,6 +4,8 @@
         <label for="task-status">Task status:</label>
         <select id="task-status">
             <option value="default" selected >Choose!</option>
+            <option *ngFor="let status of taksStatusList"
+                    [value]="status">{{status}}</option>
         </select>
     </div>
     <div>
