@@ -22,6 +22,7 @@ export class Task {
     timeHours: number;
 
     private _id: string;
+    private _createdDate: Date;
     private _status: TaskStatus;
 
     constructor(id = '', name = '', description = '', timeHours = 0.0) {
@@ -30,11 +31,18 @@ export class Task {
         this.description = description;
         this.timeHours = timeHours;
         this._status = TaskStatus.Started;
+        // when it is created
+        this._createdDate = new Date();
     }
 
     /** The idetifier of the task. */
     public get id(): string {
         return this._id;
+    }
+
+    /** The date of the task when it was created. */
+    public get createdDate(): string {
+        return this._createdDate.toDateString();
     }
 
     /**
