@@ -1,1 +1,19 @@
-<p>task works!</p>
+<div class="task-new"><button>+ New task</button></div>
+<div class="taks-filter">
+    <div>
+        <label for="task-status">Task status:</label>
+        <select id="task-status">
+            <option value="default" selected >Choose!</option>
+        </select>
+    </div>
+    <div>
+        <label for="task-time">Time period:</label>
+        <select id="task-time">
+            <option value="today" selected>Today</option>
+            <option value="yesterday">Yesterday</option>
+        </select>
+    </div>
+</div>
+<div class="task-container">
+    <p *ngFor="let task of taskList">{{task.id}}</p>
+</div>
