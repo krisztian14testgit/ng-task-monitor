@@ -1,20 +1,25 @@
-<div class="task-new"><button>+ New task</button></div>
+<div class="task-new">
+    <button mat-raised-button>+ New task</button>
+</div>
 <div class="taks-filter">
-    <div>
-        <label for="task-status">Task status:</label>
-        <select id="task-status">
-            <option value="default" selected >Choose!</option>
-            <option *ngFor="let status of taksStatusList"
-                    [value]="status">{{status}}</option>
-        </select>
-    </div>
-    <div>
-        <label for="task-time">Time period:</label>
-        <select id="task-time">
-            <option value="today" selected>Today</option>
-            <option value="yesterday">Yesterday</option>
-        </select>
-    </div>
+    <!--task status-->
+    <mat-form-field appearance="fill">
+        <mat-label>Select Task status!</mat-label>
+        <mat-select [(ngModel)]="selectedStatus">
+            <mat-option *ngFor="let status of taksStatusList"
+                [value]="status">{{status}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    
+    <!--time period-->
+    <mat-form-field appearance="fill">
+        <mat-label>Time period:</mat-label>
+        <mat-select [value]="defaultTaskTime"
+                    (selectionChange)="onChangedTimePeriod($event)">
+            <mat-option value="0">Today</mat-option>
+            <mat-option value="1">Yesterday</mat-option>
+        </mat-select>
+    </mat-form-field>
 </div>
 <div class="task-container">
     <p *ngFor="let task of taskList">{{task.id}}</p>

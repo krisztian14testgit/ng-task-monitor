@@ -3,3 +3,13 @@
     width: auto;
     height: 560px
 }
+
+.taks-filter mat-form-field {
+    width: 100%;
+}
+
+.task-new > button {
+    float: right;
+    font-weight: bold;
+    width: 35%;
+}
