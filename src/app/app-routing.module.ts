@@ -15,7 +15,7 @@ const routes: Routes = [
     loadChildren: () => import('./modules/task/task.module').then(module => module.TaskModule)
   },
   // redirects to the task sub-side
-  {path: '', redirectTo: '/tasks', pathMatch: 'full'},
+  {path: '', redirectTo: '/tasks/inprogress', pathMatch: 'full'},
   {path: '**', component: PageNotFoundComponent}
 ];
 
