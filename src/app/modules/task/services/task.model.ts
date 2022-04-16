@@ -11,6 +11,16 @@ export enum TaskStatus {
 }
 
 /**
+ * The different time period of Task.
+ * When task was created: 
+ * * Today = 0, Yesterday = 1
+ */
+export enum TaskTime {
+    Today,
+    Yesterday
+}
+
+/**
  * The structure of the Task class.
  */
 export class Task {
