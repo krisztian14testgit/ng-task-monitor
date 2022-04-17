@@ -35,6 +35,7 @@ export class Task {
     private _createdDate: Date;
     private _status: TaskStatus;
 
+    /** Creating a Task instance. Default is empty task. */
     constructor(id = '', title = '', description = '', timeHours = 0.0) {
         this._id = id;
         this.title = title;
