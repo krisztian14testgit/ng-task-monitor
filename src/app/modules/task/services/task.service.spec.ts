@@ -46,7 +46,7 @@ describe('TaskService', () => {
   it('should NOT get all tasks, bad request', fakeAsync(() =>{
     const fakedTaskList = FakedTask.list;
     
-    service.getAll().subscribe(taskList => {}, (err) => {
+    service.getAll().subscribe(_ => {}, (err) => {
       expect(err.status).toBe(503);
       expect(err.statusText).toBe('Bad request');
     });
@@ -81,7 +81,7 @@ describe('TaskService', () => {
       console.log(insertedTask);
       expect(insertedTask).toBeDefined();
       expect(insertedTask.id).not.toBe('');
-      expect(insertedTask.name).toBe(newTask.name);
+      expect(insertedTask.title).toBe(newTask.title);
     });
 
     const reqPointer = mockHttp.expectOne({url: `${taksUrl}/`, method: 'POST'});
@@ -95,13 +95,13 @@ describe('TaskService', () => {
   it('should update the selected Task by id', fakeAsync(() => {
     const originTask = FakedTask.list[0];
     const updatedTask = Object.assign({}, originTask); // deep copy
-    updatedTask.name = 'alma';
+    updatedTask.title = 'alma';
     updatedTask.description = 'modifed description';
 
     service.update(updatedTask).subscribe(task => {
       expect(task).toBeDefined();
       expect(task['_id']).toBe(originTask.id);
-      expect(task.name).not.toBe(originTask.name);
+      expect(task.title).not.toBe(originTask.title);
       expect(task.description).not.toBe(originTask.description);
     });
 
@@ -127,7 +127,7 @@ describe('TaskService', () => {
 
   it('shoud NOT remove the taks, removing is failed', fakeAsync(() => {
     const removedTaskId = FakedTask.list[0].id;
-    service.delete(removedTaskId).subscribe(isDeleted => {}, (err) => {
+    service.delete(removedTaskId).subscribe(_ => {}, (err) => {
       expect(err.status).toBe(500);
       expect(err.statusText).toBe('Internal Server Error');
     });
