@@ -1,0 +1,8 @@
+.task-card {
+    width: inherit;
+    border: 1px solid black;
+}
+
+mat-card-title {
+    font-size: 20px;
+}

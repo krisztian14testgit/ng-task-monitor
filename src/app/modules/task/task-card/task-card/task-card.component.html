@@ -1,1 +1,13 @@
-<p>task-card works!</p>
+<mat-card class="task-card">
+    <mat-card-title>Task title</mat-card-title>
+    <mat-card-content>
+      <p>{{ 'task content' }}</p>
+    </mat-card-content>
+    <mat-divider inset></mat-divider>
+    <mat-card-actions>
+      <button mat-button>Start progress</button>
+    </mat-card-actions>
+    <mat-card-footer>
+      <!--<mat-progress-bar mode="indeterminate"></mat-progress-bar>-->
+    </mat-card-footer>
+</mat-card>
