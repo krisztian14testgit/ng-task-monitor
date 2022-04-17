@@ -25,7 +25,7 @@ export enum TaskTime {
  */
 export class Task {
     /** The label/short name of the task. */
-    name: string;
+    title: string;
     /** The desscription of the task. */
     description: string;
     /** Stores the working/inProgress hours in Number(like double in C#). */
@@ -35,9 +35,9 @@ export class Task {
     private _createdDate: Date;
     private _status: TaskStatus;
 
-    constructor(id = '', name = '', description = '', timeHours = 0.0) {
+    constructor(id = '', title = '', description = '', timeHours = 0.0) {
         this._id = id;
-        this.name = name;
+        this.title = title;
         this.description = description;
         this.timeHours = timeHours;
         this._status = TaskStatus.Started;
