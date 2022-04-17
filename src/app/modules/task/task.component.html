@@ -22,5 +22,6 @@
     </mat-form-field>
 </div>
 <div class="task-container">
-    <p *ngFor="let task of taskList">{{task.id}}</p>
+    <app-task-card *ngFor="let task of taskList"
+                    [task]="task"></app-task-card>
 </div>
