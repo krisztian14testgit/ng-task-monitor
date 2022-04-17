@@ -8,10 +8,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { TaskRoutingModule } from './task-routing.module';
 import { TaskComponent } from './task.component';
 import { TaskService } from './services/task.service';
+import { TaskCardComponent } from './task-card/task-card/task-card.component';
 
 @NgModule({
   declarations: [
-    TaskComponent
+    TaskComponent,
+    TaskCardComponent
   ],
   imports: [
     CommonModule,
