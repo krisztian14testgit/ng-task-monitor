@@ -1,5 +1,6 @@
 <mat-card *ngIf="task"
-          class="task-card"
+          dirCardHighlight
+          class="task-card task-card-default-border"
           [id]="task.id"
           (click)="onClickMatCard()">
     <mat-card-title>

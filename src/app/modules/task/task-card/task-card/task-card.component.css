@@ -1,7 +1,14 @@
 .task-card {
     width: inherit;
-    border: 1px solid black;
     margin-bottom: 10px;
+}
+
+.task-card-default-border {
+    border: 1px solid black;
+}
+
+.task-card-highlight {
+    border: 3px solid blue;
 }
 
 mat-card-title {
