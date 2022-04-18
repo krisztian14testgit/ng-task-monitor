@@ -50,7 +50,8 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getAllTask(): void {
-    this._taskSubscription = this.taskService.getAll().subscribe(tasks => this.taskList = tasks);
+    this._taskSubscription = this.taskService.getAll()
+    .subscribe(tasks => this.taskList = tasks);
   }
 
   private fillInStatusSelection(): void {
