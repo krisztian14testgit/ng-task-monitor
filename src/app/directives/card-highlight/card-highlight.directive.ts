@@ -22,7 +22,7 @@ export class CardHighlightDirective {
   public onClick(): void {
     const currentCardDiv = this.getCardDiv();
     if (currentCardDiv) {
-      const isHighlighted = currentCardDiv?.className.includes(this.highlightBorderClass); 
+      const isHighlighted = currentCardDiv && this.isHighlighted(currentCardDiv); 
       // not removing the highlight if the cardDiv is same, not run for cycle uneccessary
       if (!isHighlighted) {
         this.removeAllCardHighLighting();
@@ -88,12 +88,21 @@ export class CardHighlightDirective {
     this.insertClass(divRef, this.originalBorderClass);
   }
 
+  /**
+   * Returns true if the card has blue border, otherwise false.
+   * @param divRef The reference of the Div tag.
+   * @returns booelan
+   */
+  private isHighlighted(divRef: HTMLDivElement | Element): boolean {
+    return divRef.className.includes(this.highlightBorderClass);
+  }
+
   /** Removes the highlighting from the all card if they was selected before. */
   private removeAllCardHighLighting(): void {
     const cardList = document.getElementsByClassName('task-card');
     for (let i = 0, k = cardList.length; i < k; i++) {
       // if it has highlighting, selected before.
-      if (cardList[i].className.includes(this.highlightBorderClass)) {
+      if (this.isHighlighted(cardList[i])) {
         this.removeHighLighting(cardList[i] as HTMLDivElement);
       }
     }
