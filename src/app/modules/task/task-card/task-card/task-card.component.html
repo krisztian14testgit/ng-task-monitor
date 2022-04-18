@@ -1,7 +1,10 @@
-<mat-card *ngIf="task" class="task-card">
+<mat-card *ngIf="task" class="task-card" [id]="task.id">
     <mat-card-title>
-        <div>{{task.title}}</div>
-        <div class="card-title-button">edit</div>
+      <div>{{task.title}}</div>
+      <div class="card-title-button-box">
+        <div *ngIf="isSelected" class="card-title-button">edit</div>
+      </div>
+      
     </mat-card-title>
     <mat-card-content>
       <p>{{task.description }}</p>
