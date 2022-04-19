@@ -76,29 +76,20 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
    */
   public onSaveCard(): void {
     const isNewTask = this.task.id.length > 0;
-    const errorText = 'Updating/saving has been unsuccessful, server error!';
+    const errorText = 'Updating/saving has been failed, server error!';
     const successText = 'Saving has been success!';
     // task instance contains the updated value by the taksForm by the references!
     this.taskForm.updateValueAndValidity();
-    
-    if (!isNewTask) {
-      // update the existed task
-      this.taskService.update(this.task)
-      .subscribe(updatedTask => {
+    const serviceMethod = !isNewTask ? 'update': 'add';
+
+    // it runs when updating/inserting task
+    this.taskService[serviceMethod](this.task)
+      .subscribe(savedTask => {
         // success branch
-        this.task = updatedTask;
+        this.task = savedTask;
         this.alertMessageService.sendMessage(successText);
       },
         _ => this.alertMessageService.sendMessage(errorText));
-    } else {
-      // insert new task
-      this.taskService.add(this.task)
-      .subscribe(insertedTask => {
-        this.task = insertedTask;
-        this.alertMessageService.sendMessage(successText);
-      },
-        _ => this.alertMessageService.sendMessage(errorText));
-    }
    
   }
 
@@ -119,7 +110,8 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
       timeSeconds: new FormControl(task.timeSeconds, [
         Validators.required,
         Validators.max(24 * 60), // 24h => 24 * 60min
-        Validators.min(1) //min value: 1 min
+        Validators.min(1), //min value: 1 min
+        Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.Number))
       ])
     });
   }
