@@ -4,6 +4,8 @@ import { MatSelectChange } from '@angular/material/select';
 
 import { TaskService } from './services/task.service';
 import { Task, TaskStatus, TaskTime } from './services/task.model';
+import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
+import { AlertType } from 'src/app/components/alert-window/alert.model';
 
 @Component({
   selector: 'app-task',
@@ -25,7 +27,8 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   public defaultTaskTime: string;
   private _taskSubscription!: Subscription;
 
-  constructor(private readonly taskService: TaskService) {
+  constructor(private readonly taskService: TaskService,
+              private readonly alertMessageService: AlertMessageService) {
     this.defaultTaskTime = TaskTime.Today.toString();
   }
 
@@ -47,6 +50,15 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   public onChangedTimePeriod(matSelectionEvent: MatSelectChange): void {
     console.log(matSelectionEvent.value);
+  }
+
+  public addNewTask(): void {
+    const maxItemNumber = 10;
+    if (this.taskList.length + 1 < maxItemNumber) {
+      // add new task
+    } else {
+      this.alertMessageService.sendMessage('You cannot add news task, max: 10!', AlertType.Warning);
+    }
   }
 
   private getAllTask(): void {

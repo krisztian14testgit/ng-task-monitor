@@ -1,5 +1,6 @@
 <div class="task-new">
-    <button mat-raised-button>+ New task</button>
+    <div>Task Limit: {{taskList.length}}/10</div>
+    <button mat-raised-button (click)="addNewTask()">+ New task</button>
 </div>
 <div class="taks-filter">
     <!--task status-->

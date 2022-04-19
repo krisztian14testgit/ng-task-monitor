@@ -8,6 +8,11 @@
     width: 100%;
 }
 
+.task-new > div {
+    float: left;
+    width: 30%;
+}
+
 .task-new > button {
     float: right;
     font-weight: bold;
