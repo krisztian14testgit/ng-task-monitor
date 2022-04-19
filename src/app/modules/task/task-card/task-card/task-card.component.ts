@@ -45,8 +45,11 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
     if (this.task.id) {
       // get TaskStatus key as string
       this.statusLabel = TaskStatus[this.task.status];
-      this.taskForm = this.generateReactiveForm(this.task);
+    } else {
+      // task id is empty, new taks with empty form
+      this.isEditable = true;
     }
+    this.taskForm = this.generateReactiveForm(this.task);
   }
 
   ngAfterViewInit(): void {
@@ -74,18 +77,26 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
   public onSaveCard(): void {
     const isNewTask = this.task.id.length > 0;
     const errorText = 'Updating/saving has been unsuccessful, server error!';
+    const successText = 'Saving has been success!';
     // task instance contains the updated value by the taksForm by the references!
     this.taskForm.updateValueAndValidity();
     
     if (!isNewTask) {
       // update the existed task
       this.taskService.update(this.task)
-      .subscribe(updatedTask => this.task = updatedTask,
+      .subscribe(updatedTask => {
+        // success branch
+        this.task = updatedTask;
+        this.alertMessageService.sendMessage(successText);
+      },
         _ => this.alertMessageService.sendMessage(errorText));
     } else {
       // insert new task
       this.taskService.add(this.task)
-      .subscribe(insertedTask => this.task = insertedTask,
+      .subscribe(insertedTask => {
+        this.task = insertedTask;
+        this.alertMessageService.sendMessage(successText);
+      },
         _ => this.alertMessageService.sendMessage(errorText));
     }
    

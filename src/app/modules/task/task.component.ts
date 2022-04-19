@@ -56,6 +56,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     const maxItemNumber = 10;
     if (this.taskList.length + 1 < maxItemNumber) {
       // add new task
+      this.taskList.unshift(new Task());
     } else {
       this.alertMessageService.sendMessage('You cannot add news task, max: 10!', AlertType.Warning);
     }
