@@ -28,23 +28,26 @@
           (click)="onClickMatCard()">
     <mat-card-title>
       <div class="edit-card-title">
-        <input matInput type="text" placeholder="Task Title">
+        <input matInput [formControl]="taskControls.title"
+              type="text" placeholder="Task Title">
       </div>
       <div class="card-title-button-box">
         <div class="card-title-button">close</div>
       </div>
     </mat-card-title>
     <mat-card-content class="edit-card-content">
-      <textarea placeholder="Task description"></textarea>
+      <textarea [formControl]="taskControls.description"
+                placeholder="Task description"></textarea>
       <div class="edit-card-time">
-        <label for="taskTime">Planed time:</label>
-        <input id="taskTime" type="number" placeholder="in minutes">
+        <label for="taskTime">Planed time(min):</label>
+        <input matInput [formControl]="taskControls.timeSeconds"
+               id="taskTime" type="number" placeholder="in minutes">
       </div>
     </mat-card-content>
     <mat-divider inset></mat-divider>
     <mat-card-actions>
       <div mat-button>Status: {{statusLabel}}</div>
-      <div><button mat-button>Save</button></div>
+      <div><button mat-raised-button color="green">Save</button></div>
     </mat-card-actions>
     <mat-card-footer>
       <!--<mat-progress-bar mode="indeterminate"></mat-progress-bar>-->
