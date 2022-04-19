@@ -35,7 +35,11 @@ export class Task {
     private _createdDate: Date;
     private _status: TaskStatus;
 
-    /** Creating a Task instance. Default is empty task. */
+    /**
+     * Creating a Task instance. Default is empty task. 
+     * * createdDate: is set up after the creation of the task instance.
+     * * status: initial value is TaskStatus.Started.
+    */
     constructor(id = '', title = '', description = '', timeSeconds = 0) {
         this._id = id;
         this.title = title;
