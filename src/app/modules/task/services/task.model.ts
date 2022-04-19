@@ -28,19 +28,19 @@ export class Task {
     title: string;
     /** The desscription of the task. */
     description: string;
-    /** Stores the working/inProgress hours in Number(like double in C#). */
-    timeHours: number;
+    /** The working/inProgress in seconds. */
+    timeSeconds: number;
 
     private _id: string;
     private _createdDate: Date;
     private _status: TaskStatus;
 
     /** Creating a Task instance. Default is empty task. */
-    constructor(id = '', title = '', description = '', timeHours = 0.0) {
+    constructor(id = '', title = '', description = '', timeSeconds = 0) {
         this._id = id;
         this.title = title;
         this.description = description;
-        this.timeHours = timeHours;
+        this.timeSeconds = timeSeconds;
         this._status = TaskStatus.Started;
         // when it is created
         this._createdDate = new Date();
