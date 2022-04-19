@@ -40,6 +40,30 @@ mat-card-title > .card-title-button-box {
 }
 
 /* progress-bar button */
-mat-card-actions > button {
+mat-card-actions > div {
     padding-left: 45%;
+}
+
+/* editable card */
+.edit-card-title > input {
+    width: -webkit-fill-available;
+}
+
+.edit-card-content {
+    height: 80px;
+}
+
+.edit-card-content > textarea {
+    float: left;
+    width: 60%;
+    height: inherit;
+}
+
+.edit-card-time {
+    float: right;
+    width: 38%;
+}
+
+.edit-card-time > input {
+    width: 100%;
 }

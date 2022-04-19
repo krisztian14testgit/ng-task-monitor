@@ -1,4 +1,4 @@
-<mat-card *ngIf="task"
+<mat-card *ngIf="!isEditable && task"
           dirCardHighlight
           class="task-card task-card-default-border"
           [id]="task.id"
@@ -14,7 +14,37 @@
     </mat-card-content>
     <mat-divider inset></mat-divider>
     <mat-card-actions>
-      <button mat-button>{{statusLabel}}</button>
+      <div><button mat-button>{{statusLabel}}</button></div>
+    </mat-card-actions>
+    <mat-card-footer>
+      <!--<mat-progress-bar mode="indeterminate"></mat-progress-bar>-->
+    </mat-card-footer>
+</mat-card>
+
+<!-- editable card -->
+<mat-card *ngIf="isEditable"
+          dirCardHighlight
+          class="task-card task-card-default-border"
+          (click)="onClickMatCard()">
+    <mat-card-title>
+      <div class="edit-card-title">
+        <input matInput type="text" placeholder="Task Title">
+      </div>
+      <div class="card-title-button-box">
+        <div class="card-title-button">close</div>
+      </div>
+    </mat-card-title>
+    <mat-card-content class="edit-card-content">
+      <textarea placeholder="Task description"></textarea>
+      <div class="edit-card-time">
+        <label for="taskTime">Planed time:</label>
+        <input id="taskTime" type="number" placeholder="in minutes">
+      </div>
+    </mat-card-content>
+    <mat-divider inset></mat-divider>
+    <mat-card-actions>
+      <div mat-button>Status: {{statusLabel}}</div>
+      <div><button mat-button>Save</button></div>
     </mat-card-actions>
     <mat-card-footer>
       <!--<mat-progress-bar mode="indeterminate"></mat-progress-bar>-->

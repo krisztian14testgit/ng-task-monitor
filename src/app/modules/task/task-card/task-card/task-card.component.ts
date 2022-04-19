@@ -10,6 +10,7 @@ import { Task, TaskStatus } from '../../services/task.model';
 export class TaskCardComponent implements OnInit, OnChanges {
   /** The current task reference which was given. */
   @Input() public task: Task = new Task();
+  @Input() public isEditable = true;
   
   /** The name of TaskStatus. */
   public statusLabel = '';
