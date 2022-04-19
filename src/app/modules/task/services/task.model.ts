@@ -46,12 +46,18 @@ export class Task {
         this._createdDate = new Date();
     }
 
-    /** The idetifier of the task. */
+    /**
+     * The idetifier of the task. 
+     * @access Readonly
+     */
     public get id(): string {
         return this._id;
     }
 
-    /** The date of the task when it was created. */
+    /** 
+     * The date of the task when it was created.
+     * @access Readonly
+     */
     public get createdDate(): string {
         return this._createdDate.toDateString();
     }
@@ -62,6 +68,7 @@ export class Task {
      * * Started
      * * Inprogress
      * * Completed
+     * @access Readonly
      */
     public get status(): TaskStatus {
         return this._status;
