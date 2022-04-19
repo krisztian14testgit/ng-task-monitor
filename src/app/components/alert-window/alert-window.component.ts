@@ -25,8 +25,8 @@ export class AlertWindowComponent implements OnInit, OnChanges {
   constructor(private readonly alertMessageService: AlertMessageService) {
     this._options = {
       alertTypeFitlerWords: {
-        'success-words': ['success', 'done'],
-        'error-words': ['failed'],
+        'success-words': ['success', 'successful','done'],
+        'error-words': ['failed', 'error'],
         'warning-words': ['warning', 'alert']
       },
       alertTypeColors: ['alert-blue', 'alert-red', 'alert-green', 'alert-yellow'],
@@ -48,6 +48,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
       if (alertType) {
         this._alertType = alertType;
       }
+      this._alertType = this.getAlertTypeFromMessage(this.alertMsg);
       this.show();
       this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
     });
