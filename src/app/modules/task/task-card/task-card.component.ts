@@ -3,8 +3,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { MyValidator } from 'src/app/validators/my-validator';
 
-import { Task, TaskStatus } from '../../services/task.model';
-import { TaskService } from '../../services/task.service';
+import { Task, TaskStatus } from '../services/task.model';
+import { TaskService } from '../services/task.service';
 
 @Component({
   selector: 'app-task-card',
