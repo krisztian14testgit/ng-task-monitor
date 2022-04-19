@@ -10,7 +10,8 @@ export namespace MyValidator {
      */
     export enum PatternRuleKeys {
         LibraryPath,
-        TaskName
+        TaskName,
+        Number
     }
     
     /**
@@ -23,7 +24,9 @@ export namespace MyValidator {
             // library path regExp: C:/folder/sub-folder/
             '[A-Z]?:/{1}([a-zA-Z0-9-_ ]+/{1})*$',
             // task name regExp: tt, Task1, task-22, task_01
-            '[^-0-9]{1}[a-zA-Z0-9-_]+'
+            '[^-0-9]{1}[a-zA-Z0-9-_]+',
+            // number regExp:
+            '[0-9]'
         ];
 
         /**
