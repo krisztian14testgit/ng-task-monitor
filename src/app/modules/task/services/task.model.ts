@@ -87,4 +87,12 @@ export class Task {
     public isCompleted(): boolean {
         return this._status === TaskStatus.Completed;
     }
+
+    /** 
+     * Returns true if the task is new by id, otherwise false.
+     * New condition: id contains 'new' keyword.
+     */
+    public isNewTask(): boolean {
+        return this._id.indexOf('new') !== -1;
+    }
 }
