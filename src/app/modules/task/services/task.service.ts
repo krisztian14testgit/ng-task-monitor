@@ -81,7 +81,7 @@ export class TaskService {
     }));*/
 
     const foundTaskIndex = FakedTask.list.findIndex(taskItem => taskItem.id === task.id);
-    this._taskList[foundTaskIndex] = task;
+    FakedTask.list[foundTaskIndex] = task;
     this.taskList$.next(FakedTask.list);
     return of(task);
   }
@@ -102,8 +102,8 @@ export class TaskService {
     }));*/
 
     const fakedIndex = FakedTask.list.findIndex(task => task.id === taskId);
-    this._taskList.splice(fakedIndex, 1);
-    this.taskList$.next(this._taskList);
+    FakedTask.list.splice(fakedIndex, 1);
+    this.taskList$.next(FakedTask.list);
     return of(true);
   }
 }
