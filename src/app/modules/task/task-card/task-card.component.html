@@ -6,7 +6,8 @@
     <mat-card-title>
       <div>{{task.title}}</div>
       <div class="card-title-button-box">
-        <div *ngIf="isSelected" class="card-title-button">edit</div>
+        <div *ngIf="isSelected" class="card-title-button"
+              (click)="onEdit_colseCard()">edit</div>
       </div>
     </mat-card-title>
     <mat-card-content>
@@ -36,7 +37,8 @@
         </mat-error>
       </div>
       <div class="card-title-button-box">
-        <div class="card-title-button">close</div>
+        <div class="card-title-button"
+            (click)="onEdit_colseCard()">close</div>
       </div>
     </mat-card-title>
     <mat-card-content class="edit-card-content">

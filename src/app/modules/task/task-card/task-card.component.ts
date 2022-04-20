@@ -28,6 +28,11 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
   public taskControls: {[prop: string]: FormControl };
   /** The FromGroup structure of the task. */
   public taskForm!: FormGroup;
+  /**
+   * Stores the initial value of the properties of task which are changeable.
+   * Values available by the property names.
+   * * Task Properties: title, description, timeSeconds*/
+  private _defaultFromValues: {[property: string]: string | number} = {};
 
   constructor(private readonly taskService: TaskService,
               private readonly alertMessageService: AlertMessageService) { 
@@ -53,11 +58,9 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    if (this.isEditable) {
-      this.taskControls['title'] = this.taskForm.get('title') as FormControl;
-      this.taskControls['description'] = this.taskForm.get('description') as FormControl;
-      this.taskControls['timeSeconds'] = this.taskForm.get('timeSeconds') as FormControl;
-    }
+    this.taskControls['title'] = this.taskForm.get('title') as FormControl;
+    this.taskControls['description'] = this.taskForm.get('description') as FormControl;
+    this.taskControls['timeSeconds'] = this.taskForm.get('timeSeconds') as FormControl;
   }
 
   /**
@@ -94,11 +97,32 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   /**
+   * This a click event function.
+   * It runs when the user clicks on the 'edit'/'close' button on the card.
+   * If the button is 'edit' then it will be 'colse' and after reverse.
+   * * isEditable: true --> 'close'
+   * * isEditabée: false --> 'edit'
+   */
+  public onEdit_colseCard(): void {
+    this.isEditable = !this.isEditable;
+    
+    // it is closed, reset task values to initial
+    if (!this.isEditable) {
+      this.taskForm.reset(this._defaultFromValues);
+    }
+  }
+
+  /**
    * Returns the Reactive form from the given task instance.
    * @param task The instance of the given task.
    * @returns FormGroup
    */
   private generateReactiveForm(task: Task): FormGroup {
+    // saving the intital values of the task
+    this._defaultFromValues['title'] = task.title;
+    this._defaultFromValues['description'] = task.description;
+    this._defaultFromValues['timeSeconds'] = task.timeSeconds;
+
     return new FormGroup({
       title: new FormControl(task.title, [
         Validators.required,
