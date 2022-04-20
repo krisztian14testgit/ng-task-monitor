@@ -78,13 +78,14 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
    * Saving/updating the task by the taskService.
    */
   public onSaveCard(): void {
-    const isNewTask = this.task.id.length > 0;
+    const isNewTask = this.task.id.length === 0;
     const errorText = 'Updating/saving has been failed, server error!';
     const successText = 'Saving has been success!';
-    // task instance contains the updated value by the taksForm by the references!
-    this.taskForm.updateValueAndValidity();
+    
+    // updating values by the taksForm in the Task instance
+    this.updateTaskValuesByForm();
     const serviceMethod = !isNewTask ? 'update': 'add';
-
+    
     // it runs when updating/inserting task
     this.taskService[serviceMethod](this.task)
       .subscribe(savedTask => {
@@ -93,7 +94,9 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
         this.alertMessageService.sendMessage(successText);
       },
         _ => this.alertMessageService.sendMessage(errorText));
-   
+    
+    // Close the edit mode
+    this.isEditable = false;
   }
 
   /**
@@ -110,6 +113,14 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
     if (!this.isEditable) {
       this.taskForm.reset(this._defaultFromValues);
     }
+  }
+
+  /** Updates the editable properties(title, description, timeSeconds) in Task class. */
+  private updateTaskValuesByForm(): void {
+    this.taskForm.updateValueAndValidity();
+    this.task.title = this.taskForm.get('title')?.value;
+    this.task.description = this.taskForm.get('description')?.value;
+    this.task.timeSeconds = this.taskForm.get('timeSeconds')?.value;
   }
 
   /**
