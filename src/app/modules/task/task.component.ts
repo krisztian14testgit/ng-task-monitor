@@ -55,10 +55,21 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   public addNewTask(): void {
     const maxItemNumber = 10;
     if (this.taskList.length + 1 < maxItemNumber) {
-      // add new task
-      this.taskList.unshift(new Task());
+      // add new task with new-$count id
+      this.taskList.unshift(new Task(`new-${this.taskList.length}`));
     } else {
       this.alertMessageService.sendMessage('You cannot add news task, max: 10!', AlertType.Warning);
+    }
+  }
+
+  /**
+   * Removed that empty card from container which belong to the removed id
+   * @param $removedTaskId The id of new task which is not saved.
+   */
+  public onRemoveFailedNewTask($removedTaskId: string): void {
+    if ($removedTaskId) {
+      const removedIndex = this.taskList.findIndex((task: Task) => task.id === $removedTaskId);
+      this.taskList.splice(removedIndex, 1);
     }
   }
 

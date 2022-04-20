@@ -24,5 +24,6 @@
 </div>
 <div class="task-container">
     <app-task-card *ngFor="let task of taskList"
-                    [task]="task"></app-task-card>
+                    [task]="task"
+                    (newTaskCreationFailed)="onRemoveFailedNewTask($event)"></app-task-card>
 </div>

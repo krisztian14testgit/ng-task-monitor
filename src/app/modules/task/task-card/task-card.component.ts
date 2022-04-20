@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnChanges, OnInit } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { MyValidator } from 'src/app/validators/my-validator';
@@ -15,6 +15,7 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
   /** The current task reference which was given. */
   @Input() public task: Task = new Task();
   @Input() public isEditable = false;
+  @Output() public readonly newTaskCreationFailed: EventEmitter<string> = new EventEmitter();
   
   /** The name of TaskStatus. */
   public statusLabel = '';
@@ -47,12 +48,12 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   ngOnChanges(): void {
-    if (this.task.id) {
-      // get TaskStatus key as string
-      this.statusLabel = TaskStatus[this.task.status];
-    } else {
-      // task id is empty, new taks with empty form
+    if (this.task.isNewTask()) {
+      // new taks with empty form
       this.isEditable = true;
+    } else if (this.task.id.length > 0) {
+      // Task is defined, get TaskStatus key as string
+      this.statusLabel = TaskStatus[this.task.status];
     }
     this.taskForm = this.generateReactiveForm(this.task);
   }
@@ -66,6 +67,7 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
   /**
    * This is an click event function.
    * It runs when the user click on the card.
+   * Display the 'edit' button.
    */
   public onClickMatCard(): void {
     this.selectedTaskId = this.task.id;
@@ -78,7 +80,7 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
    * Saving/updating the task by the taskService.
    */
   public onSaveCard(): void {
-    const isNewTask = this.task.id.length === 0;
+    const isNewTask = this.task.isNewTask();
     const errorText = 'Updating/saving has been failed, server error!';
     const successText = 'Saving has been success!';
     
@@ -109,6 +111,12 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
    */
   public onEdit_colseCard(): void {
     this.isEditable = !this.isEditable;
+
+    // new empty task card is closed without SAVING
+    if (!this.isEditable && this.task.isNewTask()) {
+      // notice the taskContainer component to remove the empty card.
+      this.newTaskCreationFailed.next(this.task.id);
+    }
     
     // it is closed, reset task values to initial
     if (!this.isEditable) {
