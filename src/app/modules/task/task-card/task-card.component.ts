@@ -30,9 +30,9 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
   public taskForm!: FormGroup;
   /**
    * Stores the initial value of the properties of task which are changeable.
-   * Values available by the property names.
+   * Values available by the Task property names.
    * * Task Properties: title, description, timeSeconds*/
-  private _defaultFromValues: {[property: string]: string | number} = {};
+  private _defaultFormValues: {[property: string]: string | number} = {};
 
   constructor(private readonly taskService: TaskService,
               private readonly alertMessageService: AlertMessageService) { 
@@ -85,12 +85,13 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
     // updating values by the taksForm in the Task instance
     this.updateTaskValuesByForm();
     const serviceMethod = !isNewTask ? 'update': 'add';
-    
+
     // it runs when updating/inserting task
     this.taskService[serviceMethod](this.task)
       .subscribe(savedTask => {
         // success branch
         this.task = savedTask;
+        this.setDefaulFormValuesBy(savedTask);
         this.alertMessageService.sendMessage(successText);
       },
         _ => this.alertMessageService.sendMessage(errorText));
@@ -111,7 +112,7 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
     
     // it is closed, reset task values to initial
     if (!this.isEditable) {
-      this.taskForm.reset(this._defaultFromValues);
+      this.taskForm.reset(this._defaultFormValues);
     }
   }
 
@@ -124,15 +125,23 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   /**
+   * Preserves the intital values of the given Task.
+   * @param task Reference of the Task
+   */
+  private setDefaulFormValuesBy(task: Task): void {
+    this._defaultFormValues['title'] = task.title;
+    this._defaultFormValues['description'] = task.description;
+    this._defaultFormValues['timeSeconds'] = task.timeSeconds;
+  }
+
+  /**
    * Returns the Reactive form from the given task instance.
    * @param task The instance of the given task.
    * @returns FormGroup
    */
   private generateReactiveForm(task: Task): FormGroup {
     // saving the intital values of the task
-    this._defaultFromValues['title'] = task.title;
-    this._defaultFromValues['description'] = task.description;
-    this._defaultFromValues['timeSeconds'] = task.timeSeconds;
+    this.setDefaulFormValuesBy(task);
 
     return new FormGroup({
       title: new FormControl(task.title, [
