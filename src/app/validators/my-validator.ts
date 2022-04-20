@@ -25,8 +25,8 @@ export namespace MyValidator {
             '[A-Z]?:/{1}([a-zA-Z0-9-_ ]+/{1})*$',
             // task name regExp: tt, Task1, task-22, task_01
             '[^-0-9]{1}[a-zA-Z0-9-_]+',
-            // number regExp:
-            '[0-9]'
+            // number regExp: only allow the digits
+            '[0-9]+'
         ];
 
         /**
