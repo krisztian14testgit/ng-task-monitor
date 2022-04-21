@@ -56,18 +56,25 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     this._locationService$.unsubscribe();
   }
 
+  /**
+   * It is an event function.
+   * It is triggered by the enter keyword.
+   * Saving the task path or application app path. Depends on which is modified.
+   */
   @HostListener('window:keydown.enter', ['$event'])
   public onEnterSaving(): void {
     if (!this._isSavingDone) {
       
-      if (this.taskDataControl.dirty) {
+      // task path
+      if (this.taskDataControl.dirty && this.taskDataControl.valid) {
         this._isSavingDone = true;
         // update value to be checked
         this.taskDataControl.updateValueAndValidity();
         this.saveLocationPath(LocationPath.TaskPath, this.taskDataControl);
       }
 
-      if (this.appSettingControl.dirty) {
+      // application path
+      if (this.appSettingControl.dirty && this.appSettingControl.valid) {
         this._isSavingDone = true;
         // update value to be checked
         this.appSettingControl.updateValueAndValidity();
