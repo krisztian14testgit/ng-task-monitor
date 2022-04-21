@@ -80,26 +80,29 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
    * Saving/updating the task by the taskService.
    */
   public onSaveCard(): void {
-    const isNewTask = this.task.isNewTask();
-    const errorText = 'Updating/saving has been failed, server error!';
-    const successText = 'Saving has been success!';
-    
-    // updating values by the taksForm in the Task instance
-    this.updateTaskValuesByForm();
-    const serviceMethod = !isNewTask ? 'update': 'add';
+    this.taskForm.updateValueAndValidity();
+    if (this.taskForm.valid) {
+      const isNewTask = this.task.isNewTask();
+      const errorText = 'Updating/saving has been failed, server error!';
+      const successText = 'Saving has been success!';
+      
+      // updating values by the taksForm in the Task instance
+      this.updateTaskValuesByForm();
+      const serviceMethod = !isNewTask ? 'update': 'add';
 
-    // it runs when updating/inserting task
-    this.taskService[serviceMethod](this.task)
-      .subscribe(savedTask => {
-        // success branch
-        this.task = savedTask;
-        this.setDefaulFormValuesBy(savedTask);
-        this.alertMessageService.sendMessage(successText);
-      },
-        _ => this.alertMessageService.sendMessage(errorText));
-    
-    // Close the edit mode
-    this.isEditable = false;
+      // it runs when updating/inserting task
+      this.taskService[serviceMethod](this.task)
+        .subscribe(savedTask => {
+          // success branch
+          this.task = savedTask;
+          this.setDefaulFormValuesBy(savedTask);
+          this.alertMessageService.sendMessage(successText);
+        },
+          _ => this.alertMessageService.sendMessage(errorText));
+      
+      // Close the edit mode
+      this.isEditable = false;
+    }
   }
 
   /**
@@ -126,7 +129,6 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
 
   /** Updates the editable properties(title, description, timeSeconds) in Task class. */
   private updateTaskValuesByForm(): void {
-    this.taskForm.updateValueAndValidity();
     this.task.title = this.taskForm.get('title')?.value;
     this.task.description = this.taskForm.get('description')?.value;
     this.task.timeSeconds = this.taskForm.get('timeSeconds')?.value;
