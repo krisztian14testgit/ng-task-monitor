@@ -1,4 +1,4 @@
-import {Task} from '../../modules/task/services/task.model';
+import {Task, TaskStatus} from '../../modules/task/services/task.model';
 
 /** TODO: just for testing Task service */
 export class FakedTask {
@@ -12,21 +12,25 @@ export class FakedTask {
      * Adds new task and sets the id of taask if the task prop is passed.
      * Returns the new Task instance
      * @param task the instance of the Task.
+     * @param status the TaskStatus of the task.
+     * @param createdDate Task date when it is created.
      * @returns Task
      */
-    public static addNewTask(task?: Task): Task {
+    public static addNewTask(task?: Task, status?: TaskStatus, createdDate?: Date): Task {
         // generate id: 0-99
-        const genId = Math.random() * 100;
+        const genId = Math.floor(Math.random() * 100);
         let retTask: Task;
         if (!task) {
             retTask = new Task(`faked-task-${genId}`, `fakedTask-${genId}`, 'new gen task', 1.0);
-            FakedTask.list.push(retTask);
         } else {
             // Set up the id of the new Task instance
-            retTask = {...task} as Task;
+            retTask = task;
             retTask['_id'] = `faked-task-${genId}`;
-            FakedTask.list.push(task);
         }
+
+        if (status) { retTask['_status'] = status; }
+        if (createdDate) { retTask['_createdDate'] = createdDate; }
+        FakedTask.list.push(retTask);
 
         return retTask;
     }
