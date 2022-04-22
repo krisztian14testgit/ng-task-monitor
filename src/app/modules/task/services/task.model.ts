@@ -89,7 +89,7 @@ export class Task {
     }
 
     /** 
-     * Returns true if the task is new by id, otherwise false.
+     * Returns true if the task is new by id (not saved yet), otherwise false.
      * New condition: id contains 'new' keyword.
      */
     public isNewTask(): boolean {
