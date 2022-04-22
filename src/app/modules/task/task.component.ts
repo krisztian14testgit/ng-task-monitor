@@ -26,6 +26,11 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   public defaultTaskTime: string;
   private _taskSubscription!: Subscription;
+  /**
+   * Stores the all original task items which got form the service.
+   * It is helping for the task filtering methods.
+   */
+  private _preservedTaskList: Task[] = [];
 
   constructor(private readonly taskService: TaskService,
               private readonly alertMessageService: AlertMessageService) {
@@ -45,6 +50,19 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Unsubscribe the task stream if the task side is leaved. */
   ngOnDestroy(): void {
     this._taskSubscription.unsubscribe();
+  }
+
+  /**
+   * This is an Model change event function.
+   * It is triggered when the selection tag value is changed in the comboBox.
+   */
+  public onFilterStatus(): void {
+    // get original task items form the preserved list.
+    this.taskList = [...this._preservedTaskList];
+    const statusKey = this.selectedStatus.toUpperCaseFirstChar();
+    // convert string to enum type
+    const statusValue = TaskStatus[statusKey as keyof typeof TaskStatus];
+    this.taskList = this.taskList.filter((task:Task) => task.status === statusValue);
   }
 
   /**
@@ -85,7 +103,10 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private getAllTask(): void {
     this._taskSubscription = this.taskService.getAll()
-    .subscribe(tasks => this.taskList = tasks);
+    .subscribe(tasks => {
+      this.taskList = tasks;
+      this._preservedTaskList = [...tasks];
+    });
   }
 
   /** 

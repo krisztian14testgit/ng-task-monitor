@@ -6,7 +6,8 @@
     <!-- task status fiter -->
     <mat-form-field appearance="fill">
         <mat-label>Select Task status!</mat-label>
-        <mat-select [(ngModel)]="selectedStatus">
+        <mat-select [(ngModel)]="selectedStatus"
+                    (ngModelChange)="onFilterStatus()">
             <mat-option *ngFor="let status of taksStatusList"
                 [value]="status">{{status}}</mat-option>
         </mat-select>
