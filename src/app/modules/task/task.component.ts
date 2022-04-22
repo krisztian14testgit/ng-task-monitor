@@ -32,14 +32,17 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     this.defaultTaskTime = TaskTime.Today.toString();
   }
 
+  /** Gets tasks form the service. */
   ngOnInit(): void {
     this.getAllTask();
   }
 
+  /** StatusList is filled in for the status filter. */
   ngAfterViewInit(): void {
     this.fillInStatusSelection();
   }
 
+  /** Unsubscribe the task stream if the task side is leaved. */
   ngOnDestroy(): void {
     this._taskSubscription.unsubscribe();
   }
@@ -52,6 +55,10 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log(matSelectionEvent.value);
   }
 
+  /**
+   * Adds new empty task into the task list.
+   * The max item limit: 10.
+   */
   public addNewTask(): void {
     const maxItemNumber = 10;
     if (this.taskList.length + 1 < maxItemNumber) {
@@ -63,8 +70,8 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Removed that empty card from container which belong to the removed id
-   * @param $removedTaskId The id of new task which is not saved.
+   * Removed that empty card from the container which belongs to the removed id
+   * @param $removedTaskId The id of new task which is not saved. The id includes 'new' keyword with number.
    */
   public onRemoveFailedNewTask($removedTaskId: string): void {
     if ($removedTaskId) {
@@ -73,11 +80,18 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /**
+   * Stores the tasks from the service into the taskList.
+   */
   private getAllTask(): void {
     this._taskSubscription = this.taskService.getAll()
     .subscribe(tasks => this.taskList = tasks);
   }
 
+  /** 
+   * Fills in taksStatusList from the TaskStatus enum items.
+   * Result: tasksStatusList: ['started', 'inprogress', 'completed']
+   */
   private fillInStatusSelection(): void {
     const statuses = Object.values(TaskStatus) as string[];
     // get rid of number: "0", "1", 

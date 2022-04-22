@@ -3,7 +3,7 @@
     <button mat-raised-button (click)="addNewTask()">+ New task</button>
 </div>
 <div class="taks-filter">
-    <!--task status-->
+    <!-- task status fiter -->
     <mat-form-field appearance="fill">
         <mat-label>Select Task status!</mat-label>
         <mat-select [(ngModel)]="selectedStatus">
@@ -12,7 +12,7 @@
         </mat-select>
     </mat-form-field>
     
-    <!--time period-->
+    <!-- time period filter -->
     <mat-form-field appearance="fill">
         <mat-label>Time period:</mat-label>
         <mat-select [value]="defaultTaskTime"
