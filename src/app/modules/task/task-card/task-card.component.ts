@@ -11,7 +11,7 @@ import { TaskService } from '../services/task.service';
   templateUrl: './task-card.component.html',
   styleUrls: ['./task-card.component.css']
 })
-export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
+export class TaskCardComponent implements OnChanges, AfterViewInit {
   /** The current task reference which was given. */
   @Input() public task: Task = new Task();
   @Input() public isEditable = false;
@@ -23,8 +23,8 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
   /** True: The card is selected, otherwise false. */
   public isSelected = false;
   /** 
-   * Stores the references of the formControls of the taks reactive form.
-   * It is helping contruction to get current formControl form the Formgroup.
+   * Stores the references of the formControls of the reactive form.
+   * It is helping construction to get current formControl form the Formgroup.
    */
   public taskControls: {[prop: string]: FormControl };
   /** The FromGroup structure of the task. */
@@ -44,9 +44,11 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
     };
   }
 
-  ngOnInit(): void {
-  }
-
+  /**
+   * The given task is new (not saved) then card will be editable.
+   * The task is defined (already exist) card mode will readonly.
+   * Generating a reactiveForm by the given task.
+   */
   ngOnChanges(): void {
     if (this.task.isNewTask()) {
       // new taks with empty form
@@ -58,6 +60,10 @@ export class TaskCardComponent implements OnInit, OnChanges, AfterViewInit {
     this.taskForm = this.generateReactiveForm(this.task);
   }
 
+  /**
+   * After the view initialization, taskControls get references from the taskForm by
+   * the control name.
+   */
   ngAfterViewInit(): void {
     this.taskControls['title'] = this.taskForm.get('title') as FormControl;
     this.taskControls['description'] = this.taskForm.get('description') as FormControl;
