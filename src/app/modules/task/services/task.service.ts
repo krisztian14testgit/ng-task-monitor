@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import ServiceBase from 'src/app/services/service-base';
-import { Task } from './task.model';
+import { Task, TaskStatus } from './task.model';
 import { environment } from '../../../../environments/environment';
 
 import { FakedTask } from '../../../tests/models/faked-task.model';
@@ -33,6 +33,8 @@ export class TaskService {
       return tasks;
     }));*/
 
+    const task1 = new Task('', 'status is changed');
+    FakedTask.addNewTask(task1, TaskStatus.Inprogress);
     this.taskList$.next(FakedTask.list);
     return of(FakedTask.list);
   }
