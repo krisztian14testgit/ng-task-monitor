@@ -137,7 +137,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** 
    * Fills in taksStatusList from the TaskStatus enum items.
-   * Result: tasksStatusList: ['started', 'inprogress', 'completed']
+   * Result: tasksStatusList: ['start', 'inprogress', 'completed']
    */
   private fillInStatusSelection(): void {
     const statuses = Object.values(TaskStatus) as string[];

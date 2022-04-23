@@ -2,8 +2,10 @@
  * The statuses of the Task.
  */
 export enum TaskStatus {
-    /** The task initialized/default value. That's mean the task is new. */
-    Started,
+    /**
+     * The task is new, ready to stared count timer.
+     * The task initialized/default value.  */
+    Start,
     /** The task started the measuring/working time. */
     Inprogress,
     /** The task is done/finished. */
@@ -38,14 +40,14 @@ export class Task {
     /**
      * Creating a Task instance. Default is empty task. 
      * * createdDate: is set up after the creation of the task instance.
-     * * status: initial value is TaskStatus.Started.
+     * * status: default value is TaskStatus.Start.
     */
     constructor(id = '', title = '', description = '', timeSeconds = 0) {
         this._id = id;
         this.title = title;
         this.description = description;
         this.timeSeconds = timeSeconds;
-        this._status = TaskStatus.Started;
+        this._status = TaskStatus.Start;
         // when it is created
         this._createdDate = new Date();
     }
@@ -68,11 +70,12 @@ export class Task {
 
     /**
      * The current status of the task.
-     * Statuses:
-     * * Started
+     * @Statuses:
+     * * Start
      * * Inprogress
      * * Completed
      * @access Readonly
+     * @default TaskStatus.Start
      */
     public get status(): TaskStatus {
         return this._status;
