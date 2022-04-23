@@ -16,7 +16,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
   public isDisplayed: boolean;
 
   private readonly _options: AlertOptions;
-  private _timeoutRef!: any;
+  private _timeoutRef!: NodeJS.Timeout;
   /** Stores type of the window. Default type is AlertyType.Info. */
   private _alertType: AlertType;
   /** Alert window closing secunds: 3sec  */
