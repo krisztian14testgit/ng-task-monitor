@@ -75,7 +75,7 @@ export class Task {
      * * Inprogress
      * * Completed
      * @access Readonly
-     * @default TaskStatus.Start
+     * @defaultValue TaskStatus.Start
      */
     public get status(): TaskStatus {
         return this._status;
