@@ -13,7 +13,7 @@ import { AlertType } from 'src/app/components/alert-window/alert.model';
   styleUrls: ['./task.component.css']
 })
 export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
-  /** Stores the created tasks. */
+  /** Stores the reference of the tasks. */
   public taskList: Task[] = [];
   /** Statuses of the Task. */
   public taksStatusList: string[] = [];
@@ -31,6 +31,8 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * It is helping for the task filtering methods.
    */
   private _preservedTaskList: Task[] = [];
+  /** Stores those tasks which are filtered by the date. Created: today or not. */
+  private _filteredTaskListByDate: Task[] = [];
 
   constructor(private readonly taskService: TaskService,
               private readonly alertMessageService: AlertMessageService) {
@@ -57,20 +59,24 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * It is triggered when the selection tag value is changed in the comboBox.
    */
   public onFilterStatus(): void {
-    // get original task items form the preserved list.
-    this.taskList = [...this._preservedTaskList];
-    const statusKey = this.selectedStatus.toUpperCaseFirstChar();
-    // convert string to enum type
-    const statusValue = TaskStatus[statusKey as keyof typeof TaskStatus];
-    this.taskList = this.taskList.filter((task:Task) => task.status === statusValue);
+    if (this.selectedStatus) {
+      const statusKey = this.selectedStatus.toUpperCaseFirstChar();
+      // convert string to enum type
+      const statusValue = TaskStatus[statusKey as keyof typeof TaskStatus];
+      this.taskList = this._filteredTaskListByDate.filter((task:Task) => task.status === statusValue);
+    } else {
+      // not filtering, contains all task status
+      this.taskList = this._filteredTaskListByDate;
+    }
   }
 
   /**
    * This an chage event function.
-   * It run when the user select an item from Task time combobox.
+   * It run when the user select an item from Task time period combobox.
    */
   public onChangedTimePeriod(matSelectionEvent: MatSelectChange): void {
-    console.log(matSelectionEvent.value);
+    const isTodayFilter = matSelectionEvent.value != 1;
+    this.taskList = this.filterTasksByDate(isTodayFilter);
   }
 
   /**
@@ -99,13 +105,27 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Returns the reference of the filtered Task list.
+   * Tasks is filtered by the date when they are created.
+   * @param isToday When tasks are created. It is filtering switch.
+   * @returns The filtered task by date.
+   */
+  private filterTasksByDate(isToday: boolean): Task[] {
+    this._filteredTaskListByDate = this._preservedTaskList
+    .filter((task:Task) => task.isCreatedToday() === isToday);
+    return this._filteredTaskListByDate;
+  }
+
+  /**
    * Stores the tasks from the service into the taskList.
+   * taskList is filtered by the "today" date.
    */
   private getAllTask(): void {
     this._taskSubscription = this.taskService.getAll()
     .subscribe(tasks => {
-      this.taskList = tasks;
       this._preservedTaskList = [...tasks];
+      // filter tasks which are created Today
+      this.taskList = this.filterTasksByDate(true);
     });
   }
 

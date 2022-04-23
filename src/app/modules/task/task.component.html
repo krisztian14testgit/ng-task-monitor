@@ -8,6 +8,7 @@
         <mat-label>Select Task status!</mat-label>
         <mat-select [(ngModel)]="selectedStatus"
                     (ngModelChange)="onFilterStatus()">
+            <mat-option [value]="">All</mat-option>
             <mat-option *ngFor="let status of taksStatusList"
                 [value]="status">{{status}}</mat-option>
         </mat-select>
