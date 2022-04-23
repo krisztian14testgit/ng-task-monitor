@@ -31,6 +31,9 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   public taskForm!: FormGroup;
   /**
    * Stores the initial value of the properties of task which are changeable.
+   * This storer is used by the form reset.
+   * 
+   * @descripton property:
    * Values available by the Task property names.
    * * Task Properties: title, description, timeSeconds*/
   private _defaultFormValues: {[property: string]: string | number} = {};
