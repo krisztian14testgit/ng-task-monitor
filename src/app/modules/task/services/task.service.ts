@@ -75,7 +75,8 @@ export class TaskService {
   public update(task: Task): Observable<Task> {
     /*return this.http.put<Task>(`${this._taskUrl}/${task.id}`, task, {headers: ServiceBase.HttpHeaders})
     .pipe(map((updatedTask: Task) => {
-      // The checking is unnecessary as the request run into good branch, so server found the item in the list and updated it.
+      // The checking is unnecessary as the request run into good branch,
+      // so server found the item in the list and updated it.
       const foundTaskIndex = this._taskList.findIndex(taskItem => taskItem.id === updatedTask.id);
       this._taskList[foundTaskIndex] = updatedTask;
       this.taskList$.next(this._taskList);
