@@ -1,7 +1,7 @@
 .task-container {
     border: 1px solid red;
     width: auto;
-    height: 560px
+    height: auto;
 }
 
 .taks-filter mat-form-field {
