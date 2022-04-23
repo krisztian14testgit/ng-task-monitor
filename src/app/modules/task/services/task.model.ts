@@ -95,4 +95,19 @@ export class Task {
     public isNewTask(): boolean {
         return this._id.indexOf('new') !== -1;
     }
+
+    /**
+     * Returns true if the Task is created today.
+     * 
+     * @description
+     * The createdDate of Task is not less then the cleint current date.
+     * Date diff range: 24 hours.
+     * @returns boolean
+     */
+    public isCreatedToday(): boolean {
+        const currentClient_inMilliSec = new Date().getMilliseconds();
+        const task_inMilliSec = this._createdDate.getMilliseconds();
+        const diff24hours_inMilliSec = 24 * 60 * 60 * 1000;
+        return currentClient_inMilliSec - task_inMilliSec < diff24hours_inMilliSec;
+    }
 }
