@@ -3,6 +3,7 @@
  * https://codepunk.io/extending-strings-and-other-data-types-in-typescript/
  */
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface String {
     /** Converts the first character to upper case. */
     toUpperCaseFirstChar: () => string;
