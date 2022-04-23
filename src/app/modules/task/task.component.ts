@@ -17,14 +17,17 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   public taskList: Task[] = [];
   /** Statuses of the Task. */
   public taksStatusList: string[] = [];
-  /** Contains the selected status from the combobox. */
+  /** Two-way bindign. Contains the selected status from the combobox. */
   public selectedStatus = '';
   /** 
-   * Task time filer: when task was created.
+   * Two-way bindig
+   * TaskTime enum filer: when task was created.
    * * Default value: Today = 0 
    * * Yesterday = 1
    */
   public defaultTaskTime: string;
+  /** Contains the count of tasks which are filtered by date. */
+  public filteredTaskCount = 0;
   private _taskSubscription!: Subscription;
   /**
    * Stores the all original task items which got form the service.
@@ -65,7 +68,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       const statusValue = TaskStatus[statusKey as keyof typeof TaskStatus];
       this.taskList = this._filteredTaskListByDate.filter((task:Task) => task.status === statusValue);
     } else {
-      // not filtering, contains all task status
+      // not filtering, contains all task statuses
       this.taskList = this._filteredTaskListByDate;
     }
   }
@@ -85,9 +88,10 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   public addNewTask(): void {
     const maxItemNumber = 10;
-    if (this.taskList.length + 1 < maxItemNumber) {
+    if (this.taskList.length < maxItemNumber) {
       // add new task with new-$count id
       this.taskList.unshift(new Task(`new-${this.taskList.length}`));
+      this.filteredTaskCount = this.taskList.length;
     } else {
       this.alertMessageService.sendMessage('You cannot add news task, max: 10!', AlertType.Warning);
     }
@@ -101,6 +105,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     if ($removedTaskId) {
       const removedIndex = this.taskList.findIndex((task: Task) => task.id === $removedTaskId);
       this.taskList.splice(removedIndex, 1);
+      this.filteredTaskCount = this.taskList.length;
     }
   }
 
@@ -113,6 +118,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   private filterTasksByDate(isToday: boolean): Task[] {
     this._filteredTaskListByDate = this._preservedTaskList
     .filter((task:Task) => task.isCreatedToday() === isToday);
+    this.filteredTaskCount = this._filteredTaskListByDate.length;
     return this._filteredTaskListByDate;
   }
 
