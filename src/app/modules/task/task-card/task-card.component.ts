@@ -56,11 +56,13 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     if (this.task.isNewTask()) {
       // new taks with empty form
       this.isEditable = true;
-    } else if (this.task.id.length > 0) {
+    }
+    
+    if (this.task.id.length > 0) {
       // Task is defined, get TaskStatus key as string
       this.statusLabel = TaskStatus[this.task.status];
+      this.taskForm = this.generateReactiveForm(this.task);
     }
-    this.taskForm = this.generateReactiveForm(this.task);
   }
 
   /**
