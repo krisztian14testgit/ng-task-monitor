@@ -13,10 +13,10 @@ export class FakedTask {
      * Returns the new Task instance
      * @param task the instance of the Task.
      * @param status the TaskStatus of the task.
-     * @param createdDate Task date when it is created.
+     * @param createdDate Task date when it is created. You can set: "Year-month-day HH:mm:ss"
      * @returns Task
      */
-    public static addNewTask(task?: Task, status?: TaskStatus, createdDate?: Date): Task {
+    public static addNewTask(task?: Task, status?: TaskStatus, createdDate?: string): Task {
         // generate id: 0-99
         const genId = Math.floor(Math.random() * 100);
         let retTask: Task;
@@ -29,7 +29,7 @@ export class FakedTask {
         }
 
         if (status) { retTask['_status'] = status; }
-        if (createdDate) { retTask['_createdDate'] = createdDate; }
+        if (createdDate) { retTask['_createdDate'] = new Date(createdDate); }
         FakedTask.list.push(retTask);
 
         return retTask;
