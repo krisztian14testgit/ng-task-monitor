@@ -16,7 +16,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
   public isDisplayed: boolean;
 
   private readonly _options: AlertOptions;
-  private _timeoutRef!: any;
+  private _timeoutRef!: NodeJS.Timeout;
   /** Stores type of the window. Default type is AlertyType.Info. */
   private _alertType: AlertType;
   /** Alert window closing secunds: 3sec  */
@@ -25,8 +25,8 @@ export class AlertWindowComponent implements OnInit, OnChanges {
   constructor(private readonly alertMessageService: AlertMessageService) {
     this._options = {
       alertTypeFitlerWords: {
-        'success-words': ['success', 'done'],
-        'error-words': ['failed'],
+        'success-words': ['success', 'successful','done'],
+        'error-words': ['failed', 'error'],
         'warning-words': ['warning', 'alert']
       },
       alertTypeColors: ['alert-blue', 'alert-red', 'alert-green', 'alert-yellow'],
@@ -47,7 +47,10 @@ export class AlertWindowComponent implements OnInit, OnChanges {
       this.alertMsg = message;
       if (alertType) {
         this._alertType = alertType;
+      } else {
+        this._alertType = this.getAlertTypeFromMessage(this.alertMsg);
       }
+      
       this.show();
       this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
     });
@@ -98,7 +101,8 @@ export class AlertWindowComponent implements OnInit, OnChanges {
    * @param closeTypes Contains those alert types when the Alert window have to close itself.
    * 
    * @Example
-   * if closeTypes: [AlertType.Success, AlertType.Info] then type of alertLabel is the same the it will close automatically.
+   * if closeTypes: [AlertType.Success, AlertType.Info] then
+   * the type of alertLabel is the same the it will close automatically.
    */
   private closeAutomatically(closeSec: number, closeTypes: AlertType[]): void {
     // clear previous timeout process.

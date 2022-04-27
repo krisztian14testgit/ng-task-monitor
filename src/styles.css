@@ -3,6 +3,13 @@
 /*#region Angular Material settings*/
 html, body { height: 100%; }
 body {font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* green button stlye
+ * mat-raised-button color="green"
+ */
+.mat-green {
+    background: rgb(0, 220, 1)
+}
 /*#endregion*/
 
 .center {

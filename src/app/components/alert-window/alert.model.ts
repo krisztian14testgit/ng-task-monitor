@@ -28,7 +28,8 @@ export class AlertLabel {
 export class AlertOptions {
     /** 
      * The key-value pairs of the that key-words which alert message can contains.
-     * If given sub-words are included in text then the window skin become those color which you set in the 'alertTypeColors' property.
+     * If given sub-words are included in text then the window skin become those color
+     * which you set in the 'alertTypeColors' property.
      */
     alertTypeFitlerWords: {[prop: string]: string[]} = {};
     /**

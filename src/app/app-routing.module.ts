@@ -10,8 +10,12 @@ const routes: Routes = [
     path: 'location',
     loadChildren: () => import('./modules/change-location/change-location.module').then(m => m.ChangeLocationModule)
   },
-  // opening side:
-  {path: '', redirectTo: '/', pathMatch: 'full'},
+  {
+    path: 'tasks',
+    loadChildren: () => import('./modules/task/task.module').then(module => module.TaskModule)
+  },
+  // redirects to the task sub-side
+  {path: '', redirectTo: '/tasks/inprogress', pathMatch: 'full'},
   {path: '**', component: PageNotFoundComponent}
 ];
 

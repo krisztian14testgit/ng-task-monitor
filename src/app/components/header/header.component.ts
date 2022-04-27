@@ -22,8 +22,8 @@ export class HeaderComponent implements OnInit {
   constructor(private readonly router: Router) {
     this.menusItemList_dict = {
       Tasks: [
-        {key: "inprogress", name: "In-Progress"},
-        {key: "finished", name: "Finished"}
+        {key: "tasks/inprogress", name: "In-Progress"},
+        {key: "tasks/finished", name: "Finished"}
       ],
       Charts: [
         {key: "weekly", name: "In-Weekly"},
