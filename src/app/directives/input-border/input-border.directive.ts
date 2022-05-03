@@ -1,5 +1,9 @@
 import { Directive, HostListener, Input, OnChanges } from '@angular/core';
 
+/**
+ * Sets the border of the input tag by isValid input property.
+ * If isValid is true then border is green, otherwise border is red.
+ */
 @Directive({
   selector: '[dirInputBorder]'
 })
