@@ -11,11 +11,13 @@ import { AlertLabel, AlertOptions, AlertType } from './alert.model';
 export class AlertWindowComponent implements OnInit, OnChanges {
   /** Contains the given/adjusted alert message. */
   @Input() public alertMsg = '';
-
+  /** It has name, color, type properties. */
   public alertLabel: AlertLabel;
+  /** Alert message appears when it is true. */
   public isDisplayed: boolean;
 
   private readonly _options: AlertOptions;
+  /** Stores the needle of the setTimeout. */
   private _timeoutRef!: NodeJS.Timeout;
   /** Stores type of the window. Default type is AlertyType.Info. */
   private _alertType: AlertType;
@@ -57,7 +59,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
   }
 
   /**
-   * It runs when the alertMsg has been changed, alertWindow appears.
+   * It runs when the alertMsg has been changed via @Input, alertWindow appears.
    * @param changes SimpleChanges
    */
   ngOnChanges(changes: SimpleChanges): void {
@@ -88,6 +90,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
     this.isDisplayed = false;
   }
   
+  /** Sets the color, name, type of the label by the given alertType. */
   private setLabelBy(alertType: AlertType): void {
     this.alertLabel.color = this._options.alertTypeColors[alertType as number];
     this.alertLabel.name = this._options.alertTypeLabels[alertType as number];
@@ -95,7 +98,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Closes Alert window after the given sec.
+   * Closes Alert window after the given milli seconds.
    * 
    * @param closeSec this is milliseconds
    * @param closeTypes Contains those alert types when the Alert window have to close itself.
@@ -140,11 +143,11 @@ export class AlertWindowComponent implements OnInit, OnChanges {
    * Returns the suitable AlertType by the alert message what is contained.
    * 
    * @description
-   * If the alert message contains the 'succes' or 'done' then AlertType will be Success
+   * If the alert message contains the 'succes' or 'done' then AlertType will be Success.
    * If the alert message contauns the 'wrong, error' then AlertType will be Error.
    * 
    * @defaultValue
-   * Returns the default: AlertType.Info if the messaga does not contains the filter key words
+   * Returns the default: AlertType.Info if the messaga does not contains the filter key words.
    * @param alertMsg The adjusted alert message.
    * @returns enum: number
    */
