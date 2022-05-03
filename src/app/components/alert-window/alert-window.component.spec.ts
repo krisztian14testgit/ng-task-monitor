@@ -112,9 +112,10 @@ describe('AlertWindowComponent', () => {
       'The basic text without keywords.', // info - blue
       'The process was failed.', // error - red
       'The process was success.', // success - green
-      'The warning text.' // warning - yellow
+      'The warning text.', // warning - yellow
+      '' // info - blue
     ];
-    const expectedAlertType = [AlertType.Info, AlertType.Error, AlertType.Success, AlertType.Warning];
+    const expectedAlertType = [AlertType.Info, AlertType.Error, AlertType.Success, AlertType.Warning, AlertType.Info];
 
     for (let i = 0; i < textArray.length; i++) {
       expect(component['getAlertTypeFromMessage'](textArray[i])).toBe(expectedAlertType[i]);
