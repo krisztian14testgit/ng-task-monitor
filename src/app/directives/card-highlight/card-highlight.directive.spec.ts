@@ -36,6 +36,10 @@ describe('CardHighlightDirective', () => {
     directive = matCard.injector.get(CardHighlightDirective);
   });
 
+  it('should create an instance', () => {
+    expect(directive).toBeTruthy();
+  });
+
   it('should get mat-card instance', () => {
     const matCard = directive['getCardDiv']();
     expect(matCard).not.toBeNull();
