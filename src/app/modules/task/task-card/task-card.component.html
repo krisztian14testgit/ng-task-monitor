@@ -28,14 +28,17 @@
           class="task-card task-card-default-border"
           (click)="onClickMatCard()">
     <mat-card-title>
+      <!-- card-title-input -->
       <div class="edit-card-title">
         <input matInput [formControl]="taskControls.title"
+              dirInputBorder [isValid]="taskControls.title.valid"
               type="text" placeholder="Task Title">
         <mat-error *ngIf="taskControls.title.invalid &&
                     (taskControls.title.dirty || taskControls.title.touched)">
             <strong>Min letters: 3. Please use these letter: 0-9, a-z, -,_!</strong>
         </mat-error>
       </div>
+      <!-- close button -->
       <div class="card-title-button-box">
         <div class="card-title-button"
             (click)="onEdit_colseCard()">close</div>
@@ -47,7 +50,8 @@
       <div class="edit-card-time">
         <label for="taskTime">Planed time(min):</label>
         <input matInput [formControl]="taskControls.timeSeconds"
-               id="taskTime" type="number" placeholder="in minutes">
+              dirInputBorder [isValid]="taskControls.timeSeconds.valid"
+              id="taskTime" type="number" placeholder="in minutes">
         <mat-error *ngIf="taskControls.timeSeconds.invalid &&
                (taskControls.timeSeconds.dirty || taskControls.timeSeconds.touched)">
           <strong>It's range [1, 1440] in minutes!</strong>
