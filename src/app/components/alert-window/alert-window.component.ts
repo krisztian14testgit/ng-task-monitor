@@ -131,9 +131,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
     const dashIndex = alertKey.indexOf('-');
     const key = alertKey.substring(0, dashIndex);
     // first letter to be upperCase
-    const firstLetter = key[0].toUpperCase();
-    const skipFirstLetterIndex = 1;
-    const enumKey = firstLetter + key.substring(skipFirstLetterIndex);
+    const enumKey = key.toUpperCaseFirstChar();
     
     // return enum form the string key value
     return AlertType[enumKey as keyof typeof AlertType];
@@ -152,6 +150,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
    * @returns enum: number
    */
   private getAlertTypeFromMessage(alertMsg: string): AlertType {
+    alertMsg = alertMsg.toLowerCase();
     const alertTypeArray = Object.keys(this._options.alertTypeFitlerWords);
     
     // alertType can be: success-words, error-words and so on.
