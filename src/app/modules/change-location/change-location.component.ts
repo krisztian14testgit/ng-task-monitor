@@ -1,6 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
 import { MyValidator } from 'src/app/validators/my-validator';
@@ -119,7 +119,9 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     const waitSeconds = 2000;
     
     this.locationService.saveLocation(keyLocation, formControlRef.value)
-    .pipe(debounceTime(waitSeconds))
+    .pipe(
+      debounceTime(waitSeconds),
+      distinctUntilChanged())
     .subscribe(() => {
       // saving was success
       this.alertMessageService.sendMessage('Path was saved!', AlertType.Success);
