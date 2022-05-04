@@ -11,7 +11,7 @@ export class InputBorderDirective implements OnChanges {
   /** The switch of the validation. */
   @Input() public isValid = false;
 
-  /** Stores the pre def key of the input-valid, input-invalid class. */
+  /** Stores the pre def keyword of the input-valid, input-invalid class. */
   private readonly preClassKey = 'input';
   /** The needle of the input element. */
   private refInput!: HTMLInputElement;
@@ -25,14 +25,14 @@ export class InputBorderDirective implements OnChanges {
     if (target.currentTarget) {
       this.refInput = target.currentTarget as HTMLInputElement;
       // it runs fist to change border of the input field
-      this.changeBorderBy(this.refInput, this.isValid);
+      this.changeBorderBy(this.isValid);
     }
   }
 
   /** It is triggered when the isValid input changes. */
   ngOnChanges(): void {
     if (this.refInput) {
-      this.changeBorderBy(this.refInput, this.isValid);
+      this.changeBorderBy(this.isValid);
     }
   }
 
@@ -41,24 +41,25 @@ export class InputBorderDirective implements OnChanges {
    * Borders:
    * * Valid -> green
    * * Invalid -> red
-   * @param refInput The input element tag.
    * @param isValid Input validation condition.
    */
-  private changeBorderBy(refInput: HTMLInputElement ,isValid: boolean): void {
+  private changeBorderBy(isValid: boolean): void {
     const classValue = isValid ? 'valid': 'invalid';
-    this.clearPreviousBorder(refInput);
-    refInput.className += ` ${this.preClassKey}-${classValue}`;
+    this.clearPreviousBorderClass();
+    this.refInput.className += ` ${this.preClassKey}-${classValue}`;
   }
 
   /**
    * Removes the previous input class definiation from the class prop of input tag.
-   * @param refInput The input element tag.
+   * Only removes that class def which contains the 'input' keywords,
+   * such as input-valid, input-invalid
    */
-  private clearPreviousBorder(refInput: HTMLInputElement): void {
-    const classes: string[] = refInput.className.split(' ');
+  private clearPreviousBorderClass(): void {
     let delIndex = -1;
-    
-    if (classes.length > 0) {
+    let classes: string[] = [];
+
+    if (this.refInput.className.length > 0) {
+      classes = this.refInput.className.split(' ');
       delIndex = this.findCurrentClassBy(classes, this.preClassKey);
     }
     
@@ -66,7 +67,7 @@ export class InputBorderDirective implements OnChanges {
       // remove class by delIndex
       classes.splice(delIndex, 1);
       // save the rest class definiton without the removed one.
-      refInput.className = classes.join(' ');
+      this.refInput.className = classes.join(' ');
     }
   }
 
@@ -74,11 +75,13 @@ export class InputBorderDirective implements OnChanges {
    * Returns the index of the found class definition by the findKey.
    * Returns -1 if the findKey is not found.
    * @param classes The clases of the input tag.
-   * @param findKey The given key which will be found.
+   * @param findKey The searched class key.
    * @returns found index of the classes.
    */
   private findCurrentClassBy(classes: string[], findKey: string): number {
     // Find item from the end of the classes, as the last class def was inserted.
+    if (!findKey) return -1;
+    
     for (let i = classes.length-1; i > -1; i--) {
       if (classes[i].includes(findKey)) {
         return i;
