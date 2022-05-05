@@ -6,7 +6,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface String {
     /** 
-     * Returns nen string where the first character is converted to upper case.
+     * Returns new string where the first character is converted to upper case.
      * The rest are not changed.
      */
     toUpperCaseFirstChar: () => string;
