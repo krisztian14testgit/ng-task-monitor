@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, NavigationStart, Router, Event } from '@angular/router';
-import { AppMenu, AppSubMenu } from 'src/app/services/models/app-menu.model';
+import { AppMenu, MenuItem } from 'src/app/services/models/app-menu.model';
 
 @Component({
   selector: 'app-header',
@@ -71,7 +71,7 @@ export class HeaderComponent implements OnInit {
    * Sets up the this.routerDict by menuKey from the menuItemList.
    * @param labelDict Contains the structure of the menu with labels and its sub-menu items
    */
-  private fillInRouterDictFrom(labelDict: {[label: string]: AppSubMenu[] }): void {
+  private fillInRouterDictFrom(labelDict: {[label: string]: MenuItem[] }): void {
     const listInList = Object.values(labelDict);
     for (let index = 0, k = listInList.length; index < k; index++) {
       for (const item of listInList[index]) {
