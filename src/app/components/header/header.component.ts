@@ -24,7 +24,7 @@ export class HeaderComponent implements OnInit {
     this.appMenus = new AppMenu();
     this.appMenus.title = 'Menu';
     this.appMenus.isDisplayedLable = true;
-    this.appMenus.subMenuItemsDict = {
+    this.appMenus.menuItemsWithLabel = {
       Tasks: [
         {linkKey: "tasks/inprogress", title: "In-Progress"},
         {linkKey: "tasks/finished", title: "Finished"}
@@ -38,14 +38,14 @@ export class HeaderComponent implements OnInit {
     this.optionMenus = new AppMenu();
     this.optionMenus.title = 'Options';
     this.optionMenus.isDisplayedLable = false;
-    this.optionMenus.subMenuItemsDict = {
+    this.optionMenus.menuItemsWithLabel = {
       Location: [
         {linkKey: "location", title: "Change location"}
       ]
     };
 
-    this.fillInRouterDictFrom(this.appMenus.subMenuItemsDict);
-    this.fillInRouterDictFrom(this.optionMenus.subMenuItemsDict);
+    this.fillInRouterDictFrom(this.appMenus.menuItemsWithLabel);
+    this.fillInRouterDictFrom(this.optionMenus.menuItemsWithLabel);
 
   }
 

@@ -11,9 +11,9 @@ export class AppMenu {
     /** The title of the menu item. Displayed name. */
     title = '';
     /** 
-     * The sub-menu items by the lables.
+     * The menu items by the lables. Orgonized with lables.
      * * label: can be the group name of the sub-menu items.*/
-    subMenuItemsDict: {[label: string]: AppSubMenu[] } = {};
+    menuItemsWithLabel: {[label: string]: AppSubMenu[] } = {};
     /**
      * Showing the label name in the menu list.
      * The labels can not be refered (not open as a link).
