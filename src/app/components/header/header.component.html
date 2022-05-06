@@ -3,15 +3,15 @@
         <div name="title">{{titleOfRoute}}</div>
     </mat-grid-tile>
     <mat-grid-tile colspan="1" rowspan="1">
-        <app-menu-item [title]="'Option'"
-                        [subMenuItems_dict]="optionItemList_dict"
-                        [isDisplayedKeys]="false">
+        <app-menu-item [title]="optionMenus.title"
+                        [subMenuItems_dict]="optionMenus.subMenuItemsDict"
+                        [isDisplayedKeys]="optionMenus.isDisplayedLable">
         </app-menu-item>
     </mat-grid-tile>
     <mat-grid-tile colspan="1" rowspan="1">
-        <app-menu-item [title]="'Menu'"
-                        [subMenuItems_dict]="menusItemList_dict"
-                        [isDisplayedKeys]="true">
+        <app-menu-item [title]="appMenus.title"
+                        [subMenuItems_dict]="appMenus.subMenuItemsDict"
+                        [isDisplayedKeys]="appMenus.isDisplayedLable">
         </app-menu-item>
     </mat-grid-tile>
 
