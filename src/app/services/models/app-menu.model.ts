@@ -1,5 +1,5 @@
-/** The structure of the sub-menu items. */
-export class AppSubMenu {
+/** The structure of the menu items. */
+export class MenuItem {
     /** The url reference key of the the sub-menu. */
     linkKey = '';
     /** The title of sub-menu. Displayed name. */
@@ -13,7 +13,7 @@ export class AppMenu {
     /** 
      * The menu items by the lables. Orgonized with lables.
      * * label: can be the group name of the sub-menu items.*/
-    menuItemsWithLabel: {[label: string]: AppSubMenu[] } = {};
+    menuItemsWithLabel: {[label: string]: MenuItem[] } = {};
     /**
      * Showing the label name in the menu list.
      * The labels can not be refered (not open as a link).
