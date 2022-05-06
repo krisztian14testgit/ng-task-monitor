@@ -11,7 +11,7 @@
       <div class="menu-label">{{labelKey}}</div>
       <hr> <!--line -->
       <!-- sub-menus -->
-      <a *ngFor="let menuItem of subMenuItems_dict[labelKey]" mat-menu-item
+      <a *ngFor="let menuItem of menuItems_dict[labelKey]" mat-menu-item
         [routerLink]="['/' + menuItem.linkKey]" routerLinkActive="activated-route">
         {{menuItem.title}}
       </a>
@@ -20,7 +20,7 @@
 
   <!-- Display sub-menu without topic key -->
   <ng-container *ngIf="!isDisplayedKeys">
-    <a *ngFor="let menuItem of subMenuValues" mat-menu-item
+    <a *ngFor="let menuItem of menuItemValues" mat-menu-item
       [routerLink]="'/' + menuItem.linkKey" routerLinkActive="activated-route">
       {{menuItem.title}}
     </a>

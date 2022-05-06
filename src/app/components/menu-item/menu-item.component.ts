@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { AppSubMenu } from 'src/app/services/models/app-menu.model';
+import { MenuItem } from 'src/app/services/models/app-menu.model';
 
 /**
  * Displays the menu with nested menus with labels.
@@ -12,13 +12,13 @@ import { AppSubMenu } from 'src/app/services/models/app-menu.model';
 export class MenuItemComponent implements OnChanges {
   /** The title of the menu. */
   @Input() public title!: string;
-  /** The structure of the sub-menu with label in dictionary. */
-  @Input() public subMenuItems_dict!: {[label: string]: AppSubMenu[] };
+  /** The structure of the menu items with label in dictionary. */
+  @Input() public menuItems_dict!: {[label: string]: MenuItem[] };
   /** Showing labels of the sub-menus if it is true otherwise it hides the labels. */
   @Input() public isDisplayedKeys = true;
 
-  /** Contains the sub-menu items with linkKey and title. */
-  public subMenuValues: AppSubMenu[] = [];
+  /** Contains the menu items with linkKey and title. */
+  public menuItemValues: MenuItem[] = [];
   /** Contains the menu labels: Tasks, Charts, and so on. */
   public menuLabelKeys: string[] = [];
 
@@ -29,15 +29,15 @@ export class MenuItemComponent implements OnChanges {
    * Showing the submenus item without topic key.
    */
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.subMenuItems_dict === changes.subMenuItems_dict.currentValue) {
-      this.menuLabelKeys = Object.keys(this.subMenuItems_dict);
+    if (this.menuItems_dict === changes.menuItems_dict.currentValue) {
+      this.menuLabelKeys = Object.keys(this.menuItems_dict);
     }
 
     if (!this.isDisplayedKeys) {
-      // get sub-array into one array: [ [a,b], [c,d] ] => [a,b,c,d]
-      const subMenulistInList = Object.values(this.subMenuItems_dict);
-      for (const getList of subMenulistInList) {
-        this.subMenuValues = [...this.subMenuValues, ...getList];
+      // get menu items into one array: [ [a,b], [c,d] ] => [a,b,c,d]
+      const sublistInList = Object.values(this.menuItems_dict);
+      for (const getList of sublistInList) {
+        this.menuItemValues = [...this.menuItemValues, ...getList];
       }
     }
   }
