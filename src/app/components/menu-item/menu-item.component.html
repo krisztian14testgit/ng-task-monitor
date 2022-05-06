@@ -7,7 +7,7 @@
 <mat-menu #beforeMenu="matMenu" xPosition="before">
   <ng-container *ngIf="isDisplayedKeys">
     <!-- label key -->
-    <div *ngFor="let labelKey of subMenuKeys">
+    <div *ngFor="let labelKey of menuLabelKeys">
       <div class="menu-label">{{labelKey}}</div>
       <hr> <!--line -->
       <!-- sub-menus -->

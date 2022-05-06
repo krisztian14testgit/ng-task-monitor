@@ -17,8 +17,10 @@ export class MenuItemComponent implements OnChanges {
   /** Showing labels of the sub-menus if it is true otherwise it hides the labels. */
   @Input() public isDisplayedKeys = true;
 
+  /** Contains the sub-menu items with linkKey and title. */
   public subMenuValues: AppSubMenu[] = [];
-  public subMenuKeys: string[] = [];
+  /** Contains the menu labels: Tasks, Charts, and so on. */
+  public menuLabelKeys: string[] = [];
 
   constructor() { }
 
@@ -28,7 +30,7 @@ export class MenuItemComponent implements OnChanges {
    */
   ngOnChanges(changes: SimpleChanges): void {
     if (this.subMenuItems_dict === changes.subMenuItems_dict.currentValue) {
-      this.subMenuKeys = Object.keys(this.subMenuItems_dict);
+      this.menuLabelKeys = Object.keys(this.subMenuItems_dict);
     }
 
     if (!this.isDisplayedKeys) {
