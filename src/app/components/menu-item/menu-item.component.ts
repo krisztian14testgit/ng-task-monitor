@@ -15,7 +15,7 @@ export class MenuItemComponent implements OnChanges {
   /** The structure of the menu items with label in dictionary. */
   @Input() public menuItems_dict!: {[label: string]: MenuItem[] };
   /** Showing labels of the sub-menus if it is true otherwise it hides the labels. */
-  @Input() public isDisplayedKeys = true;
+  @Input() public isDisplayedLabels = true;
 
   /** Contains the menu items with linkKey and title. */
   public menuItemValues: MenuItem[] = [];
@@ -29,11 +29,11 @@ export class MenuItemComponent implements OnChanges {
    * Showing the submenus item without topic key.
    */
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.menuItems_dict === changes.menuItems_dict.currentValue) {
+    if (this.menuItems_dict && this.menuItems_dict === changes.menuItems_dict.currentValue) {
       this.menuLabelKeys = Object.keys(this.menuItems_dict);
     }
 
-    if (!this.isDisplayedKeys) {
+    if (!this.isDisplayedLabels) {
       // get menu items into one array: [ [a,b], [c,d] ] => [a,b,c,d]
       const sublistInList = Object.values(this.menuItems_dict);
       for (const getList of sublistInList) {

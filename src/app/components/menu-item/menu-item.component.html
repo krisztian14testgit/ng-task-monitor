@@ -5,12 +5,12 @@
 </button>
 <!-- nested menu template -->
 <mat-menu #beforeMenu="matMenu" xPosition="before">
-  <ng-container *ngIf="isDisplayedKeys">
+  <ng-container *ngIf="isDisplayedLabels">
     <!-- label key -->
     <div *ngFor="let labelKey of menuLabelKeys">
       <div class="menu-label">{{labelKey}}</div>
       <hr> <!--line -->
-      <!-- sub-menus -->
+      <!-- menu-items -->
       <a *ngFor="let menuItem of menuItems_dict[labelKey]" mat-menu-item
         [routerLink]="['/' + menuItem.linkKey]" routerLinkActive="activated-route">
         {{menuItem.title}}
@@ -19,7 +19,7 @@
   </ng-container>
 
   <!-- Display sub-menu without topic key -->
-  <ng-container *ngIf="!isDisplayedKeys">
+  <ng-container *ngIf="!isDisplayedLabels">
     <a *ngFor="let menuItem of menuItemValues" mat-menu-item
       [routerLink]="'/' + menuItem.linkKey" routerLinkActive="activated-route">
       {{menuItem.title}}
