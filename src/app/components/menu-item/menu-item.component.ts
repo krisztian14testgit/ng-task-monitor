@@ -31,6 +31,7 @@ export class MenuItemComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (this.menuItems_dict && this.menuItems_dict === changes.menuItems_dict.currentValue) {
       this.menuLabelKeys = Object.keys(this.menuItems_dict);
+      this.isDisplayedLabels = this.menuLabelKeys.length > 0;
     }
 
     if (!this.isDisplayedLabels) {
@@ -39,6 +40,11 @@ export class MenuItemComponent implements OnChanges {
       for (const getList of sublistInList) {
         this.menuItemValues = [...this.menuItemValues, ...getList];
       }
+      // reset menu labels
+      this.menuLabelKeys = [];
+    } else {
+      // displayed true to collect labelKeys again.
+      this.menuLabelKeys = Object.keys(this.menuItems_dict);
     }
   }
 
