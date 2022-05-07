@@ -2,17 +2,18 @@
     <mat-grid-tile colspan="7" rowspan="2">
         <div name="title">{{titleOfRoute}}</div>
     </mat-grid-tile>
+    <!-- options menu -->
     <mat-grid-tile colspan="1" rowspan="1">
         <app-menu-item [title]="optionMenus.title"
                         [menuItems_dict]="optionMenus.menuItemsWithLabel"
                         [isDisplayedLabels]="optionMenus.isDisplayedLable">
         </app-menu-item>
     </mat-grid-tile>
+    <!-- app menu -->
     <mat-grid-tile colspan="1" rowspan="1">
         <app-menu-item [title]="appMenus.title"
                         [menuItems_dict]="appMenus.menuItemsWithLabel"
                         [isDisplayedLabels]="appMenus.isDisplayedLable">
         </app-menu-item>
     </mat-grid-tile>
-
 </mat-grid-list>

@@ -9,14 +9,17 @@ import { AppMenu, MenuItem } from 'src/app/services/models/app-menu.model';
 })
 export class HeaderComponent implements OnInit {
   public titleOfRoute = '';
-  /** Contains the structure of the menu with labels and its sub-menu items. */
+  /** Contains the structure of the menu with labels. */
   public appMenus: AppMenu;
-  /** Contains the structure of the option with labels and its sub-menu items. */
+  /** Contains the structure of the option menu with labels. */
   public optionMenus: AppMenu;
   /**
-   * * Contains the merged item from the menusItemList_dict and optionItemList_dict 
-   * by the key-name pair.
+   * * Contains the linkKey and title of the menuItems.
    * * It helps display more readable name of the navigated routing path.
+   * @example
+   * routerDict: { 
+   *  'linkey': 'menuTitle'
+   * }
    */
   private routerDict: {[routerKey: string]: string} = {};
 
@@ -68,7 +71,8 @@ export class HeaderComponent implements OnInit {
   }
 
   /**
-   * Sets up the this.routerDict by menuKey from the menuItemList.
+   * Sets up the this.routerDict by menu linkKEy from the menuItemList.
+   * The routerDict will contains the all menu title with menu linkKey.
    * @param labelDict Contains the structure of the menu with labels and its sub-menu items
    */
   private fillInRouterDictFrom(labelDict: {[label: string]: MenuItem[] }): void {
