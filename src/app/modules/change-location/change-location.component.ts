@@ -120,8 +120,7 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     
     this.locationService.saveLocation(keyLocation, formControlRef.value)
     .pipe(
-      debounceTime(waitSeconds),
-      distinctUntilChanged())
+      debounceTime(waitSeconds))
     .subscribe(() => {
       // saving was success
       this.alertMessageService.sendMessage('Path was saved!', AlertType.Success);
