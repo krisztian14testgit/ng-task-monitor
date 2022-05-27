@@ -1,0 +1,69 @@
+.task-card {
+    width: inherit;
+    margin-bottom: 10px;
+}
+
+.task-card-default-border {
+    border: 1px solid black;
+}
+
+.task-card-highlight {
+    border: 3px solid blue;
+}
+
+mat-card-title {
+    font-size: 20px;
+    height: 20px;
+}
+
+mat-card-title > div {
+    width: 83%;
+    float: left;
+}
+
+mat-card-title > .card-title-button-box {
+    width: 15%;
+}
+
+.card-title-button {
+    width: initial;
+    border: 1px solid black;
+    border-radius: 10px;
+    box-shadow: 0 3px 1px -2px #0003, 0 2px 2px #00000024, 0 1px 5px #0000001f;
+    padding: 5px 0px 5px 0px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.card-title-button:hover {
+    background-color: lightgrey;
+}
+
+/* progress-bar button */
+mat-card-actions > div {
+    padding-left: 45%;
+}
+
+/* editable card */
+.edit-card-title > input {
+    width: -webkit-fill-available;
+}
+
+.edit-card-content {
+    height: 80px;
+}
+
+.edit-card-content > textarea {
+    float: left;
+    width: 60%;
+    height: inherit;
+}
+
+.edit-card-time {
+    float: right;
+    width: 38%;
+}
+
+.edit-card-time > input {
+    width: 100%;
+}

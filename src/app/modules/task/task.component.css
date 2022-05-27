@@ -1,0 +1,20 @@
+.task-container {
+    border: 1px solid red;
+    width: auto;
+    height: auto;
+}
+
+.taks-filter mat-form-field {
+    width: 100%;
+}
+
+.task-new > div {
+    float: left;
+    width: 30%;
+}
+
+.task-new > button {
+    float: right;
+    font-weight: bold;
+    width: 35%;
+}

@@ -3,6 +3,25 @@
 /*#region Angular Material settings*/
 html, body { height: 100%; }
 body {font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/*#region green button*/
+/* mat-raised-button color="green"*/
+.mat-green {
+    background: rgb(0, 220, 1)
+}
+/*#endregion*/
+
+/*#region input-validation*/
+.input-valid {
+    border-radius: inherit;
+    border: 3px solid green;
+}
+
+.input-invalid {
+    border-radius: inherit;
+    border: 3px solid red;
+
+}
 /*#endregion*/
 
 .center {

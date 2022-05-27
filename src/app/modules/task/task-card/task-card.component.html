@@ -1,0 +1,73 @@
+<mat-card *ngIf="!isEditable && task"
+          dirCardHighlight
+          class="task-card task-card-default-border"
+          [id]="task.id"
+          (click)="onClickMatCard()">
+    <mat-card-title>
+      <div>{{task.title}}</div>
+      <div class="card-title-button-box">
+        <div *ngIf="isSelected" class="card-title-button"
+              (click)="onEdit_colseCard()">edit</div>
+      </div>
+    </mat-card-title>
+    <mat-card-content>
+      <p>{{task.description }}</p>
+    </mat-card-content>
+    <mat-divider inset></mat-divider>
+    <mat-card-actions>
+      <div><button mat-button>{{statusLabel}}</button></div>
+    </mat-card-actions>
+    <mat-card-footer>
+      <!--<mat-progress-bar mode="indeterminate"></mat-progress-bar>-->
+    </mat-card-footer>
+</mat-card>
+
+<!-- editable card -->
+<mat-card *ngIf="isEditable"
+          dirCardHighlight
+          class="task-card task-card-default-border"
+          (click)="onClickMatCard()">
+    <mat-card-title>
+      <!-- card-title-input -->
+      <div class="edit-card-title">
+        <input matInput [formControl]="taskControls.title"
+              dirInputBorder [isValid]="taskControls.title.valid"
+              type="text" placeholder="Task Title">
+        <mat-error *ngIf="taskControls.title.invalid &&
+                    (taskControls.title.dirty || taskControls.title.touched)">
+            <strong>Min letters: 3. Please use these letter: 0-9, a-z, -,_!</strong>
+        </mat-error>
+      </div>
+      <!-- close button -->
+      <div class="card-title-button-box">
+        <div class="card-title-button"
+            (click)="onEdit_colseCard()">close</div>
+      </div>
+    </mat-card-title>
+    <mat-card-content class="edit-card-content">
+      <textarea [formControl]="taskControls.description"
+                placeholder="Task description"></textarea>
+      <div class="edit-card-time">
+        <label for="taskTime">Planed time(min):</label>
+        <input matInput [formControl]="taskControls.timeSeconds"
+              dirInputBorder [isValid]="taskControls.timeSeconds.valid"
+              id="taskTime" type="number" placeholder="in minutes">
+        <mat-error *ngIf="taskControls.timeSeconds.invalid &&
+               (taskControls.timeSeconds.dirty || taskControls.timeSeconds.touched)">
+          <strong>It's range [1, 1440] in minutes!</strong>
+        </mat-error>
+      </div>
+    </mat-card-content>
+    <mat-divider inset></mat-divider>
+    <mat-card-actions>
+      <div mat-button>Status: {{statusLabel}}</div>
+      <div>
+        <button mat-raised-button color="green"
+                  [disabled]="taskForm !== undefined && taskForm.invalid"
+                  (click)="onSaveCard()">Save</button>
+      </div>
+    </mat-card-actions>
+    <mat-card-footer>
+      <!--<mat-progress-bar mode="indeterminate"></mat-progress-bar>-->
+    </mat-card-footer>
+</mat-card>

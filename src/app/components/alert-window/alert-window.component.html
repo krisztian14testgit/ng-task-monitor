@@ -1,0 +1,11 @@
+<div *ngIf="isDisplayed"
+    class="alert-window" [ngClass]="alertLabel.color">
+    <!-- alert cross-x -->
+    <div class="alert-close"
+        (click)="onClose()">X</div>
+    <!-- alert message -->
+    <div class="alert-msg">
+        <strong>{{alertLabel.name}}: </strong>
+        <span>{{alertMsg}}</span>
+    </div>
+</div>

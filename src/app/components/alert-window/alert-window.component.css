@@ -1,0 +1,36 @@
+.alert-window {
+    width: auto;
+    border: 2px solid white;
+    border-radius: 10px;
+}
+
+.alert-close {
+    float: right;
+    padding-right: 10px;
+    cursor: pointer;
+}
+
+.alert-msg {
+    padding-left: 10px;
+}
+
+/*alert color:*/
+.alert-blue {
+    color: blue;
+    background-color: lightblue;
+}
+
+.alert-red {
+    color: rgb(255, 0, 0);
+    background-color: rgba(255, 0, 0, 0.3);
+}
+
+.alert-green {
+    color: darkgreen;
+    background-color: rgba(0, 128, 0, 0.3);
+}
+
+.alert-yellow {
+    color: rgb(255, 187, 0);
+    background-color: rgba(255, 187, 0, 0.25);
+}
