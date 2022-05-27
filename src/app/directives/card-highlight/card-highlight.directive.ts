@@ -8,7 +8,9 @@ import { Directive, ElementRef, HostListener } from '@angular/core';
   selector: '[dirCardHighlight]'
 })
 export class CardHighlightDirective {
+  /** Normal border of the class. The Definition in task-card.comp.css */
   private readonly originalBorderClass = 'task-card-default-border';
+  /** Highlighted border of the class. The class definition in task-card.comp.css */
   private readonly highlightBorderClass = 'task-card-highlight';
 
   constructor(private readonly elementRef: ElementRef) { }
@@ -22,7 +24,7 @@ export class CardHighlightDirective {
   public onClick(): void {
     const currentCardDiv = this.getCardDiv();
     if (currentCardDiv) {
-      const isHighlighted = currentCardDiv && this.isHighlighted(currentCardDiv); 
+      const isHighlighted = this.isHighlighted(currentCardDiv); 
       // not removing the highlight if the cardDiv is same, not run for cycle uneccessary
       if (!isHighlighted) {
         this.removeAllCardHighLighting();

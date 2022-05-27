@@ -58,7 +58,7 @@ describe('LocationService', () => {
 
   it('should save location setting is failed, 503', fakeAsync(() => {
     service.saveLocation(LocationPath.AppSettingPath, fakedPath)
-    .subscribe(_ => {}, (err) =>  {
+    .subscribe(() => {return ;}, (err) =>  {
       expect(err.status).toBe(503);
       expect(err.statusText).toBe('Bad request');
     });

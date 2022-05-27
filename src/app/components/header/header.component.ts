@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, NavigationStart, Router, Event } from '@angular/router';
+import { AppMenu, MenuItem } from 'src/app/services/models/app-menu.model';
 
 @Component({
   selector: 'app-header',
@@ -8,37 +9,46 @@ import { NavigationEnd, NavigationStart, Router, Event } from '@angular/router';
 })
 export class HeaderComponent implements OnInit {
   public titleOfRoute = '';
-  /** Contains the structure of the menu with labels and its sub-menu items. */
-  public menusItemList_dict: {[label: string]: { key: string, name: string}[] };
-  /** Contains the structure of the option with labels and its sub-menu items. */
-  public optionItemList_dict: {[label: string]: { key: string, name: string}[] };
+  /** Contains the structure of the menu with labels. */
+  public appMenus: AppMenu;
+  /** Contains the structure of the option menu with labels. */
+  public optionMenus: AppMenu;
   /**
-   * * Contains the merged item from the menusItemList_dict and optionItemList_dict 
-   * by the key-name pair.
+   * * Contains the linkKey and title of the menuItems.
    * * It helps display more readable name of the navigated routing path.
+   * @example
+   * routerDict: { 
+   *  'linkey': 'menuTitle'
+   * }
    */
   private routerDict: {[routerKey: string]: string} = {};
 
   constructor(private readonly router: Router) {
-    this.menusItemList_dict = {
+    this.appMenus = new AppMenu();
+    this.appMenus.title = 'Menu';
+    this.appMenus.isDisplayedLable = true;
+    this.appMenus.menuItemsWithLabel = {
       Tasks: [
-        {key: "tasks/inprogress", name: "In-Progress"},
-        {key: "tasks/finished", name: "Finished"}
+        {linkKey: "tasks/inprogress", title: "In-Progress"},
+        {linkKey: "tasks/finished", title: "Finished"}
       ],
       Charts: [
-        {key: "weekly", name: "In-Weekly"},
-        {key: "statistic", name: "Statistic-all"}
+        {linkKey: "weekly", title: "In-Weekly"},
+        {linkKey: "statistic", title: "Statistic-all"}
       ]
     };
 
-    this.optionItemList_dict = {
+    this.optionMenus = new AppMenu();
+    this.optionMenus.title = 'Options';
+    this.optionMenus.isDisplayedLable = false;
+    this.optionMenus.menuItemsWithLabel = {
       Location: [
-        {key: "location", name: "Change location"}
+        {linkKey: "location", title: "Change location"}
       ]
     };
 
-    this.fillInRouterDictFrom(this.menusItemList_dict);
-    this.fillInRouterDictFrom(this.optionItemList_dict);
+    this.fillInRouterDictFrom(this.appMenus.menuItemsWithLabel);
+    this.fillInRouterDictFrom(this.optionMenus.menuItemsWithLabel);
 
   }
 
@@ -61,14 +71,15 @@ export class HeaderComponent implements OnInit {
   }
 
   /**
-   * Sets up the this.routerDict by menuKey from the menuItemList.
+   * Sets up the this.routerDict by menu linkKEy from the menuItemList.
+   * The routerDict will contains the all menu title with menu linkKey.
    * @param labelDict Contains the structure of the menu with labels and its sub-menu items
    */
-  private fillInRouterDictFrom(labelDict: {[label: string]: { key: string, name: string}[] }): void {
+  private fillInRouterDictFrom(labelDict: {[label: string]: MenuItem[] }): void {
     const listInList = Object.values(labelDict);
     for (let index = 0, k = listInList.length; index < k; index++) {
       for (const item of listInList[index]) {
-        this.routerDict[item.key] = item.name;
+        this.routerDict[item.linkKey] = item.title;
       }
     }
   }

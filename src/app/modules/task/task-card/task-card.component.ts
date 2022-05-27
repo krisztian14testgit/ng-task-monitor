@@ -1,5 +1,8 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { of } from 'rxjs';
+import { exhaustMap } from 'rxjs/operators';
+
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { MyValidator } from 'src/app/validators/my-validator';
 
@@ -101,18 +104,22 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
       this.updateTaskValuesByForm();
       const serviceMethod = !isNewTask ? 'update': 'add';
 
-      // it runs when updating/inserting task
-      this.taskService[serviceMethod](this.task)
-        .subscribe(savedTask => {
-          // success branch
-          this.task = savedTask;
-          this.setDefaulFormValuesBy(savedTask);
-          this.alertMessageService.sendMessage(successText);
-        },
-          _ => this.alertMessageService.sendMessage(errorText));
-      
-      // Close the edit mode
-      this.isEditable = false;
+      // updated task by the reference in this.task
+      const saving$ = of(this.task);
+      saving$.pipe(
+        // ignore new request(insert, update) when the previous one is not completed!
+        exhaustMap(task =>  this.taskService[serviceMethod](task))
+      ).subscribe(savedTask => {
+        // success branch
+        this.task = savedTask;
+        this.setDefaulFormValuesBy(savedTask);
+        this.alertMessageService.sendMessage(successText);
+      },
+        () => this.alertMessageService.sendMessage(errorText),
+        () => {
+          // finally branch, Close the edit mode
+          this.isEditable = false;
+        });
     }
   }
 

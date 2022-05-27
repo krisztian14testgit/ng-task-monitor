@@ -46,7 +46,7 @@ describe('TaskService', () => {
   it('should NOT get all tasks, bad request', fakeAsync(() =>{
     const fakedTaskList = FakedTask.list;
     
-    service.getAll().subscribe(_ => {}, (err) => {
+    service.getAll().subscribe(()=> {return ;}, (err) => {
       expect(err.status).toBe(503);
       expect(err.statusText).toBe('Bad request');
     });
@@ -127,7 +127,7 @@ describe('TaskService', () => {
 
   it('shoud NOT remove the taks, removing is failed', fakeAsync(() => {
     const removedTaskId = FakedTask.list[0].id;
-    service.delete(removedTaskId).subscribe(_ => {}, (err) => {
+    service.delete(removedTaskId).subscribe(() => {return ;}, (err) => {
       expect(err.status).toBe(500);
       expect(err.statusText).toBe('Internal Server Error');
     });
