@@ -38,7 +38,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * 
    * @descripton property:
    * Values available by the Task property names.
-   * * Task Properties: title, description, timeSeconds*/
+   * * Task Properties: title, description, timeMinutes*/
   private _defaultFormValues: {[property: string]: string | number} = {};
 
   constructor(private readonly taskService: TaskService,
@@ -46,7 +46,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     this.taskControls = {
       title: new FormControl(),
       description: new FormControl(),
-      timeSeconds: new FormControl()
+      timeMinutes: new FormControl()
     };
   }
 
@@ -75,7 +75,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   ngAfterViewInit(): void {
     this.taskControls['title'] = this.taskForm.get('title') as FormControl;
     this.taskControls['description'] = this.taskForm.get('description') as FormControl;
-    this.taskControls['timeSeconds'] = this.taskForm.get('timeSeconds') as FormControl;
+    this.taskControls['timeMinutes'] = this.taskForm.get('timeMinutes') as FormControl;
   }
 
   /**
@@ -145,11 +145,11 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     }
   }
 
-  /** Updates the editable properties(title, description, timeSeconds) in Task class. */
+  /** Updates the editable properties(title, description, timeMinutes) in Task class. */
   private updateTaskValuesByForm(): void {
     this.task.title = this.taskForm.get('title')?.value;
     this.task.description = this.taskForm.get('description')?.value;
-    this.task.timeSeconds = this.taskForm.get('timeSeconds')?.value;
+    this.task.timeMinutes = this.taskForm.get('timeMinutes')?.value;
   }
 
   /**
@@ -159,7 +159,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   private setDefaulFormValuesBy(task: Task): void {
     this._defaultFormValues['title'] = task.title;
     this._defaultFormValues['description'] = task.description;
-    this._defaultFormValues['timeSeconds'] = task.timeSeconds;
+    this._defaultFormValues['timeMinutes'] = task.timeMinutes;
   }
 
   /**
@@ -179,9 +179,9 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
         Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.TaskName))
       ]),
       description: new FormControl(task.description, []),
-      timeSeconds: new FormControl(task.timeSeconds, [
+      timeMinutes: new FormControl(task.timeMinutes, [
         Validators.required,
-        Validators.max(24 * 60), // 24h => 24 * 60min
+        Validators.max(23 * 60 -1), // in minutes: 1379 => 23h * 59min -minValue(1)  => 23:59:00 
         Validators.min(1), //min value: 1 min
         Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.Number))
       ])
