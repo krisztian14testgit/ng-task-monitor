@@ -11,11 +11,17 @@
       </div>
     </mat-card-title>
     <mat-card-content>
-      <p>{{task.description }}</p>
+      <div class="card-description">{{task.description}}</div>
+      <div class="card-timer">
+        <div>Planed time(min): {{task.timeMinutes}}</div>
+      </div>
     </mat-card-content>
     <mat-divider inset></mat-divider>
     <mat-card-actions>
-      <div><button mat-button>{{statusLabel}}</button></div>
+      <div>
+        <button mat-button>{{statusLabel}}</button>
+        {{1379 * 60 * 1000| date:'HH:mm:ss'}}
+      </div>
     </mat-card-actions>
     <mat-card-footer>
       <!--<mat-progress-bar mode="indeterminate"></mat-progress-bar>-->
@@ -45,16 +51,17 @@
       </div>
     </mat-card-title>
     <mat-card-content class="edit-card-content">
-      <textarea [formControl]="taskControls.description"
+      <textarea class="card-description"
+                [formControl]="taskControls.description"
                 placeholder="Task description"></textarea>
-      <div class="edit-card-time">
+      <div class="card-timer edit-card-timer">
         <label for="taskTime">Planed time(min):</label>
-        <input matInput [formControl]="taskControls.timeSeconds"
-              dirInputBorder [isValid]="taskControls.timeSeconds.valid"
+        <input matInput [formControl]="taskControls.timeMinutes"
+              dirInputBorder [isValid]="taskControls.timeMinutes.valid"
               id="taskTime" type="number" placeholder="in minutes">
-        <mat-error *ngIf="taskControls.timeSeconds.invalid &&
-               (taskControls.timeSeconds.dirty || taskControls.timeSeconds.touched)">
-          <strong>It's range [1, 1440] in minutes!</strong>
+        <mat-error *ngIf="taskControls.timeMinutes.invalid &&
+               (taskControls.timeMinutes.dirty || taskControls.timeMinutes.touched)">
+          <strong>It's range [1, 1379] in minutes!</strong>
         </mat-error>
       </div>
     </mat-card-content>
