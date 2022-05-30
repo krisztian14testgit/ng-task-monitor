@@ -23,6 +23,18 @@ export enum TaskTime {
 }
 
 /**
+ * It is in charge of converting different task times to desired one.
+ */
+export class TaskTimer {
+    /** Returns the milliSeconds from the given minutes. */
+    static convertsToMilliSec(inMinutes: number): number {
+        const sec = 60;
+        const milliSec = 1000;
+        return inMinutes * sec * milliSec;
+    }
+}
+
+/**
  * The structure of the Task class.
  */
 export class Task {
@@ -30,8 +42,8 @@ export class Task {
     title: string;
     /** The desscription of the task. */
     description: string;
-    /** The working/inProgress in seconds. */
-    timeSeconds: number;
+    /** The task timer: working/inProgress in minutes. */
+    timeMinutes: number;
 
     private _id: string;
     private _createdDate: Date;
@@ -42,11 +54,11 @@ export class Task {
      * * createdDate: is set up after the creation of the task instance.
      * * status: default value is TaskStatus.Start.
     */
-    constructor(id = '', title = '', description = '', timeSeconds = 0) {
+    constructor(id = '', title = '', description = '', inMinutes = 0) {
         this._id = id;
         this.title = title;
         this.description = description;
-        this.timeSeconds = timeSeconds;
+        this.timeMinutes = inMinutes;
         this._status = TaskStatus.Start;
         // when it is created
         this._createdDate = new Date();
@@ -110,8 +122,8 @@ export class Task {
     public isCreatedToday(): boolean {
         const currentClient_inMilliSec = new Date().getMilliseconds();
         const task_inMilliSec = this._createdDate.getMilliseconds();
-        //                             h    min  sec  milliSec
-        const diff24hours_inMilliSec = 24 * 60 * 60 * 1000;
+        //     24hours in milliSec:                                 h    min
+        const diff24hours_inMilliSec = TaskTimer.convertsToMilliSec(24 * 60);
         return currentClient_inMilliSec - task_inMilliSec < diff24hours_inMilliSec;
     }
 }
