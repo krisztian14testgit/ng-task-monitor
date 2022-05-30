@@ -20,7 +20,7 @@
     <mat-card-actions>
       <div>
         <button mat-button>{{statusLabel}}</button>
-        {{1379 * 60 * 1000| date:'HH:mm:ss'}}
+        <app-task-timer [timerInMinutes]="task.timeMinutes"></app-task-timer>
       </div>
     </mat-card-actions>
     <mat-card-footer>

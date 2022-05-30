@@ -11,6 +11,7 @@ import { TaskRoutingModule } from './task-routing.module';
 import { TaskComponent } from './task.component';
 import { TaskService } from './services/task.service';
 import { TaskCardComponent } from './task-card/task-card.component';
+import { TaskTimerComponent } from './task-timer/task-timer.component';
 
 import { CardHighlightDirective } from 'src/app/directives/card-highlight/card-highlight.directive';
 import { InputBorderDirective } from 'src/app/directives/input-border/input-border.directive';
@@ -20,7 +21,8 @@ import { InputBorderDirective } from 'src/app/directives/input-border/input-bord
     TaskComponent,
     TaskCardComponent,
     CardHighlightDirective,
-    InputBorderDirective
+    InputBorderDirective,
+    TaskTimerComponent
   ],
   imports: [
     CommonModule,
