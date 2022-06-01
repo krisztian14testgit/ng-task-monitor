@@ -44,9 +44,11 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   }
 
   /**
-   * Destroys the setInvertal's id if it exists after leaving the task card.
+   * Stops the counterClock.
+   * Destroys the setInvertal's id if it exists when the task is edit mode.
    */
   ngOnDestroy(): void {
+    this.isStartedTimer = false;
     this.stopCounterClock();
   }
 
@@ -70,6 +72,7 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
           this.updateTaskTimerDate(0); // finishedDate
         }
 
+        console.log('timer ', this.timerInMillisec);
         this.timerInMillisec -= milliSec;
       }, milliSec);
     }
