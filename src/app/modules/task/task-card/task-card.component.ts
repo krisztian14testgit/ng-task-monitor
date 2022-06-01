@@ -150,6 +150,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     this.task.title = this.taskForm.get('title')?.value;
     this.task.description = this.taskForm.get('description')?.value;
     this.task.timeMinutes = this.taskForm.get('timeMinutes')?.value;
+    this.task['setStatus'](TaskStatus.Start);
   }
 
   /**
