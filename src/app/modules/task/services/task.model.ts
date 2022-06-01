@@ -44,6 +44,10 @@ export class Task {
     description: string;
     /** The task timer: working/inProgress in minutes. */
     timeMinutes: number;
+    /** The timer date when the counterClock is start counting. */
+    timerStartedDate: Date | undefined;
+     /** The timer date when the counterClock is over. */
+    timerFinishedDate: Date | undefined;
 
     private _id: string;
     private _createdDate: Date;
@@ -60,8 +64,10 @@ export class Task {
         this.description = description;
         this.timeMinutes = inMinutes;
         this._status = TaskStatus.Start;
-        // when it is created
+        // when it is created, not changeable
         this._createdDate = new Date();
+        this.timerStartedDate = undefined;
+        this.timerFinishedDate = undefined;
     }
 
     /**
@@ -88,6 +94,7 @@ export class Task {
      * * Completed
      * @access Readonly
      * @defaultValue TaskStatus.Start
+     * @todo task-timer component only adjust the status by the setStatus
      */
     public get status(): TaskStatus {
         return this._status;
@@ -95,12 +102,12 @@ export class Task {
 
     /** Returns true if task status is inprogress. */
     public isInProgress(): boolean {
-        return this._status === TaskStatus.Inprogress;
+        return this._status === TaskStatus.Inprogress && this.timeMinutes > 0;
     }
 
     /** Returns true if task status is completed/done. */
     public isCompleted(): boolean {
-        return this._status === TaskStatus.Completed;
+        return this._status === TaskStatus.Completed && this.timeMinutes <= 0;
     }
 
     /** 
@@ -125,5 +132,14 @@ export class Task {
         //     24hours in milliSec:                                 h    min
         const diff24hours_inMilliSec = TaskTimer.convertsToMilliSec(24 * 60);
         return currentClient_inMilliSec - task_inMilliSec < diff24hours_inMilliSec;
+    }
+
+    /**
+     * Sets the status of the task.
+     * @todo task-timer comp adjuts it.
+     * @param statusValue 
+     */
+    private setStatus(statusValue: TaskStatus) {
+        this._status = statusValue;
     }
 }
