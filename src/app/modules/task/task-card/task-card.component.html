@@ -19,8 +19,7 @@
     <mat-divider inset></mat-divider>
     <mat-card-actions>
       <div>
-        <button mat-button>{{statusLabel}}</button>
-        <app-task-timer [timerInMinutes]="task.timeMinutes"></app-task-timer>
+        <app-task-timer [task]="task"></app-task-timer>
       </div>
     </mat-card-actions>
     <mat-card-footer>
