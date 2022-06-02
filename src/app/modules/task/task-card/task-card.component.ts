@@ -17,6 +17,7 @@ import { TaskService } from '../services/task.service';
 export class TaskCardComponent implements OnChanges, AfterViewInit {
   /** The current task reference which was given. */
   @Input() public task: Task = new Task();
+  /** The switcher of the card is editable or not. */
   @Input() public isEditable = false;
   @Output() public readonly newTaskCreationFailed: EventEmitter<string> = new EventEmitter();
   
@@ -90,16 +91,64 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
 
   /**
    * This an event function.
-   * It runs when the save button is triggered.
-   * Saving/updating the task by the taskService.
+   * It runs when the save button is clicked on.
+   * 
+   * Saving the task card.
+   * @todo
+   * If the task card is modified then the status of task will be Start again.
    */
   public onSaveCard(): void {
+    this.updateTaskStatus(TaskStatus.Start);
+    this.saveTaskService();
+  }
+
+  /**
+   * It is an event function.
+   * It runs when counter timer emits the status(started, finished).
+   * 
+   * Updates the task status and timerDate properties after save task instance.
+   * @param timerState$ It can be: timerStarted, timerFinished
+   */
+  public onTimerStatus(timerState$: string): void {
+    this.updateTaskStatusBy(timerState$);
+    this.updateTaskTimerDateBy(timerState$);
+    // saving modified task the reference
+    this.saveTaskService();
+  }
+
+  /**
+   * This a click event function.
+   * It runs when the user clicks on the 'edit'/'close' button on the card.
+   * 
+   * If the button is 'edit' then it will be 'colse' and after reverse.
+   * * isEditable: true --> 'close'
+   * * isEditabée: false --> 'edit'
+   */
+  public onEdit_colseCard(): void {
+    this.isEditable = !this.isEditable;
+
+    // new empty task card is closed without SAVING
+    if (!this.isEditable && this.task.isNewTask()) {
+      // notice the taskContainer component to remove the empty card.
+      this.newTaskCreationFailed.next(this.task.id);
+    }
+    
+    // it is closed, reset task values to initial
+    if (!this.isEditable) {
+      this.taskForm.reset(this._defaultFormValues);
+    }
+  }
+
+  /**
+   * Saving/updating the task by the taskService if the taskForm is valid.
+   */
+  private saveTaskService(): void {
     this.taskForm.updateValueAndValidity();
     if (this.taskForm.valid) {
       const isNewTask = this.task.isNewTask();
       const errorText = 'Updating/saving has been failed, server error!';
       const successText = 'Saving has been success!';
-      
+
       // updating values by the taksForm in the Task instance
       this.updateTaskValuesByForm();
       const serviceMethod = !isNewTask ? 'update': 'add';
@@ -123,34 +172,46 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     }
   }
 
-  /**
-   * This a click event function.
-   * It runs when the user clicks on the 'edit'/'close' button on the card.
-   * If the button is 'edit' then it will be 'colse' and after reverse.
-   * * isEditable: true --> 'close'
-   * * isEditabée: false --> 'edit'
-   */
-  public onEdit_colseCard(): void {
-    this.isEditable = !this.isEditable;
-
-    // new empty task card is closed without SAVING
-    if (!this.isEditable && this.task.isNewTask()) {
-      // notice the taskContainer component to remove the empty card.
-      this.newTaskCreationFailed.next(this.task.id);
-    }
-    
-    // it is closed, reset task values to initial
-    if (!this.isEditable) {
-      this.taskForm.reset(this._defaultFormValues);
-    }
-  }
-
   /** Updates the editable properties(title, description, timeMinutes) in Task class. */
   private updateTaskValuesByForm(): void {
     this.task.title = this.taskForm.get('title')?.value;
     this.task.description = this.taskForm.get('description')?.value;
     this.task.timeMinutes = this.taskForm.get('timeMinutes')?.value;
-    this.task['setStatus'](TaskStatus.Start);
+  }
+
+  /**
+   * Updates the status number of the Task and statusLabel.
+   * @param taskStatus 
+   */
+  private updateTaskStatus(taskStatus: TaskStatus): void {
+    this.task['setStatus'](taskStatus);
+    this.statusLabel = TaskStatus[taskStatus];
+  }
+
+   /**
+   * Updates the status of the task by the given timerState.
+   * 
+   * timer state values in string
+   * * timerStarted => task status: inProgress
+   * * timerFinished => task status: Completed
+   * @param timerState It can be: timerStarted or timerFinished.
+   */
+  private updateTaskStatusBy(timerState: string): void {
+    const taskStatusValue = timerState === 'timerStarted'? TaskStatus.Inprogress : TaskStatus.Completed;
+    this.updateTaskStatus(taskStatusValue);
+  }
+
+  /**
+   * Updates the timerStartedDate or timerFinishedDate of task by the given timerState value.
+   * @param timerState It can be: timerStarted or timerFinished.
+   */
+  private updateTaskTimerDateBy(timerState: string): void {
+    const propName = timerState + 'Date';
+    if (this.task.isHasOwnPoperty(propName)) {
+      // Adjust the timerStartedDate or timerFinishedDate with the system clock by the timerEvent emitter.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this.task as any)[propName] = new Date();
+    }
   }
 
   /**
