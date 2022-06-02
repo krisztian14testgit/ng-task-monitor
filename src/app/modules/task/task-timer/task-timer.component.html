@@ -1,10 +1,10 @@
 <div>
     <!-- start -->
-    <button *ngIf="!isStartedTimer" mat-button
+    <button *ngIf="!isTimerStarted && !isTimerFinished" mat-button
             (click)="startCounterClock()">{{statusLabel}}</button>
     <!-- inProgress or completed -->
-    <span *ngIf="task?.isInProgress() || task?.isCompleted()">{{statusLabel}}</span>
+    <span *ngIf="isTimerStarted || isTimerFinished">{{statusLabel}}</span>
     <!-- counterClock -->
-    <span *ngIf="task && task.isInProgress()">{{timerInMillisec | date:'HH:mm:ss'}}</span>
+    <span *ngIf="isTimerStarted && !isTimerFinished">{{timerInMillisec | date:'HH:mm:ss'}}</span>
 </div>
 
