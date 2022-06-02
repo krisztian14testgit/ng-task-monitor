@@ -135,6 +135,16 @@ export class Task {
     }
 
     /**
+     * Returns true if the task class has the property otherwise returns false.
+     * @param propertyName The name of the property.
+     * @returns boolean
+     */
+    public isHasOwnPoperty(propertyName: string): boolean {
+        const propertiesOfTask = Object.getOwnPropertyNames(this);
+        return propertiesOfTask.includes(propertyName);
+    }
+
+    /**
      * Sets the status of the task.
      * @todo task-timer comp adjuts it.
      * @param statusValue 
