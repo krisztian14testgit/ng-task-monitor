@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output } from '@angular/core';
-import { TaskTimer } from '../services/task.model';
+import { TaskStatus, TaskTimer } from '../services/task.model';
 
 /** Represents the states of the Timer. */
 enum TimerState {
@@ -53,7 +53,10 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   ngOnChanges(): void {
     if (this.timerInMinutes > 0) {
       this.timerInMillisec = TaskTimer.convertsToMilliSec(this.timerInMinutes);
-      // this.statusLabel = TaskStatus[this.task.status];
+    }
+
+    if (this.statusLabel == TaskStatus[TaskStatus.Inprogress]) {
+      // show countdown timer
     }
   }
 
@@ -63,6 +66,11 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
    * like the card is in edit mode.
    */
   ngOnDestroy(): void {
+    // The countdown timer is broken, save finished time date by the emitter.
+    if (this.isTimerStarted && !this.isTimerFinished) {
+      this.emitsTimerState(TimerState.Finished);
+    }
+
     this.isTimerFinished = this.isTimerStarted  = false;
     this.stopCounterClock();
   }
