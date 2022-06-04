@@ -1,3 +1,5 @@
+import { TaskTimer } from "./task-timer.model";
+
 /**
  * The statuses of the Task.
  */
@@ -20,18 +22,6 @@ export enum TaskStatus {
 export enum TaskTime {
     Today,
     Yesterday
-}
-
-/**
- * It is in charge of converting different task times to desired one.
- */
-export class TaskTimer {
-    /** Returns the milliSeconds from the given minutes. */
-    static convertsToMilliSec(inMinutes: number): number {
-        const sec = 60;
-        const milliSec = 1000;
-        return inMinutes * sec * milliSec;
-    }
 }
 
 /**
