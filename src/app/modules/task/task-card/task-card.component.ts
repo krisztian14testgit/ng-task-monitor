@@ -2,10 +2,10 @@ import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output } from
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { of } from 'rxjs';
 import { exhaustMap } from 'rxjs/operators';
-
-import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { MyValidator } from 'src/app/validators/my-validator';
 
+import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
+import { TimerState } from '../services/task-timer.model';
 import { Task, TaskStatus } from '../services/task.model';
 import { TaskService } from '../services/task.service';
 
@@ -104,14 +104,14 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
 
   /**
    * It is an event function.
-   * It runs when counter timer emits the status(started, finished).
+   * It runs when counterdown timer emits the status(started, finished, inprogress).
    * 
-   * Updates the task status and timerDate properties after save task instance.
-   * @param timerState$ It can be: timerStarted, timerFinished
+   * Updates the task status and timerDate properties after saving task instance.
+   * @param timerState$ It can be: Started, Finished, Inprogress
    */
-  public onTimerStatus(timerState$: string): void {
-    this.updateTaskStatusBy(timerState$);
-    this.updateTaskTimerDateBy(timerState$);
+  public onTimerStatus(timerStateName$: string): void {
+    this.updateTaskStatusBy(timerStateName$);
+    this.updateTaskTimerDateBy(timerStateName$);
     // saving modified task the reference
     this.saveTaskService();
   }
@@ -194,23 +194,28 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * timer state values in string
    * * timerStarted => task status: inProgress
    * * timerFinished => task status: Completed
-   * @param timerState It can be: timerStarted or timerFinished.
+   * @param timerStateName It can be: Started, Finished, Inprogress.
    */
-  private updateTaskStatusBy(timerState: string): void {
-    const taskStatusValue = timerState === 'timerStarted'? TaskStatus.Inprogress : TaskStatus.Completed;
+  private updateTaskStatusBy(timerStateName: string): void {
+    // converts enum string to enum value
+    const timerState = TimerState[timerStateName as keyof typeof TimerState];
+    const taskStatusArray = [TaskStatus.Start, TaskStatus.Completed, TaskStatus.Inprogress];
+    const taskStatusValue = taskStatusArray[timerState];
     this.updateTaskStatus(taskStatusValue);
   }
 
   /**
    * Updates the timerStartedDate or timerFinishedDate of task by the given timerState value.
-   * @param timerState It can be: timerStarted or timerFinished.
+   * @param timerStateName It can be: Started, Finished, Inprogress.
    */
-  private updateTaskTimerDateBy(timerState: string): void {
-    const propName = timerState + 'Date';
-    if (this.task.isHasOwnPoperty(propName)) {
-      // Adjust the timerStartedDate or timerFinishedDate with the system clock by the timerEvent emitter.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this.task as any)[propName] = new Date();
+  private updateTaskTimerDateBy(timerStateName: string): void {
+    if (timerStateName !== TimerState[TimerState.Inprogress]) {
+      const propName = `timer${timerStateName}Date`;
+      if (this.task.isHasOwnPoperty(propName)) {
+        // Adjust the timerStartedDate or timerFinishedDate with the system clock by the timerEvent emitter.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (this.task as any)[propName] = new Date();
+      }
     }
   }
 
