@@ -1,7 +1,7 @@
 <div>
     <!-- start -->
     <button *ngIf="!isTimerStarted && !isTimerFinished" mat-button
-            (click)="startCounterClock()">{{statusLabel}}</button>
+            (click)="startTimer()">{{statusLabel}}</button>
     <!-- inProgress or completed -->
     <span *ngIf="isTimerStarted || isTimerFinished">{{statusLabel}}</span>
     <!-- counterClock -->

@@ -56,9 +56,11 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
       this.timerInMillisec = TaskTimer.convertsToMilliSec(this.timerInMinutes);
     }
 
-    // If timer is interrupted
-    /*if (this.timerInMinutes > 0 && this.statusLabel == TaskStatus[TaskStatus.Completed]) {
+    // If timer is interrupted, inprogress
+    /*if (this.statusLabel == TaskStatus[TaskStatus.Inprogress]) {
+      debugger;
       this.isTimerFinished = false;
+      // this.emitsTimerState(TimerState.Inprogress);
       this.startCounterClock();
     }*/
   }
@@ -71,7 +73,7 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   ngOnDestroy(): void {
     // The countdown timer is broken, save finished timer date by the emitter.
     if (this.isTimerStarted && !this.isTimerFinished) {
-      this.emitsTimerState(TimerState.Finished);
+      this.emitsTimerState(TimerState.Interrupted);
     }
 
     this.isTimerFinished = this.isTimerStarted  = false;
@@ -95,7 +97,7 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
     if (this.timerInMillisec > 0) {
       this.isTimerStarted = true;
       this.clockIntervalId = setInterval(() => {
-        // exit condition: finish counterClock
+        // exit condition: counterClock is over!
         if (this.timerInMillisec <= 0) {
           this.stopCounterClock();
           this.emitsTimerState(TimerState.Finished);
