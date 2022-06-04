@@ -4,7 +4,8 @@ import { TaskStatus, TaskTimer } from '../services/task.model';
 /** Represents the states of the Timer. */
 enum TimerState {
   Finished,
-  Started
+  Started,
+  Inprogress
 }
 
 @Component({
@@ -55,9 +56,11 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
       this.timerInMillisec = TaskTimer.convertsToMilliSec(this.timerInMinutes);
     }
 
-    if (this.statusLabel == TaskStatus[TaskStatus.Inprogress]) {
-      // show countdown timer
-    }
+    // If timer is interrupted
+    /*if (this.timerInMinutes > 0 && this.statusLabel == TaskStatus[TaskStatus.Completed]) {
+      this.isTimerFinished = false;
+      this.startCounterClock();
+    }*/
   }
 
   /**
@@ -66,7 +69,7 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
    * like the card is in edit mode.
    */
   ngOnDestroy(): void {
-    // The countdown timer is broken, save finished time date by the emitter.
+    // The countdown timer is broken, save finished timer date by the emitter.
     if (this.isTimerStarted && !this.isTimerFinished) {
       this.emitsTimerState(TimerState.Finished);
     }
@@ -76,16 +79,21 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   }
 
   /**
-   * Starts counterClock of the task.
-   * Measuring the time.
+   * Starts counterdown timer of the task by clicking on 'start' button.
+   * Measuring the time if the timerInmillisec is not zero.
    */
-  public startCounterClock() {
+  public startTimer() {
+    if (this.timerInMillisec > 0) {
+      this.emitsTimerState(TimerState.Started);
+      this.startCounterClock();
+    }
+  }
+
+  private startCounterClock() {
     // 1sec -> 1000ms
     const milliSec = 1000;
     if (this.timerInMillisec > 0) {
       this.isTimerStarted = true;
-      this.emitsTimerState(TimerState.Started);
-
       this.clockIntervalId = setInterval(() => {
         // exit condition: finish counterClock
         if (this.timerInMillisec <= 0) {
@@ -110,16 +118,19 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   }
 
   /**
-   * Emits the state of the counter clock timer
+   * Emits the state of the counterdown timer
    * when timer is started or over.
    *
    * The mode can be
    * * 0: timerFinsished
    * * 1: timerStarted
+   * * 2: timerInprogress
    * @param mode It can be 0, 1.
    */
   private emitsTimerState(mode: TimerState) {
-    const timerEmittedValues = ['timerFinished', 'timerStarted'];
+    const timerStateNames = Object.keys(TimerState).filter(prop => prop.length > 1);
+    // inserts 'timer' keywords to each enum fields: timerStarted, timerFinished, timerInprogress 
+    const timerEmittedValues = timerStateNames.map(item => 'timer' + item);
     
     if (mode < timerEmittedValues.length) {
       const emitValue = timerEmittedValues[mode];
