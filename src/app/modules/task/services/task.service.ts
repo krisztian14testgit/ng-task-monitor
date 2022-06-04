@@ -34,7 +34,7 @@ export class TaskService {
     }));*/
 
     const task1 = new Task('', 'status is changed');
-    FakedTask.addNewTask(task1, TaskStatus.Inprogress);
+    FakedTask.addNewTask(task1, TaskStatus.Completed);
     this.taskList$.next(FakedTask.list);
     return of(FakedTask.list);
   }
