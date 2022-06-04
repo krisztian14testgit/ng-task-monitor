@@ -14,5 +14,5 @@
 export enum TimerState {
     Finished,
     Started,
-    Inprogress
+    Interrupted
 }
