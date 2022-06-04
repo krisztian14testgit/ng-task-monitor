@@ -191,16 +191,18 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    /**
    * Updates the status of the task by the given timerState.
    * 
-   * timer state values in string
-   * * timerStarted => task status: inProgress
-   * * timerFinished => task status: Completed
-   * @param timerStateName It can be: Started, Finished, Inprogress.
+   * Task status will be changed by timer state
+   * * timer Started(1), Interrupted(2) => task status: inProgress
+   * * timer Finished(0) => task status: Completed
+   * @param timerStateName It can be: Started, Finished, Interrupted
    */
   private updateTaskStatusBy(timerStateName: string): void {
     // converts enum string to enum value
     const timerState = TimerState[timerStateName as keyof typeof TimerState];
-    const taskStatusArray = [TaskStatus.Start, TaskStatus.Completed, TaskStatus.Inprogress];
-    const taskStatusValue = taskStatusArray[timerState];
+    let taskStatusValue = TaskStatus.Completed;
+    if (timerState > 0) {
+      taskStatusValue = TaskStatus.Inprogress;
+    }
     this.updateTaskStatus(taskStatusValue);
   }
 
@@ -209,7 +211,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * @param timerStateName It can be: Started, Finished, Inprogress.
    */
   private updateTaskTimerDateBy(timerStateName: string): void {
-    if (timerStateName !== TimerState[TimerState.Inprogress]) {
+    if (timerStateName !== TimerState[TimerState.Interrupted]) {
       const propName = `timer${timerStateName}Date`;
       if (this.task.isHasOwnPoperty(propName)) {
         // Adjust the timerStartedDate or timerFinishedDate with the system clock by the timerEvent emitter.
