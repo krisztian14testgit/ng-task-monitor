@@ -1,12 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output } from '@angular/core';
-import { TaskStatus, TaskTimer } from '../services/task.model';
+import { TaskTimer, TimerState } from '../services/task-timer.model';
+import { TaskStatus } from '../services/task.model';
 
-/** Represents the states of the Timer. */
-enum TimerState {
-  Finished,
-  Started,
-  Inprogress
-}
+
 
 @Component({
   selector: 'app-task-timer',
@@ -20,7 +16,11 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   @Input() public statusLabel = '';
   /** 
    * It triggers when the timer start counting and it is over.
-   * Emits 'timerStarted' when timer is start counting, otherwise emtis 'timerFinished'.
+   * 
+   * Timer states:
+   * * Finsished
+   * * Started
+   * * Inprogress
    */
   @Output() public timerStartedEnded: EventEmitter<string> = new EventEmitter();
 
@@ -121,19 +121,17 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
    * Emits the state of the counterdown timer
    * when timer is started or over.
    *
-   * The mode can be
-   * * 0: timerFinsished
-   * * 1: timerStarted
-   * * 2: timerInprogress
-   * @param mode It can be 0, 1.
+   * The timer mode can be
+   * * 0: Finsished
+   * * 1: Started
+   * * 2: Inprogress
+   * @param mode It can be 0, 1, 2.
    */
   private emitsTimerState(mode: TimerState) {
     const timerStateNames = Object.keys(TimerState).filter(prop => prop.length > 1);
-    // inserts 'timer' keywords to each enum fields: timerStarted, timerFinished, timerInprogress 
-    const timerEmittedValues = timerStateNames.map(item => 'timer' + item);
     
-    if (mode < timerEmittedValues.length) {
-      const emitValue = timerEmittedValues[mode];
+    if (mode < timerStateNames.length) {
+      const emitValue = timerStateNames[mode];
       this.timerStartedEnded.emit(emitValue);
     }
   }
