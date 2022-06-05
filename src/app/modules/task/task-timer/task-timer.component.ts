@@ -20,12 +20,12 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
    * Timer states:
    * * Finsished
    * * Started
-   * * Inprogress
+   * * Interrupted
    */
-  @Output() public timerStartedEnded: EventEmitter<string> = new EventEmitter();
+  @Output() public timerStatusEmitter: EventEmitter<[string, Date]> = new EventEmitter();
 
   /** 
-   * Stores the millisec of the converted task minutes.
+   * Rest milliSeconds of timer of task. Measuring time.
    * Counter clock reduces this value if it is started. */
   public timerInMillisec = 0;
   /** Contains true if the timer is started. */
@@ -34,6 +34,7 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   public isTimerFinished = false;
   /** Stores the interval Id of the setInterval function. */
   private clockIntervalId!: NodeJS.Timeout;
+  private timerStartedDate!: Date;
 
   /**
    * webWorker
@@ -117,22 +118,29 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   }
 
   /**
-   * Emits the state of the counterdown timer
-   * when timer is started or over.
+   * Emits the state and eventDate of the counterdown timer in Tuple.
+   * 
+   * The eventDate: when timer is started, over or interrupted.
    *
    * The timer mode can be
    * * 0: Finsished
    * * 1: Started
-   * * 2: Inprogress
+   * * 2: Interrupted
    * @param mode It can be 0, 1, 2.
    */
   private emitsTimerState(mode: TimerState) {
-    const timerStateNames = Object.keys(TimerState).filter(prop => prop.length > 1);
-    
-    if (mode < timerStateNames.length) {
-      const emitValue = timerStateNames[mode];
-      this.timerStartedEnded.emit(emitValue);
+    let actualSystemClock = new Date();
+    if (mode === TimerState.Started) {
+      this.timerStartedDate = actualSystemClock;
+    } else if (mode === TimerState.Interrupted) {
+      // timerFinished date = rest millisec + timerStarted date
+      const startedDate_millisec = this.timerStartedDate.getTime();
+      const finishedDate_millisec = startedDate_millisec + this.timerInMillisec;
+      actualSystemClock = new Date(finishedDate_millisec);
     }
+    
+    const timerStatus = TimerState[mode];
+    this.timerStatusEmitter.emit([timerStatus, actualSystemClock]);
   }
 
 }

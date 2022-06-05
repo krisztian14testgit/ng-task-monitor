@@ -21,7 +21,7 @@
       <div>
         <app-task-timer [timerInMinutes]="task.timeMinutes"
                         [statusLabel]="statusLabel"
-                        (timerStartedEnded)="onTimerStatus($event)"></app-task-timer>
+                        (timerStatusEmitter)="onTimerStatus($event)"></app-task-timer>
       </div>
     </mat-card-actions>
     <mat-card-footer>

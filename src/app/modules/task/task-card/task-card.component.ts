@@ -107,11 +107,12 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * It runs when counterdown timer emits the status(started, finished, inprogress).
    * 
    * Updates the task status and timerDate properties after saving task instance.
-   * @param timerState$ It can be: Started, Finished, Inprogress
+   * @param timerTuple$ Stores the stateName and occuredDate of timer.
    */
-  public onTimerStatus(timerStateName$: string): void {
-    this.updateTaskStatusBy(timerStateName$);
-    this.updateTaskTimerDateBy(timerStateName$);
+  public onTimerStatus(timerTuple$: [string, Date]): void {
+    const [timerStateName, timerDate] = timerTuple$;
+    this.updateTaskStatusBy(timerStateName);
+    this.updateTaskTimerDateBy(timerStateName, timerDate);
     // saving modified task the reference
     this.saveTaskService();
   }
@@ -192,8 +193,9 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * Updates the status of the task by the given timerState.
    * 
    * Task status will be changed by timer state
-   * * timer Started(1), Interrupted(2) => task status: inProgress
-   * * timer Finished(0) => task status: Completed
+   * * timer Started(1)     => task status: inProgress
+   * * timer Interrupted(2) => task status: inProgress
+   * * timer Finished(0)    => task status: Completed
    * @param timerStateName It can be: Started, Finished, Interrupted
    */
   private updateTaskStatusBy(timerStateName: string): void {
@@ -208,16 +210,21 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
 
   /**
    * Updates the timerStartedDate or timerFinishedDate of task by the given timerState value.
+   * 
+   * If TimerState.Interrupted then timerFinishedDate will get that date when interrupted event is occured.
    * @param timerStateName It can be: Started, Finished, Inprogress.
+   * @param timerDate That date of the timer when it is started, finished or interrupted!
    */
-  private updateTaskTimerDateBy(timerStateName: string): void {
-    if (timerStateName !== TimerState[TimerState.Interrupted]) {
-      const propName = `timer${timerStateName}Date`;
-      if (this.task.isHasOwnPoperty(propName)) {
-        // Adjust the timerStartedDate or timerFinishedDate with the system clock by the timerEvent emitter.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (this.task as any)[propName] = new Date();
-      }
+  private updateTaskTimerDateBy(timerStateName: string, timerDate: Date): void {
+    if (timerStateName == TimerState[TimerState.Interrupted]) {
+      timerStateName = TimerState[TimerState.Finished];
+    }
+
+    const propName = `timer${timerStateName}Date`;
+    if (this.task.isHasOwnPoperty(propName)) {
+      // Adjusts the timerStartedDate or timerFinishedDate with the system clock by the timer's state.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this.task as any)[propName] = timerDate;
     }
   }
 
