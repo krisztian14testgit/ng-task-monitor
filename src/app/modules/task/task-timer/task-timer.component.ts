@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { TaskTimer, TimerState } from '../services/task-timer.model';
 import { TaskStatus } from '../services/task.model';
 
@@ -51,18 +51,15 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
    * Sets this.timerInMillisec by converting task.timeMinutes to millisec.
    * Sets the statusLabel by the TaskStatus enum key.
    */
-  ngOnChanges(): void {
-    if (this.timerInMinutes > 0) {
+  ngOnChanges(changes : SimpleChanges): void {
+    if (changes.timerInMinutes?.isFirstChange() && this.timerInMinutes > 0) {
       this.timerInMillisec = TaskTimer.convertsToMilliSec(this.timerInMinutes);
+      
+      // If timer is interrupted, it was inprogress, start timer again.
+      if (this.statusLabel == TaskStatus[TaskStatus.Inprogress]) {
+        this.startTimer();
+      }
     }
-
-    // If timer is interrupted, inprogress
-    /*if (this.statusLabel == TaskStatus[TaskStatus.Inprogress]) {
-      debugger;
-      this.isTimerFinished = false;
-      // this.emitsTimerState(TimerState.Inprogress);
-      this.startCounterClock();
-    }*/
   }
 
   /**
