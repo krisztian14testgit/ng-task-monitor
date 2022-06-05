@@ -4,6 +4,8 @@
  export class TaskTimer { // => moved into new model file: TaskTimer.model.ts
     /** Returns the milliSeconds from the given minutes. */
     static convertsToMilliSec(inMinutes: number): number {
+        if (inMinutes === 0) { return 0; }
+        
         const sec = 60;
         const milliSec = 1000;
         return inMinutes * sec * milliSec;
