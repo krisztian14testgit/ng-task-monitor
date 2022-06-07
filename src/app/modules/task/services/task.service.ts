@@ -18,6 +18,10 @@ export class TaskService {
   constructor(private readonly http: HttpClient) {
     this._taskList = [];
     this.taskList$ = new BehaviorSubject<Task[]>(this._taskList);
+    
+    const task1 = new Task('', 'statusChanged');
+    FakedTask.addNewTask(task1, TaskStatus.Completed);
+    this.taskList$.next(FakedTask.list);
   }
 
   /**
@@ -32,10 +36,6 @@ export class TaskService {
       this.taskList$.next(tasks);
       return tasks;
     }));*/
-
-    const task1 = new Task('', 'status is changed');
-    FakedTask.addNewTask(task1, TaskStatus.Completed);
-    this.taskList$.next(FakedTask.list);
     return of(FakedTask.list);
   }
 
