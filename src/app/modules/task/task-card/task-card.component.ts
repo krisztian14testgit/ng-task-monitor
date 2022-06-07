@@ -80,7 +80,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   }
 
   /**
-   * This is an click event function.
+   * @event Click event.
    * It runs when the user click on the card.
    * Display the 'edit' button.
    */
@@ -90,6 +90,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   }
 
   /**
+   * @event Saving event.
    * This an event function.
    * It runs when the save button is clicked on.
    * 
@@ -103,7 +104,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   }
 
   /**
-   * It is an event function.
+   * @event TimeStatus Changes:
    * It runs when counterdown timer emits the status(started, finished, inprogress).
    * 
    * Updates the task status and timerDate properties after saving task instance.
@@ -118,7 +119,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   }
 
   /**
-   * This a click event function.
+   * @event Click event function.
    * It runs when the user clicks on the 'edit'/'close' button on the card.
    * 
    * If the button is 'edit' then it will be 'colse' and after reverse.
@@ -192,6 +193,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    /**
    * Updates the status of the task by the given timerState.
    * 
+   * @description
    * Task status will be changed by timer state
    * * timer Started(1)     => task status: inProgress
    * * timer Interrupted(2) => task status: inProgress
