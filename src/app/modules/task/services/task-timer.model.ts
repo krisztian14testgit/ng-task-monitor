@@ -4,6 +4,8 @@
  export class TaskTimer {
     /**
      * Returns the milliSeconds from the given minutesAndSecond.
+     * It uses the 60 number system for minutes and seconds.
+     * 
      * @description
      * At the decimal number:
      * * Integer => minutes
