@@ -112,6 +112,7 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
    * Stops the counter clock counting.
    */
   private stopCounterClock() {
+    console.log('Timer Stopped');
     clearInterval(this.clockIntervalId);
     this.isTimerFinished = true;
     this.timerInMillisec = 0;
@@ -129,18 +130,19 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
    * @param mode It can be 0, 1, 2.
    */
   private emitsTimerState(mode: TimerState) {
-    let actualSystemClock = new Date();
+    let systemClock = new Date();
     if (mode === TimerState.Started) {
-      this.timerStartedDate = actualSystemClock;
+      this.timerStartedDate = systemClock;
     } else if (mode === TimerState.Interrupted) {
-      // timerFinished date = rest millisec + timerStarted date
+      // timerFinished date(when will be done) =  timerStarted date + rest milliSec
       const startedDate_millisec = this.timerStartedDate.getTime();
       const finishedDate_millisec = startedDate_millisec + this.timerInMillisec;
-      actualSystemClock = new Date(finishedDate_millisec);
+      // future date when task timer is over.
+      systemClock = new Date(finishedDate_millisec);
     }
     
     const timerStatus = TimerState[mode];
-    this.timerStatusEmitter.emit([timerStatus, actualSystemClock]);
+    this.timerStatusEmitter.emit([timerStatus, systemClock]);
   }
 
 }
