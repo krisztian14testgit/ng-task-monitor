@@ -6,6 +6,7 @@ import { TaskService } from './services/task.service';
 import { Task, TaskStatus, TaskTime } from './services/task.model';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { AlertType } from 'src/app/components/alert-window/alert.model';
+import { CountdownTimerService } from 'src/app/services/countdown-timer/countdown-timer.service';
 
 @Component({
   selector: 'app-task',
@@ -38,7 +39,8 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   private _filteredTaskListByDate: Task[] = [];
 
   constructor(private readonly taskService: TaskService,
-              private readonly alertMessageService: AlertMessageService) {
+              private readonly alertMessageService: AlertMessageService,
+              private readonly timerWorkerService: CountdownTimerService) {
     this.defaultTaskTime = TaskTime.Today.toString();
   }
 
@@ -55,6 +57,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Unsubscribe the task stream if the task side is leaved. */
   ngOnDestroy(): void {
     this._taskSubscription.unsubscribe();
+    this.timerWorkerService.terminateWorker();
   }
 
   /**
@@ -112,7 +115,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Returns the reference of the filtered Task list.
    * Tasks is filtered by the date when they are created.
-   * @param isToday When tasks are created. It is filtering switch.
+   * @param isToday Tasks are created Today. It is filtering switch.
    * @returns The filtered task by date.
    */
   private filterTasksByDate(isToday: boolean): Task[] {
@@ -130,8 +133,14 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     this._taskSubscription = this.taskService.getAll()
     .subscribe(tasks => {
       this._preservedTaskList = [...tasks];
-      // filter tasks which are created Today
-      this.taskList = this.filterTasksByDate(true);
+      this.timerWorkerService.calculateTaskExpirationTime(this._preservedTaskList)
+      .catch((err: Error) => console.error(err));
+      
+      // Spleep main thread a little the sub-thread timer calculation runs well.
+      setTimeout(() => {
+        const isToday = true;
+        this.taskList = this.filterTasksByDate(isToday);
+      }, 500);
     });
   }
 
@@ -149,5 +158,4 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       this.taksStatusList.push(status.toLowerCase());
     }
   }
-
 }
