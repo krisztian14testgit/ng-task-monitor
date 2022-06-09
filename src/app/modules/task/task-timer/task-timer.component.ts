@@ -101,8 +101,6 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
           this.emitsTimerState(TimerState.Finished);
         }
 
-        // todo: just helping
-        console.log('timer ', this.timerInMillisec);
         this.timerInMillisec -= milliSec;
       }, milliSec);
     }
@@ -112,7 +110,6 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
    * Stops the counter clock counting.
    */
   private stopCounterClock() {
-    console.log('Timer Stopped');
     clearInterval(this.clockIntervalId);
     this.isTimerFinished = true;
     this.timerInMillisec = 0;
