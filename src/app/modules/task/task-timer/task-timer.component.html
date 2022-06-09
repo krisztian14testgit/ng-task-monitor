@@ -5,6 +5,6 @@
     <!-- inProgress or completed -->
     <span *ngIf="isTimerStarted || isTimerFinished">{{statusLabel}}</span>
     <!-- counterClock -->
-    <span *ngIf="isTimerStarted && !isTimerFinished">{{timerInMillisec | date:'HH:mm:ss'}}</span>
+    <span *ngIf="isTimerStarted && !isTimerFinished">{{timerInMillisec | date:'HH:mm:ss':'UTC'}}</span>
 </div>
 
