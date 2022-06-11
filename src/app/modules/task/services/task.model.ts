@@ -136,10 +136,10 @@ export class Task {
 
     /**
      * Sets the status of the task.
-     * @todo task-timer comp adjuts it.
+     * @todo countdown-timer adjusts it.
      * @param statusValue 
      */
-    private setStatus(statusValue: TaskStatus) {
+    public setStatus(statusValue: TaskStatus) {
         this._status = statusValue;
     }
 }

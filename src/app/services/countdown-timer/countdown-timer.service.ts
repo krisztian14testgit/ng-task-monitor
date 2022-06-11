@@ -42,7 +42,7 @@ export class CountdownTimerService {
           for (let i = 0; i < taskList.length; i++) {
             if (restTimeList[i] === 0) {
               // test setStatus, if them are zero
-              taskList[i]['setStatus'](TaskStatus.Completed);
+              taskList[i].setStatus(TaskStatus.Completed);
             }
             taskList[i].timeMinutes = restTimeList[i];
           }

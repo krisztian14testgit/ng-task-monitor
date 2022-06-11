@@ -186,7 +186,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * @param taskStatus 
    */
   private updateTaskStatus(taskStatus: TaskStatus): void {
-    this.task['setStatus'](taskStatus);
+    this.task.setStatus(taskStatus);
     this.statusLabel = TaskStatus[taskStatus];
   }
 
