@@ -117,11 +117,11 @@ export class Task {
      * @returns boolean
      */
     public isCreatedToday(): boolean {
-        const currentClient_inMilliSec = new Date().getMilliseconds();
-        const task_inMilliSec = this._createdDate.getMilliseconds();
-        //     24hours in milliSec:                                 h    min
+        const systemClock_inMilliSec = new Date().getTime();
+        const task_inMilliSec = this._createdDate.getTime();
+        //     24hours in milliSec:                               hour   min
         const diff24hours_inMilliSec = TaskTimer.convertsToMilliSec(24 * 60);
-        return currentClient_inMilliSec - task_inMilliSec < diff24hours_inMilliSec;
+        return systemClock_inMilliSec - task_inMilliSec < diff24hours_inMilliSec;
     }
 
     /**
