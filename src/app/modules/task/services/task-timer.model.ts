@@ -1,7 +1,16 @@
+/** Represents the states of the Countdown Timer. */
+export enum TimerState {
+    Finished,
+    Started,
+    Interrupted
+}
+
 /**
  * It is in charge of converting different times to desired one.
  */
  export class TaskTimer {
+
+    private constructor() {};
     /**
      * Returns the milliSeconds from the given minutesAndSecond.
      * It uses the 60 number system for minutes and seconds.
@@ -33,11 +42,4 @@
         // return interger number
         return minutesAndSec * sec * milliSec;
     }
-}
-
-/** Represents the states of the Countdown Timer. */
-export enum TimerState {
-    Finished,
-    Started,
-    Interrupted
 }
