@@ -41,7 +41,7 @@ export class CountdownTimerService {
     }
     
     if (window.Worker && this._timerWorker) {
-      this._timerWorker.onmessage = function(wEvent: any) {
+      this._timerWorker.onmessage = function(wEvent: MessageEvent) {
         console.log('Main thread received Date form web-worker');
         const restTimeList = wEvent.data as number[];
 
@@ -57,9 +57,9 @@ export class CountdownTimerService {
         }
       };
 
-      console.log('Main thread sended data to worker');
+      console.log('Main thread sent data to worker');
       this._timerWorker.postMessage(taskList);
-
+      
     } else {
       throw Error('Web-worker, multiy thread cannot run!');
     }
