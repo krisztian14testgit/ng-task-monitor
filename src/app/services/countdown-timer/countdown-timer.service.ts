@@ -8,7 +8,12 @@ import { Task, TaskStatus } from 'src/app/modules/task/services/task.model';
 @Injectable()
 export class CountdownTimerService {
   /** The reference of the timer-worker. */
-  private _timerWorker!: Worker;
+  private _timerWorker!: Worker | null;
+
+  /** Creates an instance for web-worker. */
+  constructor() {
+    this.createWorkerInstance();
+  }
 
   /** 
    * Aborts the timer worker process. 
@@ -18,6 +23,7 @@ export class CountdownTimerService {
     console.log('worker terminate');
     if (this._timerWorker) {
       this._timerWorker.terminate();
+      this._timerWorker = null;
     }
   }
 
@@ -30,9 +36,11 @@ export class CountdownTimerService {
    * @param taskList The task items where their timeMinutes will be modified.
    */
   public async calculateTaskExpirationTime(taskList: Task[]): Promise<void> {
-    this._timerWorker = new Worker(new URL('src/app/web-workers/countdown-timer.worker', import.meta.url));
+    if (!this._timerWorker) {
+      this.createWorkerInstance();
+    }
     
-    if (window.Worker) {
+    if (window.Worker && this._timerWorker) {
       this._timerWorker.onmessage = function(wEvent: any) {
         console.log('Main thread received Date form web-worker');
         const restTimeList = wEvent.data as number[];
@@ -55,5 +63,9 @@ export class CountdownTimerService {
     } else {
       throw Error('Web-worker, multiy thread cannot run!');
     }
+  }
+
+  private createWorkerInstance(): void {
+    this._timerWorker = new Worker(new URL('src/app/web-workers/countdown-timer.worker', import.meta.url));
   }
 }
