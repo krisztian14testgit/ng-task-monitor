@@ -84,4 +84,12 @@ describe('TaskTimer class', () => {
             expect(TaskTimer.convertsToMilliSec(decimals[i])).toBe(expectedDecimalResults[i]);
         }
     });
+
+    it('should return 0 if the get wrong value', () =>{
+        const wrongValues = [undefined, null];
+        const expectedDecimalResults = [0, 0];
+        for (let i = 0; i < wrongValues.length; i++) {
+            expect(TaskTimer.convertsToMilliSec(wrongValues[i] as any)).toBe(expectedDecimalResults[i]);
+        }
+    });
 });

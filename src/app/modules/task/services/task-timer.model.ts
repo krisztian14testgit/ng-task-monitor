@@ -24,7 +24,8 @@ export enum TimerState {
      * @param minutesAndSec It can be integer egy decimal number.
      * */
     static convertsToMilliSec(minutesAndSec: number): number {
-        if (minutesAndSec === 0) { return 0; }
+        // exit condition
+        if (!minutesAndSec || minutesAndSec === 0) { return 0; }
         
         const sec = 60;
         const milliSec = 1000;
