@@ -138,7 +138,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       this.timerWorkerService.calculateTaskExpirationTime(this._preservedTaskList)
       .catch((err: Error) => console.error(err));
       
-      // Spleep main thread a little the sub-thread timer calculation runs well.
+      // Spleeping main thread a little the sub-thread timer calculation runs well.
       setTimeout(() => {
         const isToday = true;
         this.taskList = this.filterTasksByDate(isToday);
