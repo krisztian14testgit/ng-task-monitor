@@ -29,10 +29,10 @@ export class CountdownTimerService {
 
   /**
    * Calculates and adjusts the timer of tasks to be expired or not.
-   * If task timer is not over then the web-worker give the rest timer in decimal number.
+   * If task timer is not over then the web-worker sets the rest timer(decimal number).
    * 
    * @description
-   * Decimal number: Integer is minutes, fraction is seconds
+   * Decimal number: Integer is minutes, fraction is seconds.
    * @param taskList The task items where their timeMinutes will be modified.
    */
   public async calculateTaskExpirationTime(taskList: Task[]): Promise<void> {
@@ -49,7 +49,7 @@ export class CountdownTimerService {
         if (restTimeList && restTimeList.length > 0) {
           for (let i = 0; i < taskList.length; i++) {
             if (restTimeList[i] === 0) {
-              // test setStatus, if them are zero
+              // status will completed, if them are zero
               taskList[i].setStatus(TaskStatus.Completed);
             }
             taskList[i].timeMinutes = restTimeList[i];
