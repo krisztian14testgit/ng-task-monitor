@@ -74,9 +74,11 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * the control name.
    */
   ngAfterViewInit(): void {
-    this.taskControls['title'] = this.taskForm.get('title') as FormControl;
-    this.taskControls['description'] = this.taskForm.get('description') as FormControl;
-    this.taskControls['timeMinutes'] = this.taskForm.get('timeMinutes') as FormControl;
+    if (this.taskForm) {
+      this.taskControls['title'] = this.taskForm.get('title') as FormControl;
+      this.taskControls['description'] = this.taskForm.get('description') as FormControl;
+      this.taskControls['timeMinutes'] = this.taskForm.get('timeMinutes') as FormControl;
+    }
   }
 
   /**
