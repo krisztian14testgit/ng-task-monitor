@@ -30,6 +30,8 @@ export class CountdownTimerService {
   /**
    * Calculates and adjusts the timer of tasks to be expired or not.
    * If task timer is not over then the web-worker sets the rest timer(decimal number).
+   * @importan
+   * The taksTime minutes will be modified via the items reference!
    * 
    * @description
    * Decimal number: Integer is minutes, fraction is seconds.
