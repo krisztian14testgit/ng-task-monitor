@@ -1,4 +1,11 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+
+import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
+import { MockTaskService } from 'src/app/tests/mock-services/mock-task.service';
+import { TaskService } from '../services/task.service';
+import { Task } from '../services/task.model';
 
 import { TaskCardComponent } from './task-card.component';
 
@@ -8,7 +15,13 @@ describe('TaskCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TaskCardComponent ]
+      imports: [ReactiveFormsModule],
+      declarations: [ TaskCardComponent ],
+      providers: [
+        { provide: TaskService, useClass: MockTaskService },
+        { provide: AlertMessageService }
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();
   });
