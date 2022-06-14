@@ -54,7 +54,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fillInStatusSelection();
   }
 
-  /** Unsubscribe the task stream if the task side is leaved. */
+  /** Unsubscribes the task stream if the task side is leaved. */
   ngOnDestroy(): void {
     this._taskSubscription.unsubscribe();
     this.timerWorkerService.terminateWorker();
@@ -63,6 +63,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * This is an Model change event function.
    * It is triggered when the selection tag value is changed in the comboBox.
+   * @event
    */
   public onFilterStatus(): void {
     if (this.selectedStatus) {
@@ -79,6 +80,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * This an chage event function.
    * It run when the user select an item from Task time period combobox.
+   * @event
    */
   public onChangedTimePeriod(matSelectionEvent: MatSelectChange): void {
     const isTodayFilter = matSelectionEvent.value != 1;
@@ -101,7 +103,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Removed that empty card from the container which belongs to the removed id
+   * Removes that empty card from the container which belongs to the removed id
    * @param $removedTaskId The id of new task which is not saved. The id includes 'new' keyword with number.
    */
   public onRemoveFailedNewTask($removedTaskId: string): void {
