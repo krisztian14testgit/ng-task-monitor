@@ -88,5 +88,6 @@ describe('CountdownTimerService', () => {
     // when tasks is undefined
     tasks = undefined;
     service.calculateTaskExpirationTime(tasks as Task[]);
+    // It already subscribes on the 'onmessage' event of worker below.
   });
 });
