@@ -1,9 +1,13 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+
 import { TaskTimer, TimerState } from '../services/task-timer.model';
 import { TaskStatus } from '../services/task.model';
 
-
-
+/**
+ * It is respansible the start countdown timer. Start counting.
+ * 
+ * Emits/handles status of the timer if it is over or interrupted.
+ */
 @Component({
   selector: 'app-task-timer',
   templateUrl: './task-timer.component.html',
@@ -26,7 +30,8 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
 
   /** 
    * Rest milliSeconds of timer of task. Measuring time.
-   * Counter clock reduces this value if it is started. */
+   * Counter clock reduces this value if it is already started.
+   */
   public timerInMillisec = 0;
   /** Contains true if the timer is started. */
   public isTimerStarted = false;
@@ -35,17 +40,6 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   /** Stores the interval Id of the setInterval function. */
   private clockIntervalId!: NodeJS.Timeout;
   private timerStartedDate!: Date;
-
-  /**
-   * webWorker
-   * 1. calculate counterClock which time is spent all task(inprogress)
-   * 2. counterclock stop when the taskCard lost focus(on monitor)
-   * 
-   * Main thread
-   * 1 update taskcard counterClock (done)
-   * 
-   */
-  constructor() { }
 
   /** 
    * It runs when the task input is changed.
@@ -89,6 +83,9 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
     }
   }
 
+  /**
+   * Starts counterdown timer.
+   */
   private startCounterClock() {
     // 1sec -> 1000ms
     const milliSec = 1000;
