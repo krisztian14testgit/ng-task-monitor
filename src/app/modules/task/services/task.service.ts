@@ -11,6 +11,7 @@ import { FakedTask } from '../../../tests/models/faked-task.model';
 
 @Injectable()
 export class TaskService {
+  /** This subject emtis changes of the task list, if get/deted/updated item from the list. */
   public readonly taskList$: BehaviorSubject<Task[]>;
   private readonly _taskUrl = `${environment.host}task`;
   private _taskList: Task[];
@@ -19,6 +20,7 @@ export class TaskService {
     this._taskList = [];
     this.taskList$ = new BehaviorSubject<Task[]>(this._taskList);
     
+    // Todo: temporay, add new faked task for test cases
     const task1 = new Task('', 'statusChanged');
     FakedTask.addNewTask(task1, TaskStatus.Completed);
     this.taskList$.next(FakedTask.list);
