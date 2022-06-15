@@ -1,4 +1,4 @@
-// TODO: stringType.ts extension is imported in test.ts
+// Info: stringType.ts extension is imported in test.ts
 
 describe('StringType extension', () => {
     it('should be defined', () => {
