@@ -5,7 +5,8 @@
 
 // eslint-disable-next-line require-jsdoc
 /** Tested and works, deep copy object, its own sub-objects. */
-function deepCopyComplexType_rec<T>(property: T): T {
+/*
+const deepCopyComplexType_rec = function<T>(property: T): T {
     const copiedObj = Object.assign({}, property) as any;
     const props = Object.getOwnPropertyNames(copiedObj);
     
@@ -19,7 +20,7 @@ function deepCopyComplexType_rec<T>(property: T): T {
     
     // exit condition, there is no more object type.
     return copiedObj;
-}
+};*/
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface Array<T> {

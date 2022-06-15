@@ -87,7 +87,7 @@ describe('ArrayType extension', () => {
     });
 
     // TODO: not implemented yet, not too effectively
-    xit('should check deepCopyComplexType reccursively', () => {
+    /*xit('should check deepCopyComplexType reccursively', () => {
         const origin = {name: 'alma', size: 0, obj1: {name: 'alma2', size: 12, obj2: {name: 'alma3', size: 32}}};
         const copied = deepCopyComplexType_rec(origin);
         
@@ -95,6 +95,6 @@ describe('ArrayType extension', () => {
         copied.obj1.obj2.name = 'CHANGED2';
         expect(copied.obj1.name).not.toBe(origin.obj1.name);
         expect(copied.obj1.obj2.name).not.toBe(origin.obj1.obj2.name);
-    });
+    });*/
 
 });
