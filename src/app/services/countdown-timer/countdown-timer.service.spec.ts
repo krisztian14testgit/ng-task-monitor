@@ -1,4 +1,4 @@
-import { fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed } from '@angular/core/testing';
 
 import { CountdownTimerService } from './countdown-timer.service';
 import { Task } from '../../modules/task/services/task.model';
@@ -69,7 +69,6 @@ describe('CountdownTimerService', () => {
       
       // terminates the workers thread
       service.terminateWorker();
-      flush();
     });
   }));
 
@@ -82,7 +81,6 @@ describe('CountdownTimerService', () => {
       expect(restTimeList).toEqual([]);
       // terminates the workers thread
       service.terminateWorker();
-      flush();
     });
 
     // when tasks is undefined
