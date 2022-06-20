@@ -39,12 +39,27 @@ mat-card-title > .card-title-button-box {
     background-color: lightgrey;
 }
 
+mat-card-content {
+    height: 20px;
+}
+
+.card-description {
+    float: left;
+    width: 60%;
+    height: initial;
+}
+
+.card-timer {
+    float: right;
+    width: 38%;
+}
+
 /* progress-bar button */
 mat-card-actions > div {
     padding-left: 45%;
 }
 
-/* editable card */
+/*#region editable card */
 .edit-card-title > input {
     width: -webkit-fill-available;
 }
@@ -53,17 +68,11 @@ mat-card-actions > div {
     height: 80px;
 }
 
-.edit-card-content > textarea {
-    float: left;
-    width: 60%;
-    height: inherit;
+.edit-card-content > .card-description {
+    height: 80px;
 }
 
-.edit-card-time {
-    float: right;
-    width: 38%;
-}
-
-.edit-card-time > input {
+.edit-card-timer > input {
     width: 100%;
 }
+/*#endregion*/

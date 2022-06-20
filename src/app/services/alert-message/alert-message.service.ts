@@ -11,7 +11,7 @@ import { AlertType } from 'src/app/components/alert-window/alert.model';
 @Injectable()
 export class AlertMessageService {
 
-  /** message stream pipe. */
+  /** The message subject emits the message text and alert type(Warning, Error, Info, Success). */
   private _message$ = new Subject<[string, AlertType | undefined]>();
 
   /**

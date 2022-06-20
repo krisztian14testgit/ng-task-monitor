@@ -60,7 +60,6 @@ describe('AlertWindowComponent', () => {
       strongTag = fixture.debugElement.nativeElement.querySelector('strong');
 
       expect(component.isDisplayed).toBeTrue();
-      // console.log('alert class =>', alertWin.classes);
       expect(alertWin.classes[colorAlerTypes[i]]).toBeTrue();
       expect(strongTag.innerText).toBe(`${strongTagValues[i]}:`);
     }

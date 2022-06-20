@@ -22,8 +22,6 @@ export class MenuItemComponent implements OnChanges {
   /** Contains the menu labels: Tasks, Charts, and so on. */
   public menuLabelKeys: string[] = [];
 
-  constructor() { }
-
   /**
    * If this.isDisplayKeys is false, it collects the list items from dictionary without topic key.
    * Showing the submenus item without topic key.
@@ -34,7 +32,7 @@ export class MenuItemComponent implements OnChanges {
       this.isDisplayedLabels = this.menuLabelKeys.length > 0;
     }
 
-    if (!this.isDisplayedLabels) {
+    if (this.menuItems_dict && !this.isDisplayedLabels) {
       // get menu items into one array: [ [a,b], [c,d] ] => [a,b,c,d]
       const sublistInList = Object.values(this.menuItems_dict);
       for (const getList of sublistInList) {
@@ -42,7 +40,9 @@ export class MenuItemComponent implements OnChanges {
       }
       // reset menu labels
       this.menuLabelKeys = [];
-    } else {
+    } 
+    
+    if (this.menuItems_dict && this.isDisplayedLabels) {
       // displayed true to collect labelKeys again.
       this.menuLabelKeys = Object.keys(this.menuItems_dict);
     }

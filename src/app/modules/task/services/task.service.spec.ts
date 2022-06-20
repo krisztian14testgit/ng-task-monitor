@@ -78,7 +78,6 @@ describe('TaskService', () => {
     
     const newTask = new Task('', 'newTask', 'for testing', 2.0);
     service.add(newTask).subscribe(insertedTask => {
-      console.log(insertedTask);
       expect(insertedTask).toBeDefined();
       expect(insertedTask.id).not.toBe('');
       expect(insertedTask.title).toBe(newTask.title);

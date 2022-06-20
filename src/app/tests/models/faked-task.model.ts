@@ -3,7 +3,7 @@ import {Task, TaskStatus} from '../../modules/task/services/task.model';
 /** TODO: just for testing Task service */
 export class FakedTask {
     public static list: Task[] = [
-        new Task('faked-task-45', 'fakedTask-45', 'This is faked Task45', 0.0),
+        new Task('faked-task-45', 'fakedTask-45', 'This is faked Task45', 1.0),
         new Task('faked-task-20', 'fakedTask-20', 'During process', 2.2)
     ];
 

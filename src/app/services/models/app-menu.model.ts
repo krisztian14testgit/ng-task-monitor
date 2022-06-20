@@ -12,7 +12,30 @@ export class AppMenu {
     title = '';
     /** 
      * The menu items by the lables. Orgonized with lables.
-     * * label: can be the group name of the sub-menu items.*/
+     * * label: can be the group name of the sub-menu items.
+     * 
+     * Displayed with labels:
+     * @example 
+     * menuItemsWithLabel = {
+        Label1: [ // <-- label name
+          {linkKey: "linkUrl", title: "TaskTitle1"},
+          {linkKey: "linkUrl", title: "TaskTitle2"}
+        ],
+        Label2: [ <-- label ame
+          {linkKey: "linkUrl", title: "TaskTitle1"},
+          {linkKey: "linkUrl", title: "TaskTitle2"}
+        ]
+      };
+     *
+     * @example // Without labels
+     * menuItemsWithLabel = {
+        Menu: [ // <-- 
+          {linkKey: "linkUrl", title: "TaskTitle1"},
+          {linkKey: "linkUrl", title: "TaskTitle2"},
+          ...
+        ]
+      };
+     */
     menuItemsWithLabel: {[label: string]: MenuItem[] } = {};
     /**
      * Showing the label name in the menu list.

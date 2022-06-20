@@ -2,6 +2,7 @@
 
 import 'zone.js/testing';
 import './app/typeExtensions/stringType';
+import './app/typeExtensions/arrayType';
 import { getTestBed } from '@angular/core/testing';
 import {
   BrowserDynamicTestingModule,

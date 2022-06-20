@@ -2,6 +2,7 @@
 /**
  * This module includes the validation features under the 'MyValidator' namespsace.
  * It can comprise class, variables, functions, enum, interfaces.
+ * @namespace
  */
 export namespace MyValidator {
     /** 
@@ -9,8 +10,11 @@ export namespace MyValidator {
      * @memberof MyValidator
      */
     export enum PatternRuleKeys {
+        /** library path regExp: C:/folder/sub-folder/ */
         LibraryPath,
+        /** task name regExp: digits, abc, -, _ */
         TaskName,
+        /** decimal regExp: only allow the digits and dot sign. */
         Number
     }
     
@@ -25,8 +29,8 @@ export namespace MyValidator {
             '[A-Z]?:/{1}([a-zA-Z0-9-_ ]+/{1})*$',
             // task name regExp: tt, Task1, task-22, task_01
             '[^-0-9]{1}[a-zA-Z0-9-_]+',
-            // number regExp: only allow the digits
-            '[0-9]+'
+            // decimal regExp: only allow the digits and dot sign.
+            '[0-9.]+'
         ];
 
         /**

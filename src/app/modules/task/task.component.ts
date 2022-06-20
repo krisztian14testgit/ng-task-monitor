@@ -6,6 +6,7 @@ import { TaskService } from './services/task.service';
 import { Task, TaskStatus, TaskTime } from './services/task.model';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { AlertType } from 'src/app/components/alert-window/alert.model';
+import { CountdownTimerService } from 'src/app/services/countdown-timer/countdown-timer.service';
 
 @Component({
   selector: 'app-task',
@@ -38,7 +39,8 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   private _filteredTaskListByDate: Task[] = [];
 
   constructor(private readonly taskService: TaskService,
-              private readonly alertMessageService: AlertMessageService) {
+              private readonly alertMessageService: AlertMessageService,
+              private readonly timerWorkerService: CountdownTimerService) {
     this.defaultTaskTime = TaskTime.Today.toString();
   }
 
@@ -52,14 +54,16 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fillInStatusSelection();
   }
 
-  /** Unsubscribe the task stream if the task side is leaved. */
+  /** Unsubscribes the task stream if the task side is leaved. */
   ngOnDestroy(): void {
     this._taskSubscription.unsubscribe();
+    this.timerWorkerService.terminateWorker();
   }
 
   /**
    * This is an Model change event function.
    * It is triggered when the selection tag value is changed in the comboBox.
+   * @event
    */
   public onFilterStatus(): void {
     if (this.selectedStatus) {
@@ -76,6 +80,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * This an chage event function.
    * It run when the user select an item from Task time period combobox.
+   * @event
    */
   public onChangedTimePeriod(matSelectionEvent: MatSelectChange): void {
     const isTodayFilter = matSelectionEvent.value != 1;
@@ -98,7 +103,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Removed that empty card from the container which belongs to the removed id
+   * Removes that empty card from the container which belongs to the removed id
    * @param $removedTaskId The id of new task which is not saved. The id includes 'new' keyword with number.
    */
   public onRemoveFailedNewTask($removedTaskId: string): void {
@@ -112,7 +117,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Returns the reference of the filtered Task list.
    * Tasks is filtered by the date when they are created.
-   * @param isToday When tasks are created. It is filtering switch.
+   * @param isToday Tasks are created Today. It is filtering switch.
    * @returns The filtered task by date.
    */
   private filterTasksByDate(isToday: boolean): Task[] {
@@ -130,8 +135,14 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     this._taskSubscription = this.taskService.getAll()
     .subscribe(tasks => {
       this._preservedTaskList = [...tasks];
-      // filter tasks which are created Today
-      this.taskList = this.filterTasksByDate(true);
+      this.timerWorkerService.calculateTaskExpirationTime(this._preservedTaskList)
+      .catch((err: Error) => console.error(err));
+      
+      // Spleeping main thread a little the sub-thread timer calculation runs well.
+      setTimeout(() => {
+        const isToday = true;
+        this.taskList = this.filterTasksByDate(isToday);
+      }, 500);
     });
   }
 
@@ -149,5 +160,4 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       this.taksStatusList.push(status.toLowerCase());
     }
   }
-
 }

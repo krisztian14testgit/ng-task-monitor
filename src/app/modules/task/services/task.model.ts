@@ -1,3 +1,5 @@
+import { TaskTimer } from "./task-timer.model";
+
 /**
  * The statuses of the Task.
  */
@@ -30,8 +32,12 @@ export class Task {
     title: string;
     /** The desscription of the task. */
     description: string;
-    /** The working/inProgress in seconds. */
-    timeSeconds: number;
+    /** The task timer: working/inProgress in minutes. */
+    timeMinutes: number;
+    /** The timer date when the counterClock is start counting. */
+    timerStartedDate: Date | undefined;
+     /** The timer date when the counterClock is over. */
+    timerFinishedDate: Date | undefined;
 
     private _id: string;
     private _createdDate: Date;
@@ -42,14 +48,16 @@ export class Task {
      * * createdDate: is set up after the creation of the task instance.
      * * status: default value is TaskStatus.Start.
     */
-    constructor(id = '', title = '', description = '', timeSeconds = 0) {
+    constructor(id = '', title = '', description = '', inMinutes = 0) {
         this._id = id;
         this.title = title;
         this.description = description;
-        this.timeSeconds = timeSeconds;
+        this.timeMinutes = inMinutes;
         this._status = TaskStatus.Start;
-        // when it is created
+        // when it is created, not changeable
         this._createdDate = new Date();
+        this.timerStartedDate = undefined;
+        this.timerFinishedDate = undefined;
     }
 
     /**
@@ -76,6 +84,7 @@ export class Task {
      * * Completed
      * @access Readonly
      * @defaultValue TaskStatus.Start
+     * @todo task-timer component only adjust the status by the setStatus
      */
     public get status(): TaskStatus {
         return this._status;
@@ -83,12 +92,12 @@ export class Task {
 
     /** Returns true if task status is inprogress. */
     public isInProgress(): boolean {
-        return this._status === TaskStatus.Inprogress;
+        return this._status === TaskStatus.Inprogress && this.timeMinutes > 0;
     }
 
     /** Returns true if task status is completed/done. */
     public isCompleted(): boolean {
-        return this._status === TaskStatus.Completed;
+        return this._status === TaskStatus.Completed && this.timeMinutes <= 0;
     }
 
     /** 
@@ -108,10 +117,29 @@ export class Task {
      * @returns boolean
      */
     public isCreatedToday(): boolean {
-        const currentClient_inMilliSec = new Date().getMilliseconds();
-        const task_inMilliSec = this._createdDate.getMilliseconds();
-        //                             h    min  sec  milliSec
-        const diff24hours_inMilliSec = 24 * 60 * 60 * 1000;
-        return currentClient_inMilliSec - task_inMilliSec < diff24hours_inMilliSec;
+        const systemClock_inMilliSec = new Date().getTime();
+        const task_inMilliSec = this._createdDate.getTime();
+        //     24hours in milliSec:                               hour   min
+        const diff24hours_inMilliSec = TaskTimer.convertsToMilliSec(24 * 60);
+        return systemClock_inMilliSec - task_inMilliSec < diff24hours_inMilliSec;
+    }
+
+    /**
+     * Returns true if the task class has the property otherwise returns false.
+     * @param propertyName The name of the property.
+     * @returns boolean
+     */
+    public isHasOwnPoperty(propertyName: string): boolean {
+        const propertiesOfTask = Object.getOwnPropertyNames(this);
+        return propertiesOfTask.includes(propertyName);
+    }
+
+    /**
+     * Sets the status of the task.
+     * @todo countdown-timer adjusts it.
+     * @param statusValue 
+     */
+    public setStatus(statusValue: TaskStatus) {
+        this._status = statusValue;
     }
 }
