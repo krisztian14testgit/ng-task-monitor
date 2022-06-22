@@ -2,16 +2,20 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { StatisticRoutingModule } from './statistic-routing.module';
-import { StatisticComponent } from './statistic.component';
+import { NgChartsModule } from 'ng2-charts';
 
+import { StatisticComponent } from './statistic.component';
+import { TaskCountComponent } from './task-count/task-count.component';
 
 @NgModule({
   declarations: [
-    StatisticComponent
+    StatisticComponent,
+    TaskCountComponent
   ],
   imports: [
     CommonModule,
-    StatisticRoutingModule
+    StatisticRoutingModule,
+    NgChartsModule
   ]
 })
 export class StatisticModule { }
