@@ -6,6 +6,7 @@ import { NgChartsModule } from 'ng2-charts';
 
 import { StatisticComponent } from './statistic.component';
 import { TaskCountComponent } from './task-count/task-count.component';
+import { TaskService } from '../task/services/task.service';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,9 @@ import { TaskCountComponent } from './task-count/task-count.component';
     CommonModule,
     StatisticRoutingModule,
     NgChartsModule
+  ],
+  providers: [
+    TaskService
   ]
 })
 export class StatisticModule { }
