@@ -56,14 +56,13 @@ export class TaskCountComponent implements OnChanges {
   }
 
   ngOnChanges(): void {
-    if (this.taskList.length > 0) {
+    if (this.isShowedTodayDate && this.taskList.length > 0) {
+      this.filteredTaskList = this.filterByCreatedToday(this.taskList);
+    } else if (this.taskList.length > 0) {
       this.filteredTaskList = this.taskList;
-      
-      if (this.isShowedTodayDate) {
-        this.filteredTaskList = this.filterByCreatedToday(this.taskList);
-      }
-      this.setPieChartDataBy(this.filteredTaskList);
     }
+    console.log('isShowed changed', this.isShowedTodayDate);
+    this.setPieChartDataBy(this.filteredTaskList);
   }
 
   private filterByCreatedToday(taskList: Task[]): Task[] {
