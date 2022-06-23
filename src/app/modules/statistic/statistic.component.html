@@ -1,4 +1,17 @@
-<div class="chart">
-    <app-task-count [taskList]="taskList"
-                    [isShowedTodayDate]="isFilteredToday"></app-task-count>
-</div>
+<mat-card>
+    <mat-card-title>{{currentChartTitle}}</mat-card-title>
+    <mat-card-content>
+        <div class="dateFilter">
+            <mat-slide-toggle class="example-margin"
+                [color]="'Primary'"
+                [(ngModel)]="isFilteredToday">
+            Show today tasks!
+        </mat-slide-toggle>
+        </div>
+        <div class="chart">
+            <app-task-count [taskList]="taskList"
+                            [isShowedTodayDate]="isFilteredToday"></app-task-count>
+        </div>
+        
+    </mat-card-content>
+</mat-card>
