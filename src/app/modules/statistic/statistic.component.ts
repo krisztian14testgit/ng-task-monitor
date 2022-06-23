@@ -9,11 +9,17 @@ import { Task } from '../task/services/task.model';
   styleUrls: ['./statistic.component.css']
 })
 export class StatisticComponent implements OnInit {
-
+  /** Contains the task instances from the task Service. */
   public taskList: Task[] = [];
+  /** This a switcher, the tasks are created today or not. */
   public isFilteredToday = true;
-  constructor(private readonly taskService: TaskService) { }
+  /** Contains the actual title of the diagramm. */
+  public currentChartTitle!: string;
+  constructor(private readonly taskService: TaskService) {
+    this.currentChartTitle = 'Number of Task status';
+  }
 
+  /** Gets all tasks from the service. */
   ngOnInit(): void {
     this.getAllTasks();
   }
