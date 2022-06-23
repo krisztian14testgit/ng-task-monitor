@@ -79,9 +79,9 @@ export class Task {
     /**
      * The current status of the task.
      * @Statuses:
-     * * Start
-     * * Inprogress
-     * * Completed
+     * * Start = 0
+     * * Inprogress = 1
+     * * Completed = 2
      * @access Readonly
      * @defaultValue TaskStatus.Start
      * @todo task-timer component only adjust the status by the setStatus
