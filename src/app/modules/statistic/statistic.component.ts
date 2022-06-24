@@ -13,15 +13,21 @@ export class StatisticComponent implements OnInit {
   public taskList: Task[] = [];
   /** This a switcher, the tasks are created today or not. */
   public isFilteredToday = true;
+  public toggleName: 'daily' | 'weekly';
   /** Contains the actual title of the diagramm. */
   public currentChartTitle!: string;
   constructor(private readonly taskService: TaskService) {
     this.currentChartTitle = 'Number of Task status';
+    this.toggleName = 'daily';
   }
 
   /** Gets all tasks from the service. */
   ngOnInit(): void {
     this.getAllTasks();
+  }
+
+  public onChangeToggle(): void {
+    this.toggleName = this.isFilteredToday ? 'daily' : 'weekly';
   }
 
   private getAllTasks(): void {
