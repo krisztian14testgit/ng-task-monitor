@@ -4,7 +4,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { StatisticComponent } from './statistic.component';
 
 const routes: Routes = [
-  { path: '', component: StatisticComponent }
+  { path: '',
+    children: [
+      { path: 'daily', component: StatisticComponent },
+      { path: 'weekly', component: StatisticComponent },
+    ]
+  }
 ];
 
 @NgModule({
