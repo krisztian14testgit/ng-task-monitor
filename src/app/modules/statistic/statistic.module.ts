@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { MatCardModule } from '@angular/material/card';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'
+import { MatSelectModule } from '@angular/material/select';
 
 import { StatisticRoutingModule } from './statistic-routing.module';
 import { NgChartsModule } from 'ng2-charts';
@@ -26,7 +26,7 @@ import { LineChartComponent } from './line-chart/line-chart.component';
     NgChartsModule,
     /** Angular material */
     MatCardModule,
-    MatSlideToggleModule
+    MatSelectModule,
   ],
   providers: [
     TaskService

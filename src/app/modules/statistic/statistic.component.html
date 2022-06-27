@@ -3,17 +3,22 @@
         <div class="chart-title">{{currentChartTitle}}</div>
     </mat-card-title>
     <mat-card-content>
-        <div class="chart-date-filter">
-            <mat-slide-toggle class="example-margin"
-                [color]="'Primary'"
-                [(ngModel)]="isFilteredToday"
-                (change)="onChangeToggle()">
-            In {{toggleName}} report
-            </mat-slide-toggle>
+        <div class="chart-report-filter">
+            <mat-form-field appearance="fill">
+                <mat-label>Report types</mat-label>
+                <mat-select [(ngModel)]="selectedChartType">
+                    <mat-option *ngFor="let repItem of loadedReportCharts; index as repIndex"
+                        [value]="repIndex">{{repItem}}</mat-option>
+                </mat-select>
+            </mat-form-field>
         </div>
         <div class="chart">
-            <app-task-count [taskList]="taskList"
-                            [isShowedTodayDate]="isFilteredToday"></app-task-count>
+            <!-- pie chart: task count -->
+            <!--<app-task-count [taskList]="taskList"
+                            [isShowedTodayDate]="isFilteredToday"></app-task-count>-->
+            
+            <!-- line chart: completed tasks -->
+            <app-line-chart></app-line-chart>
         </div>
         
     </mat-card-content>

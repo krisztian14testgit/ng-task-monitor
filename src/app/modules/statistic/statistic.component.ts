@@ -19,14 +19,22 @@ export class StatisticComponent implements OnInit {
   public isDailyReport!: boolean;
   /** Contains the actual title of the diagramm. */
   public currentChartTitle!: string;
+  public loadedReportCharts!: string[];
+  public selectedChartType = '';
+  private dailyReportCharts: string[];
+  private weeklyReportCharts: string[];
+
+
   constructor(private readonly taskService: TaskService,
               private readonly router: Router) {
     this.currentChartTitle = 'Number of Task status';
+    this.dailyReportCharts = ['Task status counts'];
+    this.weeklyReportCharts = ['Task Status counts', 'Completed tasks in week', 'Spent time on tasks'];
   }
 
   /** Gets all tasks from the service. */
   ngOnInit(): void {
-    this.getReportTypeFromUrl();
+    this.setReportTypeFromUrl();
     this.getAllTasks();
   }
 
@@ -38,9 +46,10 @@ export class StatisticComponent implements OnInit {
   /**
    * Adjusts the isDailyReport switcher by the url path.
    */
-  private getReportTypeFromUrl(): void {
+  private setReportTypeFromUrl(): void {
     const reportType = 'daily';
     this.isDailyReport = this.router.url.includes(reportType);
+    this.loadedReportCharts = this.isDailyReport ? this.dailyReportCharts : this.weeklyReportCharts;
   }
 
 }

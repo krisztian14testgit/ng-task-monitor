@@ -3,6 +3,6 @@
     margin-bottom: 20px;
 }
 
-.chart-date-filter {
-    float: right;
+.chart-report-filter mat-form-field {
+    width: 100%;
 }
