@@ -1,21 +1,26 @@
 import { WeekDay } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { ChartType, ChartConfiguration, ChartData } from 'chart.js';
+import { TaskDate } from '../../task/services/task-timer.model';
 
 import { Task, TaskStatus } from '../../task/services/task.model';
+import { ChartLineReport } from '../services/chart-date.model';
 
 @Component({
   selector: 'app-line-chart',
   templateUrl: './line-chart.component.html',
   styleUrls: ['./line-chart.component.css']
 })
-export class LineChartComponent implements OnInit {
+export class LineChartComponent implements OnChanges {
   @Input() taskList: Task[] = [];
+  @Input() lineType: ChartLineReport = ChartLineReport.CompletedTask;
 
   public lineChartType: ChartType;
   public lineChartOptions: ChartConfiguration['options'];
   public lineChartData: ChartData<'line', number[], string | string[]>;
   public lineChartPlugins = [];
+
+  private lineChartLabels: string[];
 
   constructor() {
     this.lineChartType = 'line';
@@ -34,20 +39,37 @@ export class LineChartComponent implements OnInit {
         fill: false,
       }]
     };
+    this.lineChartLabels = [
+      'Completed task numbers in This week',
+      'Spent timer on the task in This week'
+    ];
   }
+  
 
-  ngOnInit(): void {
+  /**
+   * 1. doing spentTime showing
+   * 2. weekly comp: show 3 types reports
+      * extre field for task => stored initial value of timer
+     3. chart resizing, reponisve
+   */
+  ngOnChanges(): void {
+    if (this.taskList && this.taskList.length > 0) {
+      this.setLineChartDataBy(this.taskList);
+    }
   }
 
   private setLineChartDataBy(taskList: Task[]): void {
-    //labels
-    //datasets
-      // - lables
-      // - data
+    this.sortTaskByDays(taskList);
+    // set labels
+    this.lineChartData.labels = this.getChartLabelDays(taskList);
+    // set datasets (label-title, data)
+    this.lineChartData.datasets[0].label = this.lineChartLabels[this.lineType];
+    this.lineChartData.datasets[0].data = this.getCompletedTaskCounts(taskList);
   }
 
   /**
    * Insreasing orders of the task items by the days
+   * The reference is the same???
    * @param taskList 
    */
   private sortTaskByDays(taskList: Task[]): void {
@@ -63,16 +85,13 @@ export class LineChartComponent implements OnInit {
     const retDays = new Set<string>();
     let taskCreatedDate: Date;
     let dayIndex: number;
-    let dayUTCNum: number;
-    let month: number;
 
     for (const task of taskList) {
       taskCreatedDate = new Date(task.createdDate);
       dayIndex = taskCreatedDate.getDay();
-      dayUTCNum = taskCreatedDate.getUTCDate();
-      month = taskCreatedDate.getMonth();
+      const [monthUTC, dayUTC] = TaskDate.getLocalTime_monthsAndDays(taskCreatedDate);
       // e.g: Monday(06.20)
-      retDays.add(WeekDay[dayIndex] + `(${month}.${dayUTCNum})`);
+      retDays.add(WeekDay[dayIndex] + `(${monthUTC}.${dayUTC})`);
     }
 
     return Array.from(retDays);
@@ -83,7 +102,7 @@ export class LineChartComponent implements OnInit {
     let isoDate: string;
 
     for (const task of taskList) {
-      isoDate = this.getYearMonthDaysISO(task.createdDate);
+      isoDate = TaskDate.getYearMonthDaysISO(task.createdDate);
       if (!completedCounts_dict[isoDate]) {
         completedCounts_dict[isoDate] = 0;
       }
@@ -95,19 +114,5 @@ export class LineChartComponent implements OnInit {
 
     // returns only the values of the dict.
     return Object.values(completedCounts_dict);
-  }
-
-  /** 
-   * Returns the ISO date from the createdDate of task.
-   * ISO Format: year-months-days.
-   * E.g.: "2022-06-24"
-   * @param date Instance of the Date
-   * @return ISO string
-   */
-  private getYearMonthDaysISO(taskCreatedDate: string): string {
-    const date = new Date(taskCreatedDate);
-    const isoDate = date.toISOString();
-    const indexOfT = isoDate.indexOf('T');
-    return isoDate.substring(0, indexOfT);
   }
 }
