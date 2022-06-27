@@ -11,11 +11,13 @@ import { NgChartsModule } from 'ng2-charts';
 import { StatisticComponent } from './statistic.component';
 import { TaskCountComponent } from './task-count/task-count.component';
 import { TaskService } from '../task/services/task.service';
+import { LineChartComponent } from './line-chart/line-chart.component';
 
 @NgModule({
   declarations: [
     StatisticComponent,
-    TaskCountComponent
+    TaskCountComponent,
+    LineChartComponent
   ],
   imports: [
     CommonModule,
