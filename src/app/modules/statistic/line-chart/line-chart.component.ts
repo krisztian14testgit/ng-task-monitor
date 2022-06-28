@@ -4,7 +4,7 @@ import { ChartType, ChartConfiguration, ChartData } from 'chart.js';
 import { TaskDate } from '../../task/services/task-timer.model';
 
 import { Task, TaskStatus } from '../../task/services/task.model';
-import { ChartLineReport } from '../services/chart-date.model';
+import { ChartLineReport } from '../services/chart.model';
 
 @Component({
   selector: 'app-line-chart',
@@ -69,8 +69,8 @@ export class LineChartComponent implements OnChanges {
     // Set labels
     this.lineChartData.labels = this.getChartLabelDays(taskList);
     // Set datasets (label-title, data)
-    this.lineChartData.datasets[0].label = this.lineChartLabels[this.lineType -1];
-    this.lineChartData.datasets[0].data = this.lineChartDataCallBack[this.lineType - 1](taskList);
+    this.lineChartData.datasets[0].label = this.lineChartLabels[this.lineType];
+    this.lineChartData.datasets[0].data = this.lineChartDataCallBack[this.lineType](taskList);
   }
 
   /**
