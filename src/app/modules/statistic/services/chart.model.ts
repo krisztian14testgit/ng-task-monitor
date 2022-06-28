@@ -18,4 +18,4 @@ export enum ChartBackGroundColor {
     Orange = 'rgb(250, 150, 0)',
     /** Dark Green color of the Completed task status. */
     DarkGreen = 'rgb(0, 155, 0)'
-  }
+}
