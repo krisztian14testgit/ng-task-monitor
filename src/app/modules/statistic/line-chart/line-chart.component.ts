@@ -21,6 +21,7 @@ export class LineChartComponent implements OnChanges {
   public lineChartPlugins = [];
 
   private lineChartLabels: string[];
+  private lineChartDataCallBack: ((taskList: Task[]) => number[])[];
 
   constructor() {
     this.lineChartType = 'line';
@@ -32,25 +33,27 @@ export class LineChartComponent implements OnChanges {
       },
     };
     this.lineChartData = {
-      labels: ['mon', 'tue', 'wed'],
+      labels: [],
       datasets: [{
-        label: 'Completed task numbers in This week',
-        data: [4, 6, 10],
+        label: 'Empty label of the chart',
+        data: [],
         fill: false,
       }]
     };
     this.lineChartLabels = [
       'Completed task numbers in This week',
-      'Spent timer on the task in This week'
+      'Spent times on the completed tasks in This week'
+    ];
+    this.lineChartDataCallBack = [
+      this.getCompletedTaskCounts,
+      this.getSpentTimesOfWorkingOnTasks
     ];
   }
   
 
   /**
-   * 1. doing spentTime showing
-   * 2. weekly comp: show 3 types reports
-      * extre field for task => stored initial value of timer
      3. chart resizing, reponisve
+     4. renaming: app-task-count to app-task-count-chart
    */
   ngOnChanges(): void {
     if (this.taskList && this.taskList.length > 0) {
@@ -60,11 +63,14 @@ export class LineChartComponent implements OnChanges {
 
   private setLineChartDataBy(taskList: Task[]): void {
     this.sortTaskByDays(taskList);
-    // set labels
+    /* Reset the lineChart data stuct, because of the pointer of lineChartDate
+     * to refreshing the line-chart's data, displaying. */
+    this.lineChartData = {...this.lineChartData};
+    // Set labels
     this.lineChartData.labels = this.getChartLabelDays(taskList);
-    // set datasets (label-title, data)
-    this.lineChartData.datasets[0].label = this.lineChartLabels[this.lineType];
-    this.lineChartData.datasets[0].data = this.getCompletedTaskCounts(taskList);
+    // Set datasets (label-title, data)
+    this.lineChartData.datasets[0].label = this.lineChartLabels[this.lineType -1];
+    this.lineChartData.datasets[0].data = this.lineChartDataCallBack[this.lineType - 1](taskList);
   }
 
   /**
@@ -103,16 +109,40 @@ export class LineChartComponent implements OnChanges {
 
     for (const task of taskList) {
       isoDate = TaskDate.getYearMonthDaysISO(task.createdDate);
+      // Adjust the initial value: 0 if the key does not exist yet in dict.
       if (!completedCounts_dict[isoDate]) {
         completedCounts_dict[isoDate] = 0;
       }
 
       if (task.isCompleted()) {
+        // Counting the completed Tasks
         completedCounts_dict[isoDate]++;
       }
     }
 
     // returns only the values of the dict.
     return Object.values(completedCounts_dict);
+  }
+
+  private getSpentTimesOfWorkingOnTasks(taskList: Task[]): number[] {
+    const spentTimeSum_dict: {[isoDate: string]: number} = {};
+    let isoDate: string;
+
+    
+    for (const task of taskList) {
+      isoDate = TaskDate.getYearMonthDaysISO(task.createdDate);
+      // Adjust the initial value: 0 if the key does not exist yet in dict.
+      if (!spentTimeSum_dict[isoDate]) {
+        spentTimeSum_dict[isoDate] = 0;
+      }
+
+      if (task.isCompleted()) {
+        // Sum the time values.
+        spentTimeSum_dict[isoDate] += task.initialTime;
+      }
+    }
+
+    // returns only the values of the dict.
+    return Object.values(spentTimeSum_dict);
   }
 }
