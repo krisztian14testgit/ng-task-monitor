@@ -10,11 +10,11 @@ enum ChartBackGroundColor {
 }
 
 @Component({
-  selector: 'app-task-count',
-  templateUrl: './task-count.component.html',
-  styleUrls: ['./task-count.component.css']
+  selector: 'app-task-count-chart',
+  templateUrl: './task-count-chart.component.html',
+  styleUrls: ['./task-count-chart.component.css']
 })
-export class TaskCountComponent implements OnChanges {
+export class TaskCountChartComponent implements OnChanges {
   @Input() taskList: Task[] = [];
   @Input() isShowedTodayDate = false;
 

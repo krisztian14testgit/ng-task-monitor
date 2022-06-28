@@ -9,14 +9,14 @@ import { StatisticRoutingModule } from './statistic-routing.module';
 import { NgChartsModule } from 'ng2-charts';
 
 import { StatisticComponent } from './statistic.component';
-import { TaskCountComponent } from './task-count/task-count.component';
+import { TaskCountChartComponent } from './task-count-chart/task-count-chart.component';
 import { TaskService } from '../task/services/task.service';
 import { LineChartComponent } from './line-chart/line-chart.component';
 
 @NgModule({
   declarations: [
     StatisticComponent,
-    TaskCountComponent,
+    TaskCountChartComponent,
     LineChartComponent
   ],
   imports: [
