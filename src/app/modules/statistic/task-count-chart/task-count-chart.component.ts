@@ -74,6 +74,12 @@ export class TaskCountChartComponent implements OnChanges {
     ];
   }
 
+  /**
+   * It triggers when taskList or isShowedTodayDate are changed.
+   * 
+   * Filtering task list by creation date if this.isShowedTodayDate is true.
+   * Setting the labels and datasets of the pie-chart.
+   */
   ngOnChanges(): void {
     if (this.isShowedTodayDate && this.taskList.length > 0) {
       this.filteredTaskList = this.filterByCreatedToday(this.taskList);

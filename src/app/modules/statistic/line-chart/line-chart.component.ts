@@ -69,6 +69,7 @@ export class LineChartComponent implements OnChanges {
   
   /**
    * It triggers when the taskList input field is changed.
+   * 
    * Setting the labels and datasets of the line-chart.
    */
   ngOnChanges(): void {
