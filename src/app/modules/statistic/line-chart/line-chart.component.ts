@@ -67,10 +67,9 @@ export class LineChartComponent implements OnChanges {
     ];
   }
   
-
   /**
-     3. chart resizing, reponisve
-     4. renaming: app-task-count to app-task-count-chart
+   * It triggers when the taskList input field is changed.
+   * Setting the labels and datasets of the line-chart.
    */
   ngOnChanges(): void {
     if (this.taskList && this.taskList.length > 0) {
