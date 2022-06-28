@@ -28,13 +28,23 @@ export enum TaskTime {
  * The structure of the Task class.
  */
 export class Task {
+    /**
+     * Maximum value of the timeMinutes prop. 24*60 = 1440 in minutes.
+     * Therefore the task timer only counts down from 24 hours, as the tasks are daily.
+     */
+    static readonly MAX_MINUTES = 1440;
     /** The label/short name of the task. */
     title: string;
     /** The desscription of the task. */
     description: string;
-    /** The task timer: working/inProgress in minutes. */
-    timeMinutes: number;
-    /** The timer date when the counterClock is start counting. */
+    /**
+     * The task timer: working/inProgress (storing minutes & seconds in decimal).
+     * @important
+     * Timer also can override this value via counting.
+     * @info
+     * The decimal range: [1 min, 1440 min]; 1440 min => 24 hours 
+     */
+    timeMinutes: number;    /** The timer date when the counterClock is start counting. */
     timerStartedDate: Date | undefined;
      /** The timer date when the counterClock is over. */
     timerFinishedDate: Date | undefined;
@@ -42,6 +52,7 @@ export class Task {
     private _id: string;
     private _createdDate: Date;
     private _status: TaskStatus;
+    private _initialTime = 0;
 
     /**
      * Creating a Task instance. Default is empty task. 
@@ -53,6 +64,7 @@ export class Task {
         this.title = title;
         this.description = description;
         this.timeMinutes = inMinutes;
+        this._initialTime = inMinutes;
         this._status = TaskStatus.Start;
         // when it is created, not changeable
         this._createdDate = new Date();
@@ -90,6 +102,15 @@ export class Task {
         return this._status;
     }
 
+    /** 
+     * Preserves the origin/initial value of the timeMinutes. 
+     * @access Readonly
+     * @defaultValue is the first set timeMinutes value.
+     */
+    public get initialTime(): number {
+        return this._initialTime;
+    }
+
     /** Returns true if task status is inprogress. */
     public isInProgress(): boolean {
         return this._status === TaskStatus.Inprogress && this.timeMinutes > 0;
@@ -119,8 +140,8 @@ export class Task {
     public isCreatedToday(): boolean {
         const systemClock_inMilliSec = new Date().getTime();
         const task_inMilliSec = this._createdDate.getTime();
-        //     24hours in milliSec:                               hour   min
-        const diff24hours_inMilliSec = TaskTimer.convertsToMilliSec(24 * 60);
+        // 24hours in milliSec
+        const diff24hours_inMilliSec = TaskTimer.convertsToMilliSec(Task.MAX_MINUTES);
         return systemClock_inMilliSec - task_inMilliSec < diff24hours_inMilliSec;
     }
 

@@ -27,6 +27,11 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   /** True: The card is selected, otherwise false. */
   public isSelected = false;
   /** 
+   * Readonly prop: in minutes: 1439 => 24h * 59min -minValue(1)  => 23:59:00 
+   * @readonly
+   */
+  public readonly TASK_MAX_MINUTES = Task.MAX_MINUTES -1;
+  /** 
    * Stores the references of the formControls of the reactive form.
    * It is helping construction to get current formControl form the Formgroup.
    */
@@ -261,7 +266,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
       description: new FormControl(task.description, []),
       timeMinutes: new FormControl(task.timeMinutes, [
         Validators.required,
-        Validators.max(23 * 60 -1), // in minutes: 1379 => 23h * 59min -minValue(1)  => 23:59:00 
+        Validators.max(this.TASK_MAX_MINUTES),
         Validators.min(1), //min value: 1 min
         Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.Number))
       ])

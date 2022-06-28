@@ -62,7 +62,7 @@
               id="taskTime" type="number" placeholder="in minutes">
         <mat-error *ngIf="taskControls.timeMinutes.invalid &&
                (taskControls.timeMinutes.dirty || taskControls.timeMinutes.touched)">
-          <strong>It's range [1, 1379] in minutes!</strong>
+          <strong>It's range [1, {{TASK_MAX_MINUTES}}] in minutes!</strong>
         </mat-error>
       </div>
     </mat-card-content>
