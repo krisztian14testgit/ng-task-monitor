@@ -2,12 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 
 import { Task, TaskStatus } from '../../task/services/task.model';
-
-enum ChartBackGroundColor {
-  Start = 'rgb(125, 125, 200)',
-  InProgress = 'rgb(255, 100, 0)',
-  Completed = 'rgb(0, 155, 0)'
-}
+import { ChartBackGroundColor } from '../services/chart.model';
 
 @Component({
   selector: 'app-task-count-chart',
@@ -42,14 +37,14 @@ export class TaskCountChartComponent implements OnChanges {
         label: 'Counts of Task status',
         data: [],
         backgroundColor: [
-          ChartBackGroundColor.Start,
-          ChartBackGroundColor.InProgress,
-          ChartBackGroundColor.Completed
+          ChartBackGroundColor.Purple,
+          ChartBackGroundColor.Orange,
+          ChartBackGroundColor.DarkGreen
         ],
         hoverBackgroundColor: [
-          ChartBackGroundColor.Start,
-          ChartBackGroundColor.InProgress,
-          ChartBackGroundColor.Completed
+          ChartBackGroundColor.Purple,
+          ChartBackGroundColor.Orange,
+          ChartBackGroundColor.DarkGreen
         ]
       } ]
     };
