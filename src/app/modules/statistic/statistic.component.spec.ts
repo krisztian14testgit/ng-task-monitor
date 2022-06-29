@@ -14,6 +14,7 @@ describe('StatisticComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      // TODO: routing testing: https://codecraft.tv/courses/angular/unit-testing/routing/
       imports: [ RouterTestingModule.withRoutes([
         { path: 'statistic/daily', component: StatisticComponent },
         { path: 'statistic/weekly', component: StatisticComponent }
