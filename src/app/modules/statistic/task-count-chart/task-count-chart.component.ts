@@ -37,7 +37,11 @@ export class TaskCountChartComponent implements OnChanges {
 
   /** Stores the pie-chart titles which showing on the chart. */
   private pieChartLabels: string[];
-  /** Index will be 0 if this.isShowedTodayDate is true, otherwise it will be 1, in short inWeekly report. */
+  /** 
+   * The default value is 0. 
+   * If this.isShowedTodayDate is true then it will be 0 as well,
+   * otherwise it will be 1, showing inWeekly report.
+   */
   private indexOfChartLabel = 0;
 
   constructor() {
