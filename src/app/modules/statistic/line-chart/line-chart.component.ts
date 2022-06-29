@@ -4,7 +4,7 @@ import { ChartType, ChartConfiguration, ChartData } from 'chart.js';
 
 import { TaskDate } from '../../task/services/task-timer.model';
 import { Task } from '../../task/services/task.model';
-import { ChartLineReport } from '../services/chart.model';
+import { LineChartReport } from '../services/chart.model';
 
 /**
  * This line-chart component can show two type of charts:
@@ -24,7 +24,7 @@ export class LineChartComponent implements OnChanges {
    * * CompletedTask: Showing the count of the completed tasks.
    * * SpentTime: Showing the spent times on the completed tasks.
    */
-  @Input() lineType: ChartLineReport = ChartLineReport.CompletedTask;
+  @Input() lineType: LineChartReport = LineChartReport.CompletedTask;
 
   /** The chartjs types: line, pie, bar, ... */
   public lineChartType: ChartType;
