@@ -32,12 +32,6 @@ export class StatisticComponent implements OnInit {
   /** Contains the weekly report selection items. */
   private weeklyReportCharts: string[];
 
-  
-  /**
-     3. chart resizing, reponisve
-     4. writing unti tests
-   */
-
   constructor(private readonly taskService: TaskService,
               private readonly router: Router) {
     this.dailyReportCharts = ['Task status counts'];
