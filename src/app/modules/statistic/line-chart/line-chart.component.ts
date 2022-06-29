@@ -59,7 +59,7 @@ export class LineChartComponent implements OnChanges {
     };
     this.lineChartLabels = [
       'Completed task numbers in This week',
-      'Amount of pent times on the completed tasks in This week'
+      'Amount of spent times on the completed tasks in This week'
     ];
     this.lineChartDataCallBack = [
       this.getCompletedTaskCounts,
