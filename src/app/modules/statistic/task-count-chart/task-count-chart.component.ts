@@ -17,7 +17,7 @@ export class TaskCountChartComponent implements OnChanges {
   /** The tasks elements. */
   @Input() taskList: Task[] = [];
   /** 
-   * The boolen swticher of today. 
+   * The boolen switcher of today. 
    * * If it is true, shows daily tasks.
    * * If it is false, shows weekly tasks.
    */
@@ -35,7 +35,7 @@ export class TaskCountChartComponent implements OnChanges {
   /** The chartjs plugins setting. */
   public pieChartPlugins = [];
 
-  /** Stores the pie-chart titles which showing on the chart. */
+  /** Stores the pie-chart titles which will be shown on the chart. */
   private pieChartLabels: string[];
   /** 
    * The default value is 0. 
@@ -97,7 +97,7 @@ export class TaskCountChartComponent implements OnChanges {
   }
 
   /**
-   * Returns the filered tasks by the creation date which are created today date.
+   * Returns the filtered tasks by the creation date which are created today date.
    * @param taskList The elements of the taskList.
    * @returns task array.
    */
@@ -123,7 +123,7 @@ export class TaskCountChartComponent implements OnChanges {
 
   /**
    * Returns the collected status names of the given tasks
-   * The collected statuses will be label(x-axis) of the pie-chart.
+   * The collected statuses will be shown on the x-axis of the pie-chart.
    * 
    * @description
    * The statuses with counted number like: Start(2), InProgress(1), Completed(3).
@@ -142,12 +142,12 @@ export class TaskCountChartComponent implements OnChanges {
   }
 
   /**
-   * Return the amount numbers of tasks by statuses.
+   * Returns the amount numbers of tasks by statuses.
    * The counted values will be into array in different task statuses: Start, Inprogress, Completed.
-   * If task statuses are same(there is one) returns the one counted number in the array.
+   * If task statuses are equivalent(there is only one) returns the one number in the array.
    * 
    * @description
-   * The return array index lenght are the pie-chart labels length. Their index postion are equal.
+   * The return array index lenght are same like the pie-chart labels length. Their index position are equal.
    * 
    * @param taskList The elements of the taskList.
    * @returns counted numbers in array.

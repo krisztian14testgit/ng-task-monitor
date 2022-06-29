@@ -20,7 +20,7 @@ export class LineChartComponent implements OnChanges {
   /** The tasks elements. */
   @Input() taskList: Task[] = [];
   /** 
-   * The line-chart type which showing on the chart. 
+   * The line-chart type has two types: 
    * * CompletedTask: Showing the count of the completed tasks.
    * * SpentTime: Showing the spent times on the completed tasks.
    */
@@ -35,7 +35,7 @@ export class LineChartComponent implements OnChanges {
   /** The chartjs plugins setting. */
   public lineChartPlugins = [];
 
-  /** Stores the line-chart titles which showing on the chart. */
+  /** Stores the line-chart titles which will be shown on the chart. */
   private lineChartLabels: string[];
   /** Stores the callback funtion references which calculate the completed Task or spent time data. */
   private lineChartDataCallBack: ((taskList: Task[]) => number[])[];
@@ -85,8 +85,8 @@ export class LineChartComponent implements OnChanges {
    */
   private setLineChartDataBy(taskList: Task[]): void {
     this.sortTaskByDays(taskList);
-    /* Reset the lineChart data stuct, because of the pointer of lineChartDate
-     * to refreshing the line-chart's data, displaying. */
+    /* Reset the line-Chart data stuct, because of the pointer of lineChartDate
+     * to refreshing the line-chart's data, refreshing the line-chart. */
     this.lineChartData = {...this.lineChartData};
     // Set labels
     this.lineChartData.labels = this.getChartLabelDays(taskList);
@@ -97,7 +97,7 @@ export class LineChartComponent implements OnChanges {
 
   /**
    * Insreasing orders of the task items by the day date.
-   * The ordering is changed in the given elements of the list, because of the reference.
+   * The ordering is changed in the same elements of the list, because of the reference.
    * @param taskList The elements of the taskList.
    */
   private sortTaskByDays(taskList: Task[]): void {
@@ -110,7 +110,7 @@ export class LineChartComponent implements OnChanges {
 
   /**
    * Returns the collected day names from the tasks when they were created by date.
-   * The collected day names will be label(x-axis) of the line-chart.
+   * The collected day names will be shown on the x-axis of the line-chart.
    * 
    * @description
    * Showing day names like: Monday(06.20), Tuesday(06.21), when the tasks were created.
@@ -136,12 +136,12 @@ export class LineChartComponent implements OnChanges {
   }
 
   /**
-   * Return the number of completed tasks by the creation date.
-   * The counted values will be into array, as creation date of thask can be differnt.
-   * If the creation date are same then returns the one counted number in the array.
+   * Returns the number of completed tasks by the creation date.
+   * The counted values will be into array, as creation date of task can be differnt.
+   * If the creation date are equivalent then returns the one number in the array.
    * 
    * @description
-   * The return array index lenght are the line-chart labels length. Their index postion are equal.
+   * The return array index lenght are same like the line-chart labels length. Their index position are equal.
    * 
    * @param taskList The elements of the taskList.
    * @returns number array
@@ -173,7 +173,7 @@ export class LineChartComponent implements OnChanges {
    * If the creation date are same returns the one element in the array.
    * 
    * @description
-   * The return array index lenght are the line-chart labels length. Their index postion are equal.
+   * The return array index lenght are same like the line-chart labels length. Their index position are equal.
    * 
    * @param taskList The elements of the taskList.
    * @returns number array
