@@ -1,6 +1,6 @@
 <mat-card>
     <mat-card-title>
-        <div class="chart-title">{{currentChartTitle}}</div>
+        <div class="chart-title">Statistic reports</div>
     </mat-card-title>
     <mat-card-content>
         <div class="chart-report-filter">
@@ -13,13 +13,26 @@
             </mat-form-field>
         </div>
         <div class="chart">
-            <!-- pie chart: task count -->
-            <!--<app-task-count [taskList]="taskList"
-                            [isShowedTodayDate]="isFilteredToday"></app-task-count>-->
-            
-            <!-- line chart: completed tasks -->
-            <app-line-chart></app-line-chart>
-        </div>
-        
+            <!-- Daily report charts -->
+            <ng-container *ngIf="isDailyReport">
+                <!-- pie-chart: task counts  -->
+                <app-task-count-chart *ngIf="selectedChartType === 0"
+                                [taskList]="taskList"
+                                [isShowedTodayDate]="isDailyReport"></app-task-count-chart>
+            </ng-container>
+
+            <!-- Weekly report charts -->
+            <ng-container *ngIf="!isDailyReport">
+                <!-- pie-chart: task counts  -->
+                <app-task-count-chart *ngIf="selectedChartType === 0"
+                                [taskList]="taskList"
+                                [isShowedTodayDate]="isDailyReport"></app-task-count-chart>
+                <!-- line-chart: completed task count, spent time on -->
+                <app-line-chart *ngIf="selectedChartType > 0"
+                                [taskList]="taskList" 
+                                [lineType]="selectedChartType -1"></app-line-chart>
+
+            </ng-container>
+        </div> 
     </mat-card-content>
 </mat-card>
