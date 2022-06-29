@@ -35,17 +35,17 @@ describe('StatisticComponent', () => {
     fixture.detectChanges();
   });
 
-  fit('should create', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  fit('should get all tasks', () => {
+  it('should get all tasks', () => {
     component.ngOnInit();
     expect(component.taskList).toBeDefined();
     expect(component.taskList.length).toBeGreaterThan(0);
   });
   
-  fit('should get report type from the url, isDailyReport to be true', fakeAsync(() => {
+  it('should get report type from the url, isDailyReport to be true', fakeAsync(() => {
     router.navigateByUrl('statistic/daily');
     tick(100);
     
@@ -54,7 +54,7 @@ describe('StatisticComponent', () => {
     expect(component.loadedReportCharts).toEqual(component['dailyReportCharts']);
   }));
 
-  fit('should get report type from the url, isDailyReport to be false', fakeAsync(() => {
+  it('should get report type from the url, isDailyReport to be false', fakeAsync(() => {
     router.navigateByUrl('statistic/weekly');
     tick(100);
     
