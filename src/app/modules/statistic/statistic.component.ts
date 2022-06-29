@@ -17,17 +17,29 @@ export class StatisticComponent implements OnInit {
    * If it is true showing daily report, otherwise weekly report.
    */
   public isDailyReport!: boolean;
-  /** Contains the actual title of the diagramm. */
-  public currentChartTitle!: string;
+  /** 
+   * Contains items for the selection tag. Items come from the dailyReportCharts or weeklyReportCharts arrays 
+   * depens on the isDailyReport switcher.
+   * 
+   * If isDailyReport is true the loadedReportCharts will contain the dailyReportCharts elements
+   * otherwise it is false, then weeklyReportCharts elements will be loaded.
+   */
   public loadedReportCharts!: string[];
-  public selectedChartType = '';
+  // showing count of the completed Tasks in daily, and weekly
+  public selectedChartType = 0;
+  /** Contains the daily report selection items. */
   private dailyReportCharts: string[];
+  /** Contains the weekly report selection items. */
   private weeklyReportCharts: string[];
 
+  
+  /**
+     3. chart resizing, reponisve
+     4. writing unti tests
+   */
 
   constructor(private readonly taskService: TaskService,
               private readonly router: Router) {
-    this.currentChartTitle = 'Number of Task status';
     this.dailyReportCharts = ['Task status counts'];
     this.weeklyReportCharts = ['Task Status counts', 'Completed tasks in week', 'Spent time on tasks'];
   }
