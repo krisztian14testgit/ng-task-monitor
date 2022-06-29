@@ -64,9 +64,11 @@ describe('TaskCountChartComponent', () => {
     component.isShowedTodayDate = true;
     component.ngOnChanges(); // it will call the setPieChartData func
     const labelIndex = component['indexOfChartLabel'];
+    // chart datasets
     expect(component.pieChartData.datasets[0].label).toBe(component['pieChartLabels'][labelIndex]);
     expect(component.pieChartData.datasets[0].label?.includes('today')).toBeTrue();
     expect(component.pieChartData.datasets[0].data.length).toBeGreaterThan(0);
+    // chart labels (x-axis)
     expect(component.pieChartData.labels?.length).toBeGreaterThan(0);
   });
 
@@ -80,9 +82,11 @@ describe('TaskCountChartComponent', () => {
     component.isShowedTodayDate = false;
     component.ngOnChanges(); // it will call the setPieChartData func
     const labelIndex = component['indexOfChartLabel'];
+    // chart datasets
     expect(component.pieChartData.datasets[0].label).toBe(component['pieChartLabels'][labelIndex]);
     expect(component.pieChartData.datasets[0].label?.includes('weekly')).toBeTrue();
     expect(component.pieChartData.datasets[0].data.length).toBeGreaterThan(0);
+    // chart labels (x-axis)
     expect(component.pieChartData.labels?.length).toBeGreaterThan(0);
   });
 });
