@@ -1,4 +1,4 @@
-import { fakeAsync, TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { CountdownTimerService } from './countdown-timer.service';
 import { Task } from '../../modules/task/services/task.model';
@@ -56,6 +56,7 @@ describe('CountdownTimerService', () => {
 
     spyOn((service['_timerWorker'] as Worker), 'postMessage').and.callThrough();
     service.calculateTaskExpirationTime(taskList);
+    tick(100);
     expect((service['_timerWorker'] as Worker).postMessage).toHaveBeenCalled();
 
     // subscribes on the message event. It triggers when the worker finishes.
@@ -72,20 +73,27 @@ describe('CountdownTimerService', () => {
     });
   }));
 
-  it('should get empty array from worker if it got empty list, undefined', () => {
-    let tasks: unknown = [];
+  it('should get empty array from worker if it got empty list', fakeAsync(() => {
+    const tasks: Task[] = [];
     service.calculateTaskExpirationTime(tasks as Task[]);
-
+    tick(100);
     (service['_timerWorker'] as Worker).addEventListener('message', (wEvent: MessageEvent) => {
       const restTimeList = wEvent.data as number[];
       expect(restTimeList).toEqual([]);
       // terminates the workers thread
       service.terminateWorker();
     });
+  }));
 
-    // when tasks is undefined
-    tasks = undefined;
-    service.calculateTaskExpirationTime(tasks as Task[]);
-    // It already subscribes on the 'onmessage' event of worker below.
-  });
+  it('should get empty array from worker if it got undefined', fakeAsync(() => {
+    const tasks = undefined;
+    service.calculateTaskExpirationTime(tasks as any);
+    tick(100);
+    (service['_timerWorker'] as Worker).addEventListener('message', (wEvent: MessageEvent) => {
+      const restTimeList = wEvent.data as number[];
+      expect(restTimeList).toEqual([]);
+      // terminates the workers thread
+      service.terminateWorker();
+    });
+  }));
 });
