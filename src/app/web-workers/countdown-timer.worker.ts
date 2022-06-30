@@ -7,12 +7,13 @@
  * If the task timer is over then difference will be zero, otherwise rest timer in Minutes.Seconds decimal number.
  */
 addEventListener('message', (wEvent: MessageEvent) => {
+  const retTimeList = [];
   // wEvent.data = [task1, task2, ..., n]
-  if (wEvent && wEvent.data.length > 0) { 
+  if (wEvent && wEvent.data && wEvent.data.length > 0) {
     console.log('Web-worker get the task timer dates');
     const currentSystemDate = new Date();
     const tasks = wEvent.data;
-    const retTimeList = [];
+    
     let restMillisec = 0;
     let restMinAndSec = 0;
     let restDate!: Date;
@@ -32,8 +33,7 @@ addEventListener('message', (wEvent: MessageEvent) => {
         retTimeList.push(restMinAndSec);
       }
     }
-
-    // send back result to main thread
-    postMessage(retTimeList);
   }
+  // send back result to main thread
+  postMessage(retTimeList);
 });
