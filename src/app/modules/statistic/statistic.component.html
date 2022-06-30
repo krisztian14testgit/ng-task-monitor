@@ -1,0 +1,38 @@
+<mat-card>
+    <mat-card-title>
+        <div class="chart-title">Statistic reports</div>
+    </mat-card-title>
+    <mat-card-content>
+        <div class="chart-report-filter">
+            <mat-form-field appearance="fill">
+                <mat-label>Report types</mat-label>
+                <mat-select [(ngModel)]="selectedChartType">
+                    <mat-option *ngFor="let repItem of loadedReportCharts; index as repIndex"
+                        [value]="repIndex">{{repItem}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="chart">
+            <!-- Daily report charts -->
+            <ng-container *ngIf="isDailyReport">
+                <!-- pie-chart: task counts  -->
+                <app-task-count-chart *ngIf="selectedChartType === 0"
+                                [taskList]="taskList"
+                                [isShowedTodayDate]="isDailyReport"></app-task-count-chart>
+            </ng-container>
+
+            <!-- Weekly report charts -->
+            <ng-container *ngIf="!isDailyReport">
+                <!-- pie-chart: task counts  -->
+                <app-task-count-chart *ngIf="selectedChartType === 0"
+                                [taskList]="taskList"
+                                [isShowedTodayDate]="isDailyReport"></app-task-count-chart>
+                <!-- line-chart: completed task count, spent time on -->
+                <app-line-chart *ngIf="selectedChartType > 0"
+                                [taskList]="taskList" 
+                                [lineType]="selectedChartType -1"></app-line-chart>
+
+            </ng-container>
+        </div> 
+    </mat-card-content>
+</mat-card>

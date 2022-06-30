@@ -1,0 +1,8 @@
+.chart-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.chart-report-filter mat-form-field {
+    width: 100%;
+}

@@ -27,3 +27,10 @@ body {font-family: Roboto, "Helvetica Neue", sans-serif; }
 .center {
     text-align: center;
 }
+
+/*#region chart.js canves*/
+.chart-responsive {
+    width: 100% !important;
+    height: 100% !important;
+}
+/*#endregion*/

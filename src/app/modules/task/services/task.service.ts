@@ -23,6 +23,12 @@ export class TaskService {
     // Todo: temporay, add new faked task for test cases
     const task1 = new Task('', 'statusChanged');
     FakedTask.addNewTask(task1, TaskStatus.Completed);
+
+    const task2 = new Task('', 'oldTask', '', 10);
+    FakedTask.addNewTask(task2, TaskStatus.Completed, '2022-06-26 18:00:00');
+
+    const task3 = new Task('', 'oldTask3', '', 10);
+    FakedTask.addNewTask(task3, TaskStatus.Completed, '2022-06-28 18:00:00');
     this.taskList$.next(FakedTask.list);
   }
 
