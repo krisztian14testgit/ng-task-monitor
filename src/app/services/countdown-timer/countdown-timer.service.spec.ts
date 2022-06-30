@@ -83,6 +83,7 @@ describe('CountdownTimerService', () => {
       // terminates the workers thread
       service.terminateWorker();
     });
+    expect(tasks).toBeDefined();
   }));
 
   it('should get empty array from worker if it got undefined', fakeAsync(() => {
@@ -95,5 +96,6 @@ describe('CountdownTimerService', () => {
       // terminates the workers thread
       service.terminateWorker();
     });
+    expect(tasks).toBeUndefined();
   }));
 });
