@@ -63,6 +63,9 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * This is an Model change event function.
    * It is triggered when the selection tag value is changed in the comboBox.
+   * 
+   * Filtering the taks elements by the selected status value.
+   * E.g.: get only the completed, inProgress tasks.
    * @event
    */
   public onFilterStatus(): void {
@@ -80,6 +83,8 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * This an chage event function.
    * It run when the user select an item from Task time period combobox.
+   * 
+   * Filtering the tasks by the creationDate which is created today or not.
    * @event
    */
   public onChangedTimePeriod(matSelectionEvent: MatSelectChange): void {

@@ -33,8 +33,8 @@ export class HeaderComponent implements OnInit {
         {linkKey: "tasks/finished", title: "Finished"}
       ],
       Charts: [
-        {linkKey: "weekly", title: "In-Weekly"},
-        {linkKey: "statistic", title: "Statistic-all"}
+        {linkKey: "statistic/daily", title: "Daily"},
+        {linkKey: "statistic/weekly", title: "In-Weekly"}
       ]
     };
 
