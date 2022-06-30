@@ -26,8 +26,8 @@ describe('HeaderComponent', () => {
   const expectedRouterDict = {
     "tasks/inprogress": "In-Progress",
     "tasks/finished": "Finished",
-    "weekly": "In-Weekly",
-    "statistic": "Statistic-all",
+    "statistic/daily": "Daily",
+    "statistic/weekly": "In-Weekly",
     "location": "Change location"
   };
 
