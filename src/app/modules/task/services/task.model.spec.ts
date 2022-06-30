@@ -36,6 +36,7 @@ describe('Task class', () => {
         expect(task.status).toBe(TaskStatus.Start);
         expect(task.isInProgress()).toBeFalse();
 
+        task.timeMinutes = 10;
         task.setStatus(TaskStatus.Inprogress);
         expect(task.isInProgress()).toBeTrue();
 
@@ -44,6 +45,7 @@ describe('Task class', () => {
     });
 
     it('should inspect the task is completed', () => {
+        task.timeMinutes = 10;
         task.setStatus(TaskStatus.Inprogress);
         expect(task.isCompleted()).toBeFalse();
 
