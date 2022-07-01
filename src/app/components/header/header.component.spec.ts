@@ -24,7 +24,7 @@ describe('HeaderComponent', () => {
 
   /** merged menu items from appMenu & optionMenu */
   const expectedRouterDict = {
-    "tasks/inprogress": "In-Progress",
+    "tasks/all": "All tasks",
     "tasks/finished": "Finished",
     "statistic/daily": "Daily",
     "statistic/weekly": "In-Weekly",

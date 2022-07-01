@@ -196,6 +196,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * Returns task status from the navigated url.
+   * If returned value empty string(''), not selected statuses.
    * @returns string
    */
   private getStatusFromUrl(): string {
@@ -205,6 +206,10 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let status = this.router.url.substring(indexOfSlash + nextChart);
     status = status === 'finished' ? 'completed': status;
+    if (status === 'all') {
+      return '';
+    }
+
     return status;
   }
 }

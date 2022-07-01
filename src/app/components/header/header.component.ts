@@ -29,7 +29,7 @@ export class HeaderComponent implements OnInit {
     this.appMenus.isDisplayedLable = true;
     this.appMenus.menuItemsWithLabel = {
       Tasks: [
-        {linkKey: "tasks/inprogress", title: "In-Progress"},
+        {linkKey: "tasks/all", title: "All tasks"},
         {linkKey: "tasks/finished", title: "Finished"}
       ],
       Charts: [
