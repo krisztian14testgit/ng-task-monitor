@@ -30,11 +30,12 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Contains the count of tasks which are filtered by date. */
   public filteredTaskCount = 0;
   /** 
-   * Locker of the Task card, if it is true then the card is not editable.
+   * Locker of the Task cards, if it is true then the card is not editable.
    * @description
-   * Using: when task creation date is yesterday, or more later, not today.
+   * It will be true when task creation date is yesterday, or more later, NOT today.
    */
-  public isLockedTask = false;
+  public isLockedTasks = false;
+  public readonly MAX_LIMIT_TASKS = 10;
   private _taskSubscription!: Subscription;
   /**
    * Stores the all original task items which got form the service.
@@ -99,7 +100,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       const timeFilter = timerPeriodFilterValues[matSelectionEvent.value];
       this.taskList = this.filterTasksByDate(timeFilter);
       // Yesterday, week tasks cannot be editable.
-      this.isLockedTask = timeFilter !== 'today';
+      this.isLockedTasks = timeFilter !== 'today';
     }
   }
 
@@ -108,13 +109,13 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * The max item limit: 10.
    */
   public addNewTask(): void {
-    const maxItemNumber = 10;
-    if (this.taskList.length < maxItemNumber) {
+    if (this.taskList.length < this.MAX_LIMIT_TASKS) {
       // add new task with new-$count id
       this.taskList.unshift(new Task(`new-${this.taskList.length}`));
       this.filteredTaskCount = this.taskList.length;
     } else {
-      this.alertMessageService.sendMessage('You cannot add news task, max: 10!', AlertType.Warning);
+      this.alertMessageService.sendMessage(`You cannot add news task, max: ${this.MAX_LIMIT_TASKS}!`, 
+                                            AlertType.Warning);
     }
   }
 
