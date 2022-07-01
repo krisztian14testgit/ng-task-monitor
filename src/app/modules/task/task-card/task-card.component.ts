@@ -213,11 +213,14 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * @param timerStateName It can be: Started, Finished, Interrupted
    */
   private updateTaskStatusBy(timerStateName: string): void {
+    this.isReadonly = false;
     // converts enum string to enum value
     const timerState = TimerState[timerStateName as keyof typeof TimerState];
     let taskStatusValue = TaskStatus.Completed;
     if (timerState > 0) {
       taskStatusValue = TaskStatus.Inprogress;
+      // Inprogress task is not editable
+      this.isReadonly = true;
     }
     this.updateTaskStatus(taskStatusValue);
   }
