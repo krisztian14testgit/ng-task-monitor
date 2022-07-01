@@ -41,7 +41,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * It is helping for the task filtering methods.
    */
   private _preservedTaskList: Task[] = [];
-  /** Stores those tasks which are filtered by the date. Created: today or not. */
+  /** Stores those tasks which are filtered by the date. Created: today/yesterday or in the week. */
   private _filteredTaskListByDate: Task[] = [];
 
   constructor(private readonly taskService: TaskService,
@@ -90,14 +90,17 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * This an change event function.
    * It run when the user select an item from Task time period combobox.
    * 
-   * Filtering the tasks by the creationDate which is created today or not.
+   * Filtering the tasks by the creationDate which is created today/yesterday or in week.
    * @event onChange
    */
   public onChangedTimePeriod(matSelectionEvent: MatSelectChange): void {
-    const isTodayFilter = matSelectionEvent.value != 1;
-    this.taskList = this.filterTasksByDate(isTodayFilter);
-    // Yesterday tasks cannot be editable.
-    this.isLockedTask = !isTodayFilter;
+    const timerPeriodFilterValues = ['today', 'yesterday', 'week'];
+    if ( matSelectionEvent.value < timerPeriodFilterValues.length) {
+      const timeFilter = timerPeriodFilterValues[matSelectionEvent.value];
+      this.taskList = this.filterTasksByDate(timeFilter);
+      // Yesterday, week tasks cannot be editable.
+      this.isLockedTask = timeFilter !== 'today';
+    }
   }
 
   /**
@@ -129,13 +132,24 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * Returns the reference of the filtered Task list.
-   * Tasks is filtered by the date when they are created.
-   * @param isToday Tasks are created Today. It is filtering switch.
-   * @returns The filtered task by date.
+   * Tasks is filtered by the created date when they are created.
+   * 
+   * If timePeriod is week, showing all tasks.
+   * @param timePeriod Can be 'today' | 'yesterday' | 'week'.
+   * @returns The filtered task by time period.
    */
-  private filterTasksByDate(isToday: boolean): Task[] {
-    this._filteredTaskListByDate = this._preservedTaskList
-    .filter((task:Task) => task.isCreatedToday() === isToday);
+  private filterTasksByDate(timePeriod: string): Task[] {
+    if (timePeriod === 'today') {
+      this._filteredTaskListByDate = this._preservedTaskList
+        .filter((task:Task) => task.isCreatedToday() === true);
+    } else if (timePeriod === 'yesterday') {
+      this._filteredTaskListByDate = this._preservedTaskList
+        .filter((task:Task) => task.isCreatedYesterday() === true);
+    } else {
+      // show all tasks, deep copy origin task items
+      this._filteredTaskListByDate = [...this._preservedTaskList];
+    }
+    
     this.filteredTaskCount = this._filteredTaskListByDate.length;
     return this._filteredTaskListByDate;
   }
@@ -153,7 +167,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       
       // Spleeping main thread a little the sub-thread timer calculation runs well.
       setTimeout(() => {
-        const isToday = true;
+        const isToday = 'today';
         this.taskList = this.filterTasksByDate(isToday);
       }, 500);
     });
