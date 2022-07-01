@@ -29,6 +29,12 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   public defaultTaskTime: string;
   /** Contains the count of tasks which are filtered by date. */
   public filteredTaskCount = 0;
+  /** 
+   * Locker of the Task card, if it is true then the card is not editable.
+   * @description
+   * Using: when task creation date is yesterday, or more later, not today.
+   */
+  public isLockedTask = false;
   private _taskSubscription!: Subscription;
   /**
    * Stores the all original task items which got form the service.
@@ -66,7 +72,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * 
    * Filtering the taks elements by the selected status value.
    * E.g.: get only the completed, inProgress tasks.
-   * @event
+   * @event onChange
    */
   public onFilterStatus(): void {
     if (this.selectedStatus) {
@@ -81,15 +87,17 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * This an chage event function.
+   * This an change event function.
    * It run when the user select an item from Task time period combobox.
    * 
    * Filtering the tasks by the creationDate which is created today or not.
-   * @event
+   * @event onChange
    */
   public onChangedTimePeriod(matSelectionEvent: MatSelectChange): void {
     const isTodayFilter = matSelectionEvent.value != 1;
     this.taskList = this.filterTasksByDate(isTodayFilter);
+    // Yesterday tasks cannot be editable.
+    this.isLockedTask = !isTodayFilter;
   }
 
   /**

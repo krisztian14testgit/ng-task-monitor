@@ -6,7 +6,7 @@
     <mat-card-title>
       <div>{{task.title}}</div>
       <div class="card-title-button-box">
-        <div *ngIf="isSelected" class="card-title-button"
+        <div *ngIf="!isReadonly && isSelected" class="card-title-button"
               (click)="onEdit_colseCard()">edit</div>
       </div>
     </mat-card-title>
