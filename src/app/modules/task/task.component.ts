@@ -7,6 +7,7 @@ import { Task, TaskStatus, TaskTime } from './services/task.model';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { AlertType } from 'src/app/components/alert-window/alert.model';
 import { CountdownTimerService } from 'src/app/services/countdown-timer/countdown-timer.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-task',
@@ -47,7 +48,8 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private readonly taskService: TaskService,
               private readonly alertMessageService: AlertMessageService,
-              private readonly timerWorkerService: CountdownTimerService) {
+              private readonly timerWorkerService: CountdownTimerService,
+              private readonly router: Router) {
     this.defaultTaskTime = TaskTime.Today.toString();
   }
 
@@ -170,6 +172,9 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       setTimeout(() => {
         const isToday = 'today';
         this.taskList = this.filterTasksByDate(isToday);
+        // filters tasks by the selected status
+        this.selectedStatus = this.getStatusFromUrl();
+        this.onFilterStatus();
       }, 500);
     });
   }
@@ -187,5 +192,19 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const status of filteredStatuses) {
       this.taksStatusList.push(status.toLowerCase());
     }
+  }
+
+  /**
+   * Returns task status from the navigated url.
+   * @returns string
+   */
+  private getStatusFromUrl(): string {
+    const slashSign = '/';
+    const indexOfSlash = this.router.url.lastIndexOf(slashSign);
+    const nextChart = 1;
+
+    let status = this.router.url.substring(indexOfSlash + nextChart);
+    status = status === 'finished' ? 'completed': status;
+    return status;
   }
 }
