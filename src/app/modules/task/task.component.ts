@@ -18,7 +18,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Stores the reference of the tasks. */
   public taskList: Task[] = [];
   /** Statuses of the Task. */
-  public taksStatusList: string[] = [];
+  public readonly taksStatusList: string[] = [];
   /** Two-way bindign. Contains the selected status from the combobox. */
   public selectedStatus = '';
   /** 
@@ -97,9 +97,9 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * @event onChange
    */
   public onChangedTimePeriod(matSelectionEvent: MatSelectChange): void {
-    const timerPeriodFilterValues = ['today', 'yesterday', 'week'];
-    if ( matSelectionEvent.value < timerPeriodFilterValues.length) {
-      const timeFilter = timerPeriodFilterValues[matSelectionEvent.value];
+    const lastTastTimeValue = TaskTime.Week;
+    if ( matSelectionEvent.value <= lastTastTimeValue) {
+      const timeFilter = matSelectionEvent.value;
       this.taskList = this.filterTasksByDate(timeFilter);
       // Yesterday, week tasks cannot be editable.
       this.isLockedTasks = timeFilter !== 'today';
@@ -141,11 +141,11 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param timePeriod Can be 'today' | 'yesterday' | 'week'.
    * @returns The filtered task by time period.
    */
-  private filterTasksByDate(timePeriod: string): Task[] {
-    if (timePeriod === 'today') {
+  private filterTasksByDate(timePeriod: TaskTime): Task[] {
+    if (timePeriod === TaskTime.Today) {
       this._filteredTaskListByDate = this._preservedTaskList
         .filter((task:Task) => task.isCreatedToday() === true);
-    } else if (timePeriod === 'yesterday') {
+    } else if (timePeriod === TaskTime.Yesterday) {
       this._filteredTaskListByDate = this._preservedTaskList
         .filter((task:Task) => task.isCreatedYesterday() === true);
     } else {
@@ -170,8 +170,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       
       // Spleeping main thread a little the sub-thread timer calculation runs well.
       setTimeout(() => {
-        const isToday = 'today';
-        this.taskList = this.filterTasksByDate(isToday);
+        this.taskList = this.filterTasksByDate(TaskTime.Today);
         // filters tasks by the selected status
         this.selectedStatus = this.getStatusFromUrl();
         this.onFilterStatus();
