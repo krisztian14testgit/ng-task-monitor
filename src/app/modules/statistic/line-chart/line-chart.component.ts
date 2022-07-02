@@ -27,18 +27,18 @@ export class LineChartComponent implements OnChanges {
   @Input() lineType: LineChartReport = LineChartReport.CompletedTask;
 
   /** The chartjs types: line, pie, bar, ... */
-  public lineChartType: ChartType;
+  public readonly lineChartType: ChartType;
   /** The chartjs options settings. */
-  public lineChartOptions: ChartConfiguration['options'];
+  public readonly lineChartOptions: ChartConfiguration['options'];
   /** The chartjs Data structure. */
   public lineChartData: ChartData<'line', number[], string | string[]>;
   /** The chartjs plugins setting. */
-  public lineChartPlugins = [];
+  public readonly lineChartPlugins = [];
 
   /** Stores the line-chart titles which will be shown on the chart. */
-  private lineChartLabels: string[];
+  private readonly lineChartLabels: string[];
   /** Stores the callback funtion references which calculate the completed Task or spent time data. */
-  private lineChartDataCallBack: ((taskList: Task[]) => number[])[];
+  private readonly lineChartDataCallBack: ((taskList: Task[]) => number[])[];
 
   constructor() {
     this.lineChartType = 'line';

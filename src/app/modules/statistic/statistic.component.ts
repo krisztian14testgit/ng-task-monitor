@@ -28,9 +28,9 @@ export class StatisticComponent implements OnInit {
   // showing count of the completed Tasks in daily, and weekly
   public selectedChartType = 0;
   /** Contains the daily report selection items. */
-  private dailyReportCharts: string[];
+  private readonly dailyReportCharts: string[];
   /** Contains the weekly report selection items. */
-  private weeklyReportCharts: string[];
+  private readonly weeklyReportCharts: string[];
 
   constructor(private readonly taskService: TaskService,
               private readonly router: Router) {
