@@ -26,8 +26,9 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * TaskTime enum filer: when task was created.
    * * Default value: Today = 0 
    * * Yesterday = 1
+   * * Week = 2
    */
-  public defaultTaskTime: string;
+  public readonly defaultTaskTime: string;
   /** Contains the count of tasks which are filtered by date. */
   public filteredTaskCount = 0;
   /** 
@@ -39,7 +40,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   public readonly MAX_LIMIT_TASKS = 10;
   private _taskSubscription!: Subscription;
   /**
-   * Stores the all original task items which got form the service.
+   * Stores the all original task items which got from the service.
    * It is helping for the task filtering methods.
    */
   private _preservedTaskList: Task[] = [];

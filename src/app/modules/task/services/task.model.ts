@@ -21,7 +21,8 @@ export enum TaskStatus {
  */
 export enum TaskTime {
     Today,
-    Yesterday
+    Yesterday,
+    Week
 }
 
 /**
