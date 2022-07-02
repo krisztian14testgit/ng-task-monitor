@@ -100,10 +100,10 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   public onChangedTimePeriod(matSelectionEvent: MatSelectChange): void {
     const lastTastTimeValue = TaskTime.Week;
     if ( matSelectionEvent.value <= lastTastTimeValue) {
-      const timeFilter = matSelectionEvent.value;
+      const timeFilter = Number(matSelectionEvent.value);
       this.taskList = this.filterTasksByDate(timeFilter);
       // Yesterday, week tasks cannot be editable.
-      this.isLockedTasks = timeFilter !== 'today';
+      this.isLockedTasks = timeFilter !== TaskTime.Today;
     }
   }
 
