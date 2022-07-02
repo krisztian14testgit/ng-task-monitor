@@ -10,5 +10,5 @@
     </div>
 </div>
 <mat-progress-bar *ngIf="isTimerStarted && !isTimerFinished" 
-                    mode="determinate" value="40"></mat-progress-bar>
+                    mode="determinate" [value]="progessBarPercent"></mat-progress-bar>
 
