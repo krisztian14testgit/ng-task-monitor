@@ -21,7 +21,8 @@ export enum TaskStatus {
  */
 export enum TaskTime {
     Today,
-    Yesterday
+    Yesterday,
+    Week
 }
 
 /**
@@ -133,16 +134,29 @@ export class Task {
      * Returns true if the Task is created today.
      * 
      * @description
-     * The createdDate of Task is not less then the cleint current date.
+     * The createdDate of Task is not less then the cleints current date.
      * Date diff range: 24 hours.
      * @returns boolean
      */
     public isCreatedToday(): boolean {
         const systemClock_inMilliSec = new Date().getTime();
         const task_inMilliSec = this._createdDate.getTime();
-        // 24hours in milliSec
-        const diff24hours_inMilliSec = TaskTimer.convertsToMilliSec(Task.MAX_MINUTES);
+        const one_MilliSec = 1000;
+         // 24hours in milliSec: 23:59
+        const diff24hours_inMilliSec = TaskTimer.convertsToMilliSec(Task.MAX_MINUTES - one_MilliSec);
         return systemClock_inMilliSec - task_inMilliSec < diff24hours_inMilliSec;
+    }
+
+    /**
+     * Returns true if the Task's createdDate is the previous day(yesterday).
+     * Yesterday: more than 24hours.
+     * @returns boolean
+     */
+    public isCreatedYesterday(): boolean {
+        const currentTimeDay = new Date().getDay();
+        const taskCreatedDay = this._createdDate.getDay();
+        const yesterdayDiff = 1;
+        return currentTimeDay - taskCreatedDay === yesterdayDiff;
     }
 
     /**

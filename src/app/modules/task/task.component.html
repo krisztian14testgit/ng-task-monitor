@@ -1,5 +1,8 @@
 <div class="task-new">
-    <div>Task Limit: <span>{{filteredTaskCount}}</span>/10</div>
+    <div>
+        Task numbers: <span>{{filteredTaskCount}}</span>
+        <span *ngIf="!isLockedTasks">/{{MAX_LIMIT_TASKS}}</span>
+    </div>
     <button mat-raised-button (click)="addNewTask()">+ New task</button>
 </div>
 <div class="taks-filter">
@@ -21,11 +24,13 @@
                     (selectionChange)="onChangedTimePeriod($event)">
             <mat-option value="0">Today</mat-option>
             <mat-option value="1">Yesterday</mat-option>
+            <mat-option value="2">Week</mat-option>
         </mat-select>
     </mat-form-field>
 </div>
 <div class="task-container">
     <app-task-card *ngFor="let task of taskList"
                     [task]="task"
+                    [isReadonly]="isLockedTasks"
                     (newTaskCreationFailed)="onRemoveFailedNewTask($event)"></app-task-card>
 </div>

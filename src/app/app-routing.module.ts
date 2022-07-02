@@ -19,7 +19,7 @@ const routes: Routes = [
     loadChildren: () => import('./modules/statistic/statistic.module').then(module => module.StatisticModule)
   },
   // redirects to the task sub-side
-  {path: '', redirectTo: '/tasks/inprogress', pathMatch: 'full'},
+  {path: '', redirectTo: '/tasks/all', pathMatch: 'full'},
   {path: '**', component: PageNotFoundComponent}
 ];
 

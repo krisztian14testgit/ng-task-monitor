@@ -7,6 +7,7 @@ import { Task, TaskStatus, TaskTime } from './services/task.model';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { AlertType } from 'src/app/components/alert-window/alert.model';
 import { CountdownTimerService } from 'src/app/services/countdown-timer/countdown-timer.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-task',
@@ -17,7 +18,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Stores the reference of the tasks. */
   public taskList: Task[] = [];
   /** Statuses of the Task. */
-  public taksStatusList: string[] = [];
+  public readonly taksStatusList: string[] = [];
   /** Two-way bindign. Contains the selected status from the combobox. */
   public selectedStatus = '';
   /** 
@@ -25,22 +26,31 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * TaskTime enum filer: when task was created.
    * * Default value: Today = 0 
    * * Yesterday = 1
+   * * Week = 2
    */
-  public defaultTaskTime: string;
+  public readonly defaultTaskTime: string;
   /** Contains the count of tasks which are filtered by date. */
   public filteredTaskCount = 0;
+  /** 
+   * Locker of the Task cards, if it is true then the card is not editable.
+   * @description
+   * It will be true when task creation date is yesterday, or more later, NOT today.
+   */
+  public isLockedTasks = false;
+  public readonly MAX_LIMIT_TASKS = 10;
   private _taskSubscription!: Subscription;
   /**
-   * Stores the all original task items which got form the service.
+   * Stores the all original task items which got from the service.
    * It is helping for the task filtering methods.
    */
   private _preservedTaskList: Task[] = [];
-  /** Stores those tasks which are filtered by the date. Created: today or not. */
+  /** Stores those tasks which are filtered by the date. Created: today/yesterday or in the week. */
   private _filteredTaskListByDate: Task[] = [];
 
   constructor(private readonly taskService: TaskService,
               private readonly alertMessageService: AlertMessageService,
-              private readonly timerWorkerService: CountdownTimerService) {
+              private readonly timerWorkerService: CountdownTimerService,
+              private readonly router: Router) {
     this.defaultTaskTime = TaskTime.Today.toString();
   }
 
@@ -66,7 +76,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * 
    * Filtering the taks elements by the selected status value.
    * E.g.: get only the completed, inProgress tasks.
-   * @event
+   * @event onChange
    */
   public onFilterStatus(): void {
     if (this.selectedStatus) {
@@ -81,15 +91,20 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * This an chage event function.
+   * This an change event function.
    * It run when the user select an item from Task time period combobox.
    * 
-   * Filtering the tasks by the creationDate which is created today or not.
-   * @event
+   * Filtering the tasks by the creationDate which is created today/yesterday or in week.
+   * @event onChange
    */
   public onChangedTimePeriod(matSelectionEvent: MatSelectChange): void {
-    const isTodayFilter = matSelectionEvent.value != 1;
-    this.taskList = this.filterTasksByDate(isTodayFilter);
+    const lastTastTimeValue = TaskTime.Week;
+    if ( matSelectionEvent.value <= lastTastTimeValue) {
+      const timeFilter = Number(matSelectionEvent.value);
+      this.taskList = this.filterTasksByDate(timeFilter);
+      // Yesterday, week tasks cannot be editable.
+      this.isLockedTasks = timeFilter !== TaskTime.Today;
+    }
   }
 
   /**
@@ -97,13 +112,13 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * The max item limit: 10.
    */
   public addNewTask(): void {
-    const maxItemNumber = 10;
-    if (this.taskList.length < maxItemNumber) {
+    if (this.taskList.length < this.MAX_LIMIT_TASKS) {
       // add new task with new-$count id
       this.taskList.unshift(new Task(`new-${this.taskList.length}`));
       this.filteredTaskCount = this.taskList.length;
     } else {
-      this.alertMessageService.sendMessage('You cannot add news task, max: 10!', AlertType.Warning);
+      this.alertMessageService.sendMessage(`You cannot add news task, max: ${this.MAX_LIMIT_TASKS}!`, 
+                                            AlertType.Warning);
     }
   }
 
@@ -121,13 +136,24 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * Returns the reference of the filtered Task list.
-   * Tasks is filtered by the date when they are created.
-   * @param isToday Tasks are created Today. It is filtering switch.
-   * @returns The filtered task by date.
+   * Tasks is filtered by the created date when they are created.
+   * 
+   * If timePeriod is week, showing all tasks.
+   * @param timePeriod Can be 'today' | 'yesterday' | 'week'.
+   * @returns The filtered task by time period.
    */
-  private filterTasksByDate(isToday: boolean): Task[] {
-    this._filteredTaskListByDate = this._preservedTaskList
-    .filter((task:Task) => task.isCreatedToday() === isToday);
+  private filterTasksByDate(timePeriod: TaskTime): Task[] {
+    if (timePeriod === TaskTime.Today) {
+      this._filteredTaskListByDate = this._preservedTaskList
+        .filter((task:Task) => task.isCreatedToday() === true);
+    } else if (timePeriod === TaskTime.Yesterday) {
+      this._filteredTaskListByDate = this._preservedTaskList
+        .filter((task:Task) => task.isCreatedYesterday() === true);
+    } else {
+      // show all tasks, deep copy origin task items
+      this._filteredTaskListByDate = [...this._preservedTaskList];
+    }
+    
     this.filteredTaskCount = this._filteredTaskListByDate.length;
     return this._filteredTaskListByDate;
   }
@@ -145,8 +171,10 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       
       // Spleeping main thread a little the sub-thread timer calculation runs well.
       setTimeout(() => {
-        const isToday = true;
-        this.taskList = this.filterTasksByDate(isToday);
+        this.taskList = this.filterTasksByDate(TaskTime.Today);
+        // filters tasks by the selected status
+        this.selectedStatus = this.getStatusFromUrl();
+        this.onFilterStatus();
       }, 500);
     });
   }
@@ -164,5 +192,24 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const status of filteredStatuses) {
       this.taksStatusList.push(status.toLowerCase());
     }
+  }
+
+  /**
+   * Returns task status from the navigated url.
+   * If returned value empty string(''), not selected statuses.
+   * @returns string
+   */
+  private getStatusFromUrl(): string {
+    const slashSign = '/';
+    const indexOfSlash = this.router.url.lastIndexOf(slashSign);
+    const nextChart = 1;
+
+    let status = this.router.url.substring(indexOfSlash + nextChart);
+    status = status === 'finished' ? 'completed': status;
+    if (status === 'all') {
+      return '';
+    }
+
+    return status;
   }
 }

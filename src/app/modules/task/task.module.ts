@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressBarModule } from '@angular/material/progress-bar'
 
 import { TaskRoutingModule } from './task-routing.module';
 import { TaskComponent } from './task.component';
@@ -34,7 +35,8 @@ import { CountdownTimerService } from 'src/app/services/countdown-timer/countdow
     MatButtonModule,
     MatSelectModule,
     MatCardModule,
-    MatDividerModule
+    MatDividerModule,
+    MatProgressBarModule
   ],
   providers: [
     TaskService,

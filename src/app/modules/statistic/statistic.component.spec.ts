@@ -1,5 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
@@ -62,4 +63,29 @@ describe('StatisticComponent', () => {
     expect(component.isDailyReport).toBeFalse();
     expect(component.loadedReportCharts).toEqual(component['weeklyReportCharts']);
   }));
+
+  it('should load the chart if selectedChartType has good value', () => {
+    // pie-chart
+    component.selectedChartType = 0;
+    fixture.detectChanges();
+    const chartDiv = fixture.debugElement.query(By.css('.chart'));
+    expect(chartDiv).toBeDefined();
+    expect(chartDiv.children.length).toBeGreaterThan(0);
+  });
+
+  it('should Not display the chart if the selectedChartType has wrong value', () => {
+    // not contains pie-chart, comboBox does have 3 index option.
+    component.selectedChartType = 3;
+    fixture.detectChanges();
+    let chartDiv = fixture.debugElement.query(By.css('.chart'));
+    expect(chartDiv).toBeDefined();
+    expect(chartDiv.children.length).toBe(0);
+
+    // wrong value
+    component.selectedChartType = null as any;
+    fixture.detectChanges();
+    chartDiv = fixture.debugElement.query(By.css('.chart'));
+    expect(chartDiv).toBeDefined();
+    expect(chartDiv.children.length).toBe(0);
+  });
 });
