@@ -18,7 +18,7 @@ addEventListener('message', (wEvent: MessageEvent) => {
     let restMinAndSec = 0;
     let restDate!: Date;
     
-    if (tasks && tasks.length) {
+    if (tasks.length > 0) {
       for (const currentTask of tasks) {
         restMillisec = 0;
         restMinAndSec = 0;
