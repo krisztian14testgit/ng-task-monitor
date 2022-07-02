@@ -97,15 +97,16 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     if (formControlRef.valid) {
       // converting string to enum value, too slow
       // const locKey = LocationPath[keyLocation as keyof typeof LocationPath];
-      let locKey = undefined;
+      let locKey = -1;
       if (keyLocation === 'TaskPath') {
         locKey = LocationPath.TaskPath;
       }
       if (keyLocation === 'AppSettingPath') {
         locKey = LocationPath.AppSettingPath;
       }
-
-      if (locKey) {
+      
+      if (locKey > -1) {
+        
         this.saveLocationPath(locKey, formControlRef);
       }
     }

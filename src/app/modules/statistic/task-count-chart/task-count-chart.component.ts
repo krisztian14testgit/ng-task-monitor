@@ -27,16 +27,16 @@ export class TaskCountChartComponent implements OnChanges {
   public filteredTaskList: Task[] = [];
 
   /** The chartjs types: line, pie, bar, ... */
-  public pieChartType: ChartType;
+  public readonly pieChartType: ChartType;
   /** The chartjs options settings. */
-  public pieChartOptions: ChartConfiguration['options'];
+  public readonly pieChartOptions: ChartConfiguration['options'];
   /** The chartjs Data structure. */
-  public pieChartData: ChartData<'pie', number[], string | string[]>;
+  public readonly pieChartData: ChartData<'pie', number[], string | string[]>;
   /** The chartjs plugins setting. */
-  public pieChartPlugins = [];
+  public readonly pieChartPlugins = [];
 
   /** Stores the pie-chart titles which will be shown on the chart. */
-  private pieChartLabels: string[];
+  private readonly pieChartLabels: string[];
   /** 
    * The default value is 0. 
    * If this.isShowedTodayDate is true then it will be 0 as well,

@@ -5,7 +5,7 @@ import { TaskComponent } from './task.component';
 const routes: Routes = [
   { path: '',
     children: [
-      { path: 'inprogress', component: TaskComponent },
+      { path: 'all', component: TaskComponent },
       { path: 'finished', component: TaskComponent }
     ]
   }

@@ -54,10 +54,8 @@ mat-card-content {
     width: 38%;
 }
 
-/* progress-bar button */
-mat-card-actions > div {
-    padding-left: 45%;
-}
+/* progress-bar class */
+
 
 /*#region editable card */
 .edit-card-title > input {
@@ -74,5 +72,8 @@ mat-card-actions > div {
 
 .edit-card-timer > input {
     width: 100%;
+}
+.edit-card-timer-progress {
+    padding-left: 45%;
 }
 /*#endregion*/

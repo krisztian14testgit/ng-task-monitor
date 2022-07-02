@@ -37,9 +37,19 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   public isTimerStarted = false;
   /** Contains true if the timer is over.*/
   public isTimerFinished = false;
+  /** 
+   * This value is percentage. Max value is 100%
+   * 
+   * Contains the calculated percentage of spent time from the timer. 
+   * Mat-ProgressBar shows this value.
+   */
+  public progessBarPercent = 0;
   /** Stores the interval Id of the setInterval function. */
   private clockIntervalId!: NodeJS.Timeout;
+  /** Stores the started date which is the current Date of system clock. */
   private timerStartedDate!: Date;
+  /** Preserves the original value of the timerInMilliesc(when we got) of the task. */
+  private preTimerInMillisec = 0;
 
   /** 
    * It runs when the task input is changed.
@@ -49,6 +59,7 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   ngOnChanges(changes : SimpleChanges): void {
     if (changes.timerInMinutes?.isFirstChange() && this.timerInMinutes > 0) {
       this.timerInMillisec = TaskTimer.convertsToMilliSec(this.timerInMinutes);
+      this.preTimerInMillisec = this.timerInMillisec;
       
       // If timer is interrupted, it was inprogress, start timer again.
       if (this.statusLabel == TaskStatus[TaskStatus.Inprogress]) {
@@ -99,6 +110,7 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
         }
 
         this.timerInMillisec -= milliSec;
+        this.progessBarPercent = this.calculateProgressBarValue(this.timerInMillisec);
       }, milliSec);
     }
   }
@@ -137,6 +149,20 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
     
     const timerStatus = TimerState[mode];
     this.timerStatusEmitter.emit([timerStatus, systemClock]);
+  }
+
+  /**
+   * Returns the spent time percentage from the current timer value.
+   * 
+   * Spent time = The percentage of the difference the preserved timer and current timer.
+   * @param timerInMillisec actual value of the Timer.
+   * @returns spent percentage of the spent timer.
+   */
+  private calculateProgressBarValue(timerInMillisec: number): number {
+    const wholePercentage = 100;
+    const restPercentage = timerInMillisec / this.preTimerInMillisec * 100;
+    // 100% - restTime% = percentage of the spent time
+    return Math.round(wholePercentage - restPercentage);
   }
 
 }
