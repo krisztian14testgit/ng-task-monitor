@@ -21,7 +21,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * The switcher of the Task card. 
    * If it is true not display the 'edit' button of the card.
    */
-  @Input() isReadonly = false;
+  @Input() public isReadonly = false;
   @Output() public readonly newTaskCreationFailed: EventEmitter<string> = new EventEmitter();
   
   /** The switcher of the card is editable or not. */
@@ -40,7 +40,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * Stores the references of the formControls of the reactive form.
    * It is helping construction to get current formControl form the Formgroup.
    */
-  public taskControls: {[prop: string]: FormControl };
+  public readonly taskControls: {[prop: string]: FormControl };
   /** The FromGroup structure of the task. */
   public taskForm!: FormGroup;
   /**
@@ -50,7 +50,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * @descripton property:
    * Values available by the Task property names.
    * * Task Properties: title, description, timeMinutes*/
-  private _defaultFormValues: {[property: string]: string | number} = {};
+  private readonly _defaultFormValues: {[property: string]: string | number} = {};
 
   constructor(private readonly taskService: TaskService,
               private readonly alertMessageService: AlertMessageService) { 
