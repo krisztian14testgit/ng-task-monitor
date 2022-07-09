@@ -12,7 +12,7 @@
 // attaching differenct themes
 @use "./skins/themes/light";
 @use "./skins/themes/dark";
-
+@use "./skins/components/menu" as menu;
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
@@ -25,3 +25,5 @@
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include mat.all-component-themes(light.$app-light-theme);
+@include menu.container(lightgray, '', darkblue);
+

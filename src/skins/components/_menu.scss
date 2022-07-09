@@ -1,0 +1,20 @@
+// The menu label, mouse hover and visited link colors are changale via the container.
+@mixin container($labelColor, $hoverColor, $activatedColor) {
+    .menu-label {
+      background-color: $labelColor;
+    }
+  
+    .mat-menu-item:hover {
+      // default color
+      color: inherit;
+      @if $hoverColor != '' {
+        color: $hoverColor;
+      }
+      
+    }
+  
+    .activated-route {
+      color: $activatedColor;
+      font-weight: bold;
+    }
+}
