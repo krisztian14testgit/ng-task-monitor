@@ -1,5 +1,6 @@
 .task-container {
     border: 1px solid red;
+    border-radius: 6px 6px;
     width: auto;
     height: auto;
 }
