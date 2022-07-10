@@ -26,21 +26,22 @@ $app-dark-theme: mat.define-dark-theme((
 }
 
 @mixin black-input {
-  input, textarea {
-    color: white;
-    background-color: black;
-  }
+  color: white;
+  background-color: black;
 }
 
 @mixin task-card() {
-  .mat-card-title {
+  .mat-card-title input {
     @include black-input();
   }
 
   .mat-card-content {
-    @include black-input();
+    textarea {
+      @include black-input();
+    }
+    
 
-    .edit-card-timer {
+    .edit-card-timer input {
       @include black-input();
     }
   }
