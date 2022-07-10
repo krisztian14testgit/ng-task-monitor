@@ -13,6 +13,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { MenuItemComponent } from './components/menu-item/menu-item.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { AlertWindowComponent } from './components/alert-window/alert-window.component';
+import { StyleThemeComponent } from './components/style-theme/style-theme.component';
 
 import { AlertMessageService } from './services/alert-message/alert-message.service';
 import { StyleManagerService } from './services/style-manager/style-manager.service';
@@ -23,7 +24,8 @@ import { StyleManagerService } from './services/style-manager/style-manager.serv
     HeaderComponent,
     MenuItemComponent,
     PageNotFoundComponent,
-    AlertWindowComponent
+    AlertWindowComponent,
+    StyleThemeComponent
   ],
   imports: [
     BrowserModule,
