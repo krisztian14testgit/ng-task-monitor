@@ -13,7 +13,9 @@ import { HeaderComponent } from './components/header/header.component';
 import { MenuItemComponent } from './components/menu-item/menu-item.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { AlertWindowComponent } from './components/alert-window/alert-window.component';
+
 import { AlertMessageService } from './services/alert-message/alert-message.service';
+import { StyleManagerService } from './services/style-manager/style-manager.service';
 
 @NgModule({
   declarations: [
@@ -34,7 +36,8 @@ import { AlertMessageService } from './services/alert-message/alert-message.serv
     MatGridListModule
   ],
   providers: [
-    AlertMessageService
+    AlertMessageService,
+    StyleManagerService
   ],
   bootstrap: [AppComponent]
 })
