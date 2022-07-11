@@ -9,7 +9,7 @@ export class StyleManagerService {
 
   /**
    * Returns true if the given themeKey is belong StyleThemes enum,
-   * oterwise returns false in any values.
+   * otherwise returns false in any values.
    * 
    * @param themeKey The key values from the StyleThemes
    * @returns boolean
@@ -37,8 +37,11 @@ export class StyleManagerService {
   }
 
   /**
-   * Returns the last index of the last item from the classList of the body.
+   * Returns the last index of the classList of the body.
    * If the classList contains one class defition or it is empty, return -1;
+   * 
+   * @description
+   * There is one typography class is occupied in the classList.
    * @returns index
    */
   private getLastIndexOfBodyClass(): number {
