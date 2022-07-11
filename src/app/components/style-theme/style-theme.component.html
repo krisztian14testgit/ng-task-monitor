@@ -1,4 +1,10 @@
 <div class="style-themes">
-    <p>style-theme works!</p>
+    <mat-radio-group aria-label="Select an theme"
+                    class="style-radio-group"
+                    [value]="selectedTheme"
+                    (change)="onChangeTheme($event)">
+        <mat-radio-button *ngFor="let theme of styleThemes;"
+                            [value]="theme">{{theme}}</mat-radio-button>
+    </mat-radio-group>
 </div>
 

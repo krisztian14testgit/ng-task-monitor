@@ -1,0 +1,11 @@
+.style-themes {
+    margin-left: 10px;
+    background-color: inherit;
+}
+
+.style-themes .mat-radio-button {
+    display: block;
+    width: 100%;
+    float:left;
+    margin-bottom: 5px;
+}
