@@ -31,6 +31,10 @@ $app-dark-theme: mat.define-dark-theme((
 }
 
 @mixin task-card() {
+  .task-container {
+    border-color: gold !important;
+  }
+
   .mat-card-title input {
     @include black-input();
   }
