@@ -33,6 +33,7 @@ describe('Task class', () => {
 
     it('should inspect the task is inProgress', () => {
         // initial values is start
+        task.setStatus(TaskStatus.Start);
         expect(task.status).toBe(TaskStatus.Start);
         expect(task.isInProgress()).toBeFalse();
 
