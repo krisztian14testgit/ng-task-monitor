@@ -43,6 +43,11 @@ $app-blue-dragon: mat.define-light-theme((
     color: $textColor;
   }
 
+  // add new task button
+  .mat-card > .task-new > button {
+    background: rgb(101 175 214);
+  }
+
   .mat-card-title input {
     @include input-field-color($input-bgColor, $input-color);
   }
@@ -107,4 +112,5 @@ $app-blue-dragon: mat.define-light-theme((
     @include task-card($background, $blueText);
     @include menu.container($menu-label-background, $menu-hover-color,
                             $mneu-activated-color, $menu-bgColor);
+    @include menu.button(rgb(101 175 214));
 }
