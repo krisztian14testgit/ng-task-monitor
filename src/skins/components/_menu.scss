@@ -1,5 +1,9 @@
-// The menu label, mouse hover and visited link colors are changale via the container.
-@mixin container($labelColor, $hoverColor, $activatedColor) {
+// The menu label, mouse hover and activated(visited link) colors are changale via the container.
+@mixin container($labelColor, $hoverColor, $activatedColor, $background: 'inherit') {
+    .mat-menu-content {
+      background: $background;
+    }
+  
     .menu-label {
       background-color: $labelColor;
     }
