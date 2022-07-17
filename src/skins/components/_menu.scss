@@ -22,3 +22,9 @@
       font-weight: bold;
     }
 }
+
+@mixin button($background) {
+  app-menu-item > .mat-button {
+    background: $background;
+  }
+}
