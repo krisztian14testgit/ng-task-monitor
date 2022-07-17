@@ -4,5 +4,5 @@ export enum StyleThemes {
     Light = '',
     Dark = 'dark-theme',
     /** Blue theme with dragon. */
-    BlueDragon = 'blue-dragon'
+    BlueDragon = 'blue-dragon-theme'
 }
