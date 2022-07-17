@@ -19,9 +19,10 @@ $app-blue-dragon: mat.define-light-theme((
 ));
 
 @mixin body($theme, $textColor) {
-  // background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 55, 125, 0.89);
   background-image: url('../../assets/pictures/blueDragon.jpg');
-  bakcground: rgba(0, 255, 255, 0.2);
+  background-repeat: repeat-y;
+  background-size: cover;
   color: $textColor;
 }
 
