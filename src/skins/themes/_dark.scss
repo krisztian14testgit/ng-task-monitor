@@ -1,6 +1,7 @@
 @use "sass:map";
 @use "@angular/material" as mat;
 @use "../components/menu" as menu;
+@use "../components/form" as form;
 
 $app-dark-primary: mat.define-palette(mat.$yellow-palette);
 $app-dark-accent: mat.define-palette(mat.$amber-palette, A200, A100, A400);
@@ -28,12 +29,10 @@ $app-dark-theme: mat.define-dark-theme((
     color: $textColor;
 }
 
-@mixin black-input($textColor) {
-  color: $textColor;
-  background-color: black;
-}
-
 @mixin task-card($textColor) {
+  $input-color: $textColor;
+  $input-bgColor: black;
+
   .task-container {
     border-color: gold !important;
   }
@@ -43,17 +42,17 @@ $app-dark-theme: mat.define-dark-theme((
   }
 
   .mat-card-title input {
-    @include black-input($textColor);
+    @include form.input-field-color($input-bgColor, $input-color);
   }
 
   .mat-card-content {
     textarea {
-      @include black-input($textColor);
+      @include form.input-field-color($input-bgColor, $input-color);
     }
     
 
     .edit-card-timer input {
-      @include black-input($textColor);
+      @include form.input-field-color($input-bgColor, $input-color);
     }
   }
 

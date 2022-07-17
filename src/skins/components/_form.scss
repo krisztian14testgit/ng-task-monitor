@@ -1,0 +1,5 @@
+// Set the input tag color and background-color
+@mixin input-field-color($background-color, $textColor) {
+    color: $textColor;
+    background-color: $background-color;
+}

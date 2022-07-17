@@ -1,6 +1,7 @@
 @use "sass:map";
 @use "@angular/material" as mat;
 @use "../components/menu" as menu;
+@use "../components/form" as form;
 
 $app-blue-primary: mat.define-palette(mat.$blue-palette, 900);
 $app-blue-accent: mat.define-palette(mat.$teal-palette, A200, A100, A400);
@@ -26,11 +27,7 @@ $app-blue-dragon: mat.define-light-theme((
   color: $textColor;
 }
 
-// TODO - general comp
-@mixin input-field-color($background-color, $textColor) {
-  color: $textColor;
-  background-color: $background-color;
-}
+
 
 @mixin task-card($background, $textColor) {
   $input-color:  lightskyblue;
@@ -50,7 +47,7 @@ $app-blue-dragon: mat.define-light-theme((
   }
 
   .mat-card-title input {
-    @include input-field-color($input-bgColor, $input-color);
+    @include form.input-field-color($input-bgColor, $input-color);
   }
 
   // edit button
@@ -60,12 +57,12 @@ $app-blue-dragon: mat.define-light-theme((
 
   .mat-card-content {
     textarea {
-      @include input-field-color($input-bgColor, $input-color);
+      @include form.input-field-color($input-bgColor, $input-color);
     }
     
 
     .edit-card-timer input {
-      @include input-field-color($input-bgColor, $input-color);
+      @include form.input-field-color($input-bgColor, $input-color);
     }
   }
 
