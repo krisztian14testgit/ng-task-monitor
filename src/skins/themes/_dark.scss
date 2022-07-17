@@ -69,12 +69,13 @@ $app-dark-theme: mat.define-dark-theme((
   }
 }
 
-@mixin alert-window() {
-  .alert-blue {
+// alert message
+@mixin alert-message() {
+  .alert-info {
     border-color: snow !important;
   }
 
-  .alert-green {
+  .alert-success {
     $green: rgb(0, 128, 0);
     color: $green !important;
     border-color: $green !important;
@@ -90,6 +91,6 @@ $app-dark-theme: mat.define-dark-theme((
     @include body($app-dark-theme, $textWhite);
     @include menu.container($menu-label-background, lightblue, darkgray);
     @include task-card($textWhite);
-    @include alert-window();
+    @include alert-message();
     // chart?
 }
