@@ -2,15 +2,18 @@
 @use "@angular/material" as mat;
 @use "../components/menu" as menu;
 
-$app-dark-primary: mat.define-palette(mat.$blue-grey-palette);
+$app-dark-primary: mat.define-palette(mat.$yellow-palette);
 $app-dark-accent: mat.define-palette(mat.$amber-palette, A200, A100, A400);
 $app-dark-warn: mat.define-palette(mat.$deep-orange-palette);
 
 // define the black theme
 $app-dark-theme: mat.define-dark-theme((
     color: (
+      // primary: the color that appears most frequently throughout your application
       primary: $app-dark-primary,
+      // accent palette used to selectively highlight key parts of your UI
       accent: $app-dark-accent,
+      // error, palette used for warnings and error states
       warn: $app-dark-warn,
     )
 ));
@@ -54,6 +57,7 @@ $app-dark-theme: mat.define-dark-theme((
     }
   }
 
+  // status button
   .mat-card-actions {
     button {
       color: lightblue;
@@ -80,8 +84,8 @@ $app-dark-theme: mat.define-dark-theme((
 
 // It will be applay if you add it into body class
 .dark-theme {
-    $menu-label-background: rgba(0, 0, 0, 0.33);
     $textWhite:rgba(255, 255, 255, 0.8);
+    $menu-label-background: rgba(0, 0, 0, 0.33);
 
     @include mat.all-component-colors($app-dark-theme);
     @include body($app-dark-theme, $textWhite);
