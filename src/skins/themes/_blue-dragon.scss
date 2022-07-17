@@ -27,8 +27,6 @@ $app-blue-dragon: mat.define-light-theme((
   color: $textColor;
 }
 
-
-
 @mixin task-card($background, $textColor) {
   $input-color:  lightskyblue;
   $input-bgColor: #005773;
@@ -80,6 +78,7 @@ $app-blue-dragon: mat.define-light-theme((
   }
 }
 
+// selection input tag
 @mixin comboBox {
   .mat-select-panel {
     background-color: rgb(10, 80, 142);
@@ -92,6 +91,37 @@ $app-blue-dragon: mat.define-light-theme((
   // selected option
   .mat-selected {
     color: snow !important;
+  }
+}
+
+@mixin alert-message($theme) {
+  // Get the color config from the theme.
+  $color-config: mat.get-color-config($theme);
+
+  // Get the warn color palette from the color-config.
+  $warn-palette: map.get($color-config, "warn");
+  $primary-palette: map.get($color-config, "primary");
+
+  .alert-info {
+    color: mat.get-color-from-palette($primary-palette) !important;
+    background-color: mat.get-color-from-palette($primary-palette, A100) !important;
+    border-color: mat.get-color-from-palette($primary-palette) !important;
+  }
+
+  .alert-warning {
+    color: mat.get-color-from-palette($warn-palette) !important;
+    background-color: mat.get-color-from-palette($warn-palette, A100) !important;
+    border-color: mat.get-color-from-palette($warn-palette) !important;
+  }
+
+  .alert-error {
+    color: maroon !important;
+    background-color: rgba(255, 0, 0, 0.9) !important;
+    border-color: maroon !important;
+  }
+
+  .alert-success {
+    background-color: rgba(0, 255, 0, 0.88) !important;
   }
 }
 
@@ -111,4 +141,5 @@ $app-blue-dragon: mat.define-light-theme((
     @include menu.container($menu-label-background, $menu-hover-color,
                             $mneu-activated-color, $menu-bgColor);
     @include menu.button(rgb(101 175 214));
+    @include alert-message($app-blue-dragon);
 }
