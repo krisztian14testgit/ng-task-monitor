@@ -14,6 +14,12 @@
     width: 30%;
 }
 
+/* new-button style */
+.mat-raised-button {
+    color: inherit;
+    border: 1px solid snow;
+}
+
 .task-new > button {
     float: right;
     font-weight: bold;
