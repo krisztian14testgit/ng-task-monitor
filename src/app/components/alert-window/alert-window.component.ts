@@ -40,7 +40,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
         'error-words': ['failed', 'error'],
         'warning-words': ['warning', 'alert']
       },
-      alertTypeColors: ['alert-blue', 'alert-red', 'alert-green', 'alert-yellow'],
+      alertTypeColors: ['alert-info', 'alert-error', 'alert-success', 'alert-warning'],
       alertTypeLabels: ['Info', 'Error', 'Success', 'Warning'],
       defaultAlertType: AlertType.Info
     };
