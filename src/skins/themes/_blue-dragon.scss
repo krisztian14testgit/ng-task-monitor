@@ -2,7 +2,7 @@
 @use "@angular/material" as mat;
 @use "../components/menu" as menu;
 
-$app-blue-primary: mat.define-palette(mat.$deep-purple-palette, A700);
+$app-blue-primary: mat.define-palette(mat.$blue-palette, 900);
 $app-blue-accent: mat.define-palette(mat.$teal-palette, A200, A100, A400);
 $app-blue-warn: mat.define-palette(mat.$deep-orange-palette, 900);
 
@@ -77,9 +77,24 @@ $app-blue-dragon: mat.define-light-theme((
   }
 }
 
+@mixin comboBox {
+  .mat-select-panel {
+    background-color: rgb(10, 80, 142);
+  }
+
+  .mat-option {
+    color: aqua;
+  }
+
+  // selected option
+  .mat-selected {
+    color: snow !important;
+  }
+}
+
 .blue-dragon-theme {
     $blueText: darkblue;
-    $background: rgba(0, 186, 237, 0.786);
+    $background: rgba(0, 186, 237, 0.88);
     
     $menu-bgColor: #4dcef2eb;
     $menu-label-background: rgba(10, 38, 62, 0.45);
@@ -88,6 +103,7 @@ $app-blue-dragon: mat.define-light-theme((
     
     @include mat.all-component-themes($app-blue-dragon);
     @include body($app-blue-dragon, $blueText);
+    @include comboBox();
     @include task-card($background, $blueText);
     @include menu.container($menu-label-background, $menu-hover-color,
                             $mneu-activated-color, $menu-bgColor);
