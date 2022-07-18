@@ -33,7 +33,7 @@ describe('AlertWindowComponent', () => {
     expect(component).toBeTruthy();
     
     // default values of alertLabel, test: setLabelBy
-    expect(component.alertLabel.color).toBe('alert-blue');
+    expect(component.alertLabel.color).toBe('alert-info');
     expect(component.alertLabel.name).toBe('Info');
     expect(component.alertLabel.type).toBe(AlertType.Info);
     expect(component.isDisplayed).toBeFalse();
