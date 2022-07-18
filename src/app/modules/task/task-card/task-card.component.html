@@ -38,7 +38,7 @@
       <!-- card-title-input -->
       <div class="edit-card-title">
         <input matInput [formControl]="taskControls.title"
-              dirInputBorder [isValid]="taskControls.title.valid"
+              dirInputBorder [isValid]="taskControls.title.touched && taskControls.title.valid"
               type="text" placeholder="Task Title">
         <mat-error *ngIf="taskControls.title.invalid &&
                     (taskControls.title.dirty || taskControls.title.touched)">
@@ -58,7 +58,7 @@
       <div class="card-timer edit-card-timer">
         <label for="taskTime">Planed time(min):</label>
         <input matInput [formControl]="taskControls.timeMinutes"
-              dirInputBorder [isValid]="taskControls.timeMinutes.valid"
+              dirInputBorder [isValid]="taskControls.timeMinutes.touched && taskControls.timeMinutes.valid"
               id="taskTime" type="number" placeholder="in minutes">
         <mat-error *ngIf="taskControls.timeMinutes.invalid &&
                (taskControls.timeMinutes.dirty || taskControls.timeMinutes.touched)">
