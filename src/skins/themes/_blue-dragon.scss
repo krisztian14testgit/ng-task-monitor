@@ -127,11 +127,11 @@ $app-blue-dragon: mat.define-light-theme((
 
 .blue-dragon-theme {
     $blueText: darkblue;
-    $background: rgba(0, 186, 237, 0.88);
+    $background: rgba(0, 186, 237, 0.9);
     
     $menu-bgColor: #4dcef2eb;
     $menu-label-background: rgba(10, 38, 62, 0.45);
-    $menu-hover-color: rgb(8, 45, 77);
+    $menu-hover-color: rgb(8, 50, 92);
     $mneu-activated-color: darkblue;
     
     @include mat.all-component-themes($app-blue-dragon);
