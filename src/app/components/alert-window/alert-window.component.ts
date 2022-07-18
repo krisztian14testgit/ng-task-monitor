@@ -11,6 +11,15 @@ import { AlertLabel, AlertOptions, AlertType } from './alert.model';
 export class AlertWindowComponent implements OnInit, OnChanges {
   /** Contains the given/adjusted alert message. */
   @Input() public alertMsg = '';
+  /** 
+   * Not closing automatically the alert window after 3 sec.
+   * Default value is false. If it is true, alert window won't close itself.
+   * 
+   * Closed AlertTypes:
+   * * Success
+   * * Info
+   */
+  @Input() public notCloseAutomatically = false;
   /** It has name, color, type properties. */
   public alertLabel: AlertLabel;
   /** Alert message appears when it is true. */
@@ -31,7 +40,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
         'error-words': ['failed', 'error'],
         'warning-words': ['warning', 'alert']
       },
-      alertTypeColors: ['alert-blue', 'alert-red', 'alert-green', 'alert-yellow'],
+      alertTypeColors: ['alert-info', 'alert-error', 'alert-success', 'alert-warning'],
       alertTypeLabels: ['Info', 'Error', 'Success', 'Warning'],
       defaultAlertType: AlertType.Info
     };
@@ -110,7 +119,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
   private closeAutomatically(closeSec: number, closeTypes: AlertType[]): void {
     // clear previous timeout process.
     clearTimeout(this._timeoutRef);
-    if (closeTypes.includes(this.alertLabel.type)) {
+    if (!this.notCloseAutomatically && closeTypes.includes(this.alertLabel.type)) {
       this._timeoutRef = setTimeout(() => { this.onClose(); }, closeSec);
     }
     

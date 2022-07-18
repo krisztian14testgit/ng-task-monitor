@@ -1,0 +1,30 @@
+// The menu label, mouse hover and activated(visited link) colors are changale via the container.
+@mixin container($labelColor, $hoverColor, $activatedColor, $background: 'inherit') {
+    .mat-menu-content {
+      background: $background;
+    }
+  
+    .menu-label {
+      background-color: $labelColor;
+    }
+  
+    .mat-menu-item:hover {
+      // default color
+      color: inherit;
+      @if $hoverColor != '' {
+        color: $hoverColor;
+      }
+      
+    }
+  
+    .activated-route {
+      color: $activatedColor;
+      font-weight: bold;
+    }
+}
+
+@mixin button($background) {
+  app-menu-item > .mat-button {
+    background: $background;
+  }
+}

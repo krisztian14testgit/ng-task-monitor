@@ -1,0 +1,96 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+@use "../components/menu" as menu;
+@use "../components/form" as form;
+
+$app-dark-primary: mat.define-palette(mat.$yellow-palette);
+$app-dark-accent: mat.define-palette(mat.$amber-palette, A200, A100, A400);
+$app-dark-warn: mat.define-palette(mat.$deep-orange-palette);
+
+// define the black theme
+$app-dark-theme: mat.define-dark-theme((
+    color: (
+      // primary: the color that appears most frequently throughout your application
+      primary: $app-dark-primary,
+      // accent palette used to selectively highlight key parts of your UI
+      accent: $app-dark-accent,
+      // error, palette used for warnings and error states
+      warn: $app-dark-warn,
+    )
+));
+
+@mixin body($theme, $textColor) {
+    // Get the color config from the theme.
+    $color-config: mat.get-color-config($theme);
+
+    // Get the primary color palette from the color-config.
+    $primary-palette: map.get($color-config, "primary");
+    background: rgba(0, 0, 0, 0.85);
+    color: $textColor;
+}
+
+@mixin task-card($textColor) {
+  $input-color: $textColor;
+  $input-bgColor: black;
+
+  .task-container {
+    border-color: gold !important;
+  }
+
+  .mat-card {
+    color: $textColor;
+  }
+
+  .mat-card-title input {
+    @include form.input-field-color($input-bgColor, $input-color);
+  }
+
+  .mat-card-content {
+    textarea {
+      @include form.input-field-color($input-bgColor, $input-color);
+    }
+    
+
+    .edit-card-timer input {
+      @include form.input-field-color($input-bgColor, $input-color);
+    }
+  }
+
+  // status button
+  .mat-card-actions {
+    button {
+      color: lightblue;
+      border: 1px solid lightblue;
+    }
+  }
+
+  .task-card-highlight {
+    border-color: snow !important;
+  }
+}
+
+// alert message
+@mixin alert-message() {
+  .alert-info {
+    border-color: snow !important;
+  }
+
+  .alert-success {
+    $green: rgb(0, 128, 0);
+    color: $green !important;
+    border-color: $green !important;
+  }
+}
+
+// It will be applay if you add it into body class
+.dark-theme {
+    $textWhite:rgba(255, 255, 255, 0.8);
+    $menu-label-background: rgba(0, 0, 0, 0.33);
+
+    @include mat.all-component-colors($app-dark-theme);
+    @include body($app-dark-theme, $textWhite);
+    @include menu.container($menu-label-background, lightblue, darkgray);
+    @include task-card($textWhite);
+    @include alert-message();
+    // chart?
+}
