@@ -42,7 +42,7 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     this.createLocationFormValidation();
   }
 
-  /** Set the location paths by the location service which come from server. */
+  /** Sets the location paths by the location service which come from the server. */
   ngOnInit(): void {
     this._locationService$ = this.locationService.getLocationSetting()
     .subscribe((locSetting: LocationSetting) => {
@@ -59,7 +59,9 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   /**
    * It is an event function.
    * It is triggered by the enter keyword.
-   * Saving the task path or application app path. Depends on which is modified.
+   * 
+   * Saving the task or application app path. Depends on which one is modified.
+   * @event onEnter
    */
   @HostListener('window:keydown.enter', ['$event'])
   public onEnterSaving(): void {
@@ -86,7 +88,8 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   /**
    * This is an key-up event function.
    * It runs when the typing is occured.
-   * Running it after evey button is pressed.
+   * 
+   * Runs it by the every button is pressed.
    * Saving the typed folder path if it is valid.
    *  
    * @event keyup
@@ -95,7 +98,6 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
    */
   public onChangePath(keyLocation: string, formControlRef: FormControl): void {
     if (formControlRef.valid) {
-      // converting string to enum value, too slow
       // const locKey = LocationPath[keyLocation as keyof typeof LocationPath];
       let locKey = -1;
       if (keyLocation === 'TaskPath') {
@@ -113,7 +115,7 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Sending the adjusted locaiton path to the server.
+   * Sending the adjusted location path to the server.
    * @param keyLocation It is enum type, value can be LocationPath(AppSettingPath, TaskPath)
    */
   private saveLocationPath(keyLocation: LocationPath, formControlRef: FormControl): void {
