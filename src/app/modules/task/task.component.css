@@ -1,5 +1,6 @@
 .task-container {
     border: 1px solid red;
+    border-radius: 6px 6px;
     width: auto;
     height: auto;
 }
@@ -11,6 +12,12 @@
 .task-new > div {
     float: left;
     width: 30%;
+}
+
+/* new-button style */
+.mat-raised-button {
+    color: inherit;
+    border: 1px solid snow;
 }
 
 .task-new > button {

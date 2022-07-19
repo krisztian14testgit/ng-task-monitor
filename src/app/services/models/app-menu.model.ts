@@ -21,15 +21,15 @@ export class AppMenu {
           {linkKey: "linkUrl", title: "TaskTitle1"},
           {linkKey: "linkUrl", title: "TaskTitle2"}
         ],
-        Label2: [ <-- label ame
+        Label2: [ // <-- label name
           {linkKey: "linkUrl", title: "TaskTitle1"},
           {linkKey: "linkUrl", title: "TaskTitle2"}
         ]
       };
      *
      * @example // Without labels
-     * menuItemsWithLabel = {
-        Menu: [ // <-- 
+     * menuItemsWithNoLabel = {
+        Menu: [ // <-- label name, not displayed, as there is one key.
           {linkKey: "linkUrl", title: "TaskTitle1"},
           {linkKey: "linkUrl", title: "TaskTitle2"},
           ...

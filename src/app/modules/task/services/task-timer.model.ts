@@ -23,7 +23,7 @@ export enum TimerState {
      */
     static convertsToMilliSec(minutesAndSec: number): number {
         // exit condition
-        if (!minutesAndSec || minutesAndSec === 0) { return 0; }
+        if (!minutesAndSec || minutesAndSec <= 0) { return 0; }
         
         const sec = 60;
         const milliSec = 1000;

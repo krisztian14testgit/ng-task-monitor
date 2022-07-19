@@ -7,13 +7,17 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { AppRoutingModule } from './app-routing.module';
+import { MatRadioModule } from '@angular/material/radio';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
 import { MenuItemComponent } from './components/menu-item/menu-item.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { AlertWindowComponent } from './components/alert-window/alert-window.component';
+import { StyleThemeComponent } from './components/style-theme/style-theme.component';
+
 import { AlertMessageService } from './services/alert-message/alert-message.service';
+import { StyleManagerService } from './services/style-manager/style-manager.service';
 
 @NgModule({
   declarations: [
@@ -21,7 +25,8 @@ import { AlertMessageService } from './services/alert-message/alert-message.serv
     HeaderComponent,
     MenuItemComponent,
     PageNotFoundComponent,
-    AlertWindowComponent
+    AlertWindowComponent,
+    StyleThemeComponent
   ],
   imports: [
     BrowserModule,
@@ -31,10 +36,12 @@ import { AlertMessageService } from './services/alert-message/alert-message.serv
     /** Material modules */
     MatMenuModule,
     MatButtonModule,
-    MatGridListModule
+    MatGridListModule,
+    MatRadioModule,
   ],
   providers: [
-    AlertMessageService
+    AlertMessageService,
+    StyleManagerService
   ],
   bootstrap: [AppComponent]
 })

@@ -10,6 +10,7 @@
     <div *ngFor="let labelKey of menuLabelKeys">
       <div class="menu-label">{{labelKey}}</div>
       <hr> <!--line -->
+      <app-style-theme *ngIf="labelKey === 'Themes'"></app-style-theme>
       <!-- menu-items -->
       <a *ngFor="let menuItem of menuItems_dict[labelKey]" mat-menu-item
         [routerLink]="['/' + menuItem.linkKey]" routerLinkActive="activated-route">
