@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
@@ -12,7 +12,8 @@ import { AlertType } from 'src/app/components/alert-window/alert.model';
 @Component({
   selector: 'app-change-location',
   templateUrl: './change-location.component.html',
-  styleUrls: ['./change-location.component.css']
+  styleUrls: ['./change-location.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChangeLocationComponent implements OnInit, OnDestroy {
   /** Stores the form validation behaviour. */
