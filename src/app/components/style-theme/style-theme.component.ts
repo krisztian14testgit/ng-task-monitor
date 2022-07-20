@@ -43,7 +43,6 @@ export class StyleThemeComponent {
     this.selectedTheme = $event.value;
     if (this.selectedTheme) {
       this.changeTheme(this.selectedTheme);
-      console.log('body class=', document.body.className);
     }
   }
 
