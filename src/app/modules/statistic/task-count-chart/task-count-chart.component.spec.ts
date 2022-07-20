@@ -29,7 +29,7 @@ describe('TaskCountChartComponent', () => {
     expect(component['pieChartType']).toBe('pie');
     expect(component['pieChartOptions']).toBeDefined();
     expect(component['pieChartData']).toBeDefined();
-    expect(component['pieChartLabels'].length).toBe(2);
+    expect(component['_pieChartLabels'].length).toBe(2);
   });
 
   it('should make chart with creationDate is Today', () => {
@@ -40,7 +40,7 @@ describe('TaskCountChartComponent', () => {
     component.ngOnChanges();
     expect(component['filterByCreatedToday']).toHaveBeenCalled();
     expect(component.filteredTaskList.length).toBeGreaterThan(0);
-    expect(component['indexOfChartLabel']).toBe(0);
+    expect(component['_indexOfChartLabel']).toBe(0);
   });
 
   it('should make chart with weekly report', () => {
@@ -51,7 +51,7 @@ describe('TaskCountChartComponent', () => {
     component.ngOnChanges();
     expect(component['filterByCreatedToday']).not.toHaveBeenCalled();
     expect(component.filteredTaskList.length).toBeGreaterThan(0);
-    expect(component['indexOfChartLabel']).toBe(1);
+    expect(component['_indexOfChartLabel']).toBe(1);
   });
 
   it('should set pie-chart data(label, data props), showing daily report', () => {
@@ -63,9 +63,9 @@ describe('TaskCountChartComponent', () => {
     // chart data showing the daily report
     component.isShowedTodayDate = true;
     component.ngOnChanges(); // it will call the setPieChartData func
-    const labelIndex = component['indexOfChartLabel'];
+    const labelIndex = component['_indexOfChartLabel'];
     // chart datasets
-    expect(component.pieChartData.datasets[0].label).toBe(component['pieChartLabels'][labelIndex]);
+    expect(component.pieChartData.datasets[0].label).toBe(component['_pieChartLabels'][labelIndex]);
     expect(component.pieChartData.datasets[0].label?.includes('today')).toBeTrue();
     expect(component.pieChartData.datasets[0].data.length).toBeGreaterThan(0);
     // chart labels (x-axis)
@@ -81,9 +81,9 @@ describe('TaskCountChartComponent', () => {
     // chart data showing the weekly report
     component.isShowedTodayDate = false;
     component.ngOnChanges(); // it will call the setPieChartData func
-    const labelIndex = component['indexOfChartLabel'];
+    const labelIndex = component['_indexOfChartLabel'];
     // chart datasets
-    expect(component.pieChartData.datasets[0].label).toBe(component['pieChartLabels'][labelIndex]);
+    expect(component.pieChartData.datasets[0].label).toBe(component['_pieChartLabels'][labelIndex]);
     expect(component.pieChartData.datasets[0].label?.includes('weekly')).toBeTrue();
     expect(component.pieChartData.datasets[0].data.length).toBeGreaterThan(0);
     // chart labels (x-axis)
