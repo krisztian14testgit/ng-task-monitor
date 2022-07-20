@@ -4,7 +4,7 @@ import { TaskTimer, TimerState } from '../services/task-timer.model';
 import { TaskStatus } from '../services/task.model';
 
 /**
- * It is respansible the start countdown timer. Start counting.
+ * It is responsible the start countdown timer. Start counting.
  * 
  * Emits/handles status of the timer if it is over or interrupted.
  */
@@ -19,7 +19,7 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   /** The status label of the status. */
   @Input() public statusLabel = '';
   /** 
-   * It triggers when the timer start counting and it is over.
+   * It triggers when the timer start counting or it is over.
    * 
    * Timer states:
    * * Finsished
@@ -45,11 +45,11 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
    */
   public progessBarPercent = 0;
   /** Stores the interval Id of the setInterval function. */
-  private clockIntervalId!: NodeJS.Timeout;
+  private _clockIntervalId!: NodeJS.Timeout;
   /** Stores the started date which is the current Date of system clock. */
-  private timerStartedDate!: Date;
+  private _timerStartedDate!: Date;
   /** Preserves the original value of the timerInMilliesc(when we got) of the task. */
-  private preTimerInMillisec = 0;
+  private _preTimerInMillisec = 0;
 
   /** 
    * It runs when the task input is changed.
@@ -59,7 +59,7 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   ngOnChanges(changes : SimpleChanges): void {
     if (changes.timerInMinutes?.isFirstChange() && this.timerInMinutes > 0) {
       this.timerInMillisec = TaskTimer.convertsToMilliSec(this.timerInMinutes);
-      this.preTimerInMillisec = this.timerInMillisec;
+      this._preTimerInMillisec = this.timerInMillisec;
       
       // If timer is interrupted, it was inprogress, start timer again.
       if (this.statusLabel == TaskStatus[TaskStatus.Inprogress]) {
@@ -71,7 +71,7 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   /**
    * Stops the counterClock.
    * Destroys the setInvertal's id if it exists when the task timer disappears
-   * like the card is in edit mode.
+   * like the card edit mode is closed.
    */
   ngOnDestroy(): void {
     // The countdown timer is broken, save finished timer date by the emitter.
@@ -102,7 +102,7 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
     const milliSec = 1000;
     if (this.timerInMillisec > 0) {
       this.isTimerStarted = true;
-      this.clockIntervalId = setInterval(() => {
+      this._clockIntervalId = setInterval(() => {
         // exit condition: counterClock is over!
         if (this.timerInMillisec <= 0) {
           this.stopCounterClock();
@@ -119,7 +119,7 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
    * Stops the counter clock counting.
    */
   private stopCounterClock() {
-    clearInterval(this.clockIntervalId);
+    clearInterval(this._clockIntervalId);
     this.isTimerFinished = true;
     this.timerInMillisec = 0;
   }
@@ -138,10 +138,10 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   private emitsTimerState(mode: TimerState) {
     let systemClock = new Date();
     if (mode === TimerState.Started) {
-      this.timerStartedDate = systemClock;
+      this._timerStartedDate = systemClock;
     } else if (mode === TimerState.Interrupted) {
       // timerFinished date(when will be done) =  timerStarted date + rest milliSec
-      const startedDate_millisec = this.timerStartedDate.getTime();
+      const startedDate_millisec = this._timerStartedDate.getTime();
       const finishedDate_millisec = startedDate_millisec + this.timerInMillisec;
       // future date when task timer is over.
       systemClock = new Date(finishedDate_millisec);
@@ -160,9 +160,8 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
    */
   private calculateProgressBarValue(timerInMillisec: number): number {
     const wholePercentage = 100;
-    const restPercentage = timerInMillisec / this.preTimerInMillisec * 100;
+    const restPercentage = timerInMillisec / this._preTimerInMillisec * 100;
     // 100% - restTime% = percentage of the spent time
     return Math.round(wholePercentage - restPercentage);
   }
-
 }

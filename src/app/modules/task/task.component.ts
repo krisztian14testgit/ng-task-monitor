@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./task.component.css']
 })
 export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
-  /** Stores the reference of the tasks. */
+  /** Stores task items. */
   public taskList: Task[] = [];
   /** Statuses of the Task. */
   public readonly taksStatusList: string[] = [];
@@ -38,6 +38,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   public isLockedTasks = false;
   public readonly MAX_LIMIT_TASKS = 10;
+  /** Stores the reference of task stream. */
   private _taskSubscription!: Subscription;
   /**
    * Stores the all original task items which got from the service.
@@ -59,7 +60,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getAllTask();
   }
 
-  /** StatusList is filled in for the status filter. */
+  /** StatusList is filled in before the view rendering. */
   ngAfterViewInit(): void {
     this.fillInStatusSelection();
   }
@@ -169,13 +170,14 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       this.timerWorkerService.calculateTaskExpirationTime(this._preservedTaskList)
       .catch((err: Error) => console.error(err));
       
-      // Spleeping main thread a little the sub-thread timer calculation runs well.
+      // Waiting main thread a little the sub-thread timer calculation to be executed.
+      const delayMilliSec = 500;
       setTimeout(() => {
         this.taskList = this.filterTasksByDate(TaskTime.Today);
         // filters tasks by the selected status
         this.selectedStatus = this.getStatusFromUrl();
         this.onFilterStatus();
-      }, 500);
+      }, delayMilliSec);
     });
   }
 
