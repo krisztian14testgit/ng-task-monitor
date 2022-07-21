@@ -18,6 +18,7 @@ import { AlertType } from 'src/app/components/alert-window/alert.model';
 export class ChangeLocationComponent implements OnInit, OnDestroy {
   /** Stores the form validation behaviour. */
   private _locationForm!: FormGroup;
+  /** The subcription of the location service. */
   private _locationService$!: Subscription;
   /**
    * The represent the saving process state.
