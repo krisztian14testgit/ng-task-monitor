@@ -43,11 +43,11 @@ ___
 ## Angular Performance Techniques
 * Compilation process: AoT - Ahead of Time
 * Change Detection Strategy: OnPush
+* Avoiding computation in template(html) files
+* trackBy - for loop
 * Using pure pipes, not filtering
 * Avoid memory leak - ngOnDestroy: unsubscribe from Observables stream
 * Lazy loading - modules
-* trackBy - for loop
-* Avoiding computation in template(html) files
 * sub-thread: Web-worker
 
 Link here: https://www.xenonstack.com/blog/performance-optimization-in-angular
