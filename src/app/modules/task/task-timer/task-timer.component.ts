@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 
-import { TaskTimer, TimerState } from '../services/task-timer.model';
+import { TaskTimer, TimerState } from '../services/task-timer/task-timer.model';
 import { TaskStatus } from '../services/task.model';
 
 /**

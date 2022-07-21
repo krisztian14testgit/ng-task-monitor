@@ -5,7 +5,7 @@ import { exhaustMap } from 'rxjs/operators';
 import { MyValidator } from 'src/app/validators/my-validator';
 
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
-import { TimerState } from '../services/task-timer.model';
+import { TimerState } from '../services/task-timer/task-timer.model';
 import { Task, TaskStatus } from '../services/task.model';
 import { TaskService } from '../services/task.service';
 

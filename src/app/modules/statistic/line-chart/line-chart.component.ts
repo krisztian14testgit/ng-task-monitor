@@ -2,7 +2,7 @@ import { WeekDay } from '@angular/common';
 import { Component, Input, OnChanges } from '@angular/core';
 import { ChartType, ChartConfiguration, ChartData } from 'chart.js';
 
-import { TaskDate } from '../../task/services/task-timer.model';
+import { TaskDate } from '../../task/services/task-timer/task-timer.model';
 import { Task } from '../../task/services/task.model';
 import { LineChartReport } from '../services/chart.model';
 
