@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 import { MatSelectChange } from '@angular/material/select';
 
 import { TaskService } from './services/task.service';
@@ -7,7 +8,6 @@ import { Task, TaskStatus, TaskTime } from './services/task.model';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { AlertType } from 'src/app/components/alert-window/alert.model';
 import { CountdownTimerService } from 'src/app/services/countdown-timer/countdown-timer.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-task',
