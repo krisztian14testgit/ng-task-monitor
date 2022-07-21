@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { TaskService } from '../task/services/task.service';
 import { Task } from '../task/services/task.model';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-statistic',
@@ -10,7 +11,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./statistic.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class StatisticComponent implements OnInit {
+export class StatisticComponent implements OnInit, OnDestroy {
   /** Contains the task instance from the task Service. */
   public taskList: Task[] = [];
   /**
@@ -32,6 +33,8 @@ export class StatisticComponent implements OnInit {
   private readonly _dailyReportCharts: string[];
   /** Contains the weekly report selection items. */
   private readonly _weeklyReportCharts: string[];
+  /** The subcription of the task service. */
+  private _taskService$!: Subscription;
 
   constructor(private readonly taskService: TaskService,
               private readonly router: Router) {
@@ -45,9 +48,14 @@ export class StatisticComponent implements OnInit {
     this.getAllTasks();
   }
 
+  /** Unsubscription from the task data streams */
+  ngOnDestroy(): void {
+    this._taskService$.unsubscribe();
+  }
+
   private getAllTasks(): void {
-    this.taskService.getAll()
-    .subscribe((tasks: Task[]) => this.taskList = tasks);
+    this._taskService$ = this.taskService.getAll()
+      .subscribe((tasks: Task[]) => this.taskList = tasks);
   }
 
   /**
