@@ -19,12 +19,16 @@ $app-blue-dragon: mat.define-light-theme((
     )
 ));
 
-@mixin body($theme, $textColor) {
-  background: rgba(0, 55, 125, 0.89);
+@mixin body($componentBackground, $textColor) {
+  background: rgba(0, 55, 125, 0.89);;
   background-image: url('../../assets/pictures/blueDragon.jpg');
   background-repeat: repeat-y;
   background-size: cover;
   color: $textColor;
+
+  .header-title {
+    background: $componentBackground !important;
+  }
 }
 
 @mixin task-card($background, $textColor) {
@@ -127,7 +131,7 @@ $app-blue-dragon: mat.define-light-theme((
 
 .blue-dragon-theme {
     $blueText: darkblue;
-    $background: rgba(0, 186, 237, 0.9);
+    $compBackground: rgba(0, 186, 237, 0.9);
     
     $menu-bgColor: #4dcef2eb;
     $menu-label-background: rgba(10, 38, 62, 0.45);
@@ -135,9 +139,9 @@ $app-blue-dragon: mat.define-light-theme((
     $mneu-activated-color: darkblue;
     
     @include mat.all-component-themes($app-blue-dragon);
-    @include body($app-blue-dragon, $blueText);
+    @include body($compBackground, $blueText);
     @include comboBox();
-    @include task-card($background, $blueText);
+    @include task-card($compBackground, $blueText);
     @include menu.container($menu-label-background, $menu-hover-color,
                             $mneu-activated-color, $menu-bgColor);
     @include menu.button(rgb(101 175 214));
