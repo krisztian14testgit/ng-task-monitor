@@ -62,7 +62,6 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
     this.taskTimerService.onChangeState()
       .subscribe(([timerState, _]: [string, Date]) => {
         if (timerState === 'stopAll') {
-          console.log('stopAll timer');
           // Interrupt the all counterdown clock
           this.emitsTimerState(TimerState.Interrupted);
         }
