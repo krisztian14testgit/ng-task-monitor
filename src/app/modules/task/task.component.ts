@@ -8,6 +8,7 @@ import { Task, TaskStatus, TaskTime } from './services/task.model';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { AlertType } from 'src/app/components/alert-window/alert.model';
 import { CountdownTimerService } from 'src/app/services/countdown-timer/countdown-timer.service';
+import { TaskTimerService } from './services/task-timer/task-timer.service';
 
 @Component({
   selector: 'app-task',
@@ -49,6 +50,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   private _filteredTaskListByDate: Task[] = [];
 
   constructor(private readonly taskService: TaskService,
+              private readonly taskTimerService: TaskTimerService,
               private readonly alertMessageService: AlertMessageService,
               private readonly timerWorkerService: CountdownTimerService,
               private readonly router: Router) {
@@ -84,9 +86,23 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       const statusKey = this.selectedStatus.toUpperCaseFirstChar();
       // convert string to enum type
       const statusValue = TaskStatus[statusKey as keyof typeof TaskStatus];
-      this.taskList = this._filteredTaskListByDate.filter((task:Task) => task.status === statusValue);
+
+      // If the task status is Completed or Start, stop all counterdown timers.
+      if (statusValue === TaskStatus.Completed || statusValue === TaskStatus.Start) {
+        this.taskTimerService.stopAllTimer();
+      } else {
+        // If it is InProgess, calculate the rest time of all tasks again.
+        this.timerWorkerService.calculateTaskExpirationTime(this._filteredTaskListByDate);
+      }
+      
+      // Delay the main thread because of the background thread has time for the calculation.
+      const delayedMilliSec = 500;
+      setTimeout(() => {
+        // filters task items by the status
+        this.taskList = this._filteredTaskListByDate.filter((task:Task) => task.status === statusValue);
+      }, delayedMilliSec);
     } else {
-      // not filtering, contains all task statuses
+      // not filtering by status, all task will display
       this.taskList = this._filteredTaskListByDate;
     }
   }

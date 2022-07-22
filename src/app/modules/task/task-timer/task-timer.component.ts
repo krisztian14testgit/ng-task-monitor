@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 
 import { TaskTimer, TimerState } from '../services/task-timer/task-timer.model';
+import { TaskTimerService } from '../services/task-timer/task-timer.service';
 import { TaskStatus } from '../services/task.model';
 
 /**
@@ -13,7 +14,7 @@ import { TaskStatus } from '../services/task.model';
   templateUrl: './task-timer.component.html',
   styleUrls: ['./task-timer.component.css']
 })
-export class TaskTimerComponent implements OnChanges, OnDestroy {
+export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
   /** The Task minutes of time. */
   @Input() public timerInMinutes = 0;
   /** The status label of the status. */
@@ -50,6 +51,23 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
   private _timerStartedDate!: Date;
   /** Preserves the original value of the timerInMilliesc(when we got) of the task. */
   private _preTimerInMillisec = 0;
+
+  constructor(private readonly taskTimerService: TaskTimerService) { }
+
+  /** 
+   * Subscribes on the taskTimer data stream to get emitted timer state.
+   * If the timer state is 'stopAll', it will terminate all task timer counting.
+   */
+  ngOnInit(): void {
+    this.taskTimerService.onChangeState()
+      .subscribe(([timerState, _]: [string, Date]) => {
+        if (timerState === 'stopAll') {
+          console.log('stopAll timer');
+          // Interrupt the all counterdown clock
+          this.emitsTimerState(TimerState.Interrupted);
+        }
+      });
+  }
 
   /** 
    * It runs when the task input is changed.
@@ -137,9 +155,8 @@ export class TaskTimerComponent implements OnChanges, OnDestroy {
    */
   private emitsTimerState(mode: TimerState) {
     let systemClock = new Date();
-    if (mode === TimerState.Started) {
-      this._timerStartedDate = systemClock;
-    } else if (mode === TimerState.Interrupted) {
+    this._timerStartedDate = systemClock;
+    if (mode === TimerState.Interrupted) {
       // timerFinished date(when will be done) =  timerStarted date + rest milliSec
       const startedDate_millisec = this._timerStartedDate.getTime();
       const finishedDate_millisec = startedDate_millisec + this.timerInMillisec;
