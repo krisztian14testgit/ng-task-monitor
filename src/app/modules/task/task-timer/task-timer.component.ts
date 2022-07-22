@@ -15,6 +15,7 @@ import { TaskStatus } from '../services/task.model';
   styleUrls: ['./task-timer.component.css']
 })
 export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() public taskId = '';
   /** The Task minutes of time. */
   @Input() public timerInMinutes = 0;
   /** The status label of the status. */
@@ -60,8 +61,8 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
    */
   ngOnInit(): void {
     this.taskTimerService.onChangeState()
-      .subscribe(([timerState, _]: [string, Date]) => {
-        if (timerState === 'stopAll') {
+      .subscribe(([timerState, interruptedTaskIds]: [number, string[]]) => {
+        if (timerState === TimerState.Interrupted && interruptedTaskIds.includes(this.taskId)) {
           // Interrupt the all counterdown clock
           this.emitsTimerState(TimerState.Interrupted);
         }

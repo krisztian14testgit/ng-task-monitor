@@ -19,7 +19,8 @@
     <mat-divider inset></mat-divider>
     <mat-card-actions>
       <div>
-        <app-task-timer [timerInMinutes]="task.timeMinutes"
+        <app-task-timer [taskId]="task.id"
+                        [timerInMinutes]="task.timeMinutes"
                         [statusLabel]="statusLabel"
                         (timerStatusEmitter)="onTimerStatus($event)"></app-task-timer>
       </div>

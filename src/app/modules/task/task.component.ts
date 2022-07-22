@@ -9,6 +9,7 @@ import { AlertMessageService } from 'src/app/services/alert-message/alert-messag
 import { AlertType } from 'src/app/components/alert-window/alert.model';
 import { CountdownTimerService } from 'src/app/services/countdown-timer/countdown-timer.service';
 import { TaskTimerService } from './services/task-timer/task-timer.service';
+import { TimerState } from './services/task-timer/task-timer.model';
 
 @Component({
   selector: 'app-task',
@@ -89,7 +90,11 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // If the task status is Completed or Start, stop all counterdown timers.
       if (statusValue === TaskStatus.Completed || statusValue === TaskStatus.Start) {
-        this.taskTimerService.stopAllTimer();
+        // Collects those task' ids which their status is InProgress, stop them
+        const inProgressTasks = this._filteredTaskListByDate
+          .filter((task:Task) => task.status === TaskStatus.Inprogress);
+        const taskIds = inProgressTasks.map(task => task.id);
+        this.taskTimerService.emitState(TimerState.Interrupted, taskIds);
       } else {
         // If it is InProgess, calculate the rest time of all tasks again.
         this.timerWorkerService.calculateTaskExpirationTime(this._filteredTaskListByDate);
