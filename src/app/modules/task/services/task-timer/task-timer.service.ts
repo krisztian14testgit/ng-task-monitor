@@ -12,61 +12,45 @@ import { TimerState } from './task-timer.model';
  * * Finsished
  * * Started
  * * Interrupted
- * * stopAll
  */
 @Injectable()
 export class TaskTimerService {
-  private _timerState$ = new BehaviorSubject<[string, Date]>(['', new Date()]);
+  private _timerState$: BehaviorSubject<[number, string[]]>;
+
+  constructor() {
+    const initialTimerState: [number, string[]] = [-1, [] ];
+    this._timerState$  = new BehaviorSubject<[number, string[]]>(initialTimerState);
+  }
 
   /**
-   * Emits the timer state as string
-   * and eventDate of the counterdown timer in tuple.
+   * Emits the given timer state and taskIds array.
    * 
-   * The eventDate: when timer is started, over or interrupted.
-   * @property
-   * The interruptedMilliSec param: should be set if you emits the 'interrupted' state.
+   * If you emit interruption of the timer, you can collect those tasks which are inprogress status.
+   * The app-task-timer component will close the inProgress tasks and stops the their timer counting.
    * 
    * The timer states:
    * * 0: Finsished
    * * 1: Started
    * * 2: Interrupted
    * @param timerState It is can be 0, 1, 2.
-   * @param interruptedMillisec The milliSec of the counterDown timer. Optional parameter, default: 0.
+   * @param taskIds Task id array.
    */
-   public emitState(timerState: TimerState, interruptedMillisec = 0): void {
-    let systemDate = new Date();
-    if (timerState === TimerState.Interrupted) {
-      // timerFinished date(when will be done) =  timerStarted date + rest milliSec
-      const startedDate_millisec = systemDate.getTime();
-      const finishedDate_millisec = startedDate_millisec + interruptedMillisec;
-      // future date when task timer is over.
-      systemDate = new Date(finishedDate_millisec);
+   public emitState(timerState: TimerState, taskIds: string[]): void {
+    if (timerState > -1 && timerState < Object.values(TimerState).length) {
+      this._timerState$.next([timerState, taskIds]);
     }
-    
-    const timerStatusName = TimerState[timerState];
-    this._timerState$.next([timerStatusName, systemDate]);
   }
 
   /**
-   * Emits the 'stopAll' timer state with the current Date time in tuple.
-   * * 0 => 'stopAll'
-   * * 1 => current date.
-   */
-  public stopAllTimer(): void {
-    const currentDate = new Date();
-    this._timerState$.next(['stopAll', currentDate]);
-  }
-
-  /**
-   * Gets the emitted tuple construction of the timer state
-   * if the component subscribes on it.
+   * Gets the emitted tuple construction
+   * if the components subscribes on it.
    * 
-   * Timer state tuple has two values:
-   * * 0 => state name (Finished, Started, Interrupted)
-   * * 1 => started/interrupted date of the timer
-   * @returns tuple[string, date]
+   * Timer tuple construction has two values:
+   * * 0 => timerState (Finished, Started, Interrupted)
+   * * 1 => task ids in array
+   * @returns tuple[number, string[]]
    */
-  public onChangeState(): Observable<[string, Date]> {
+  public onChangeState(): Observable<[number, string[]]> {
     return this._timerState$.pipe(tuple => tuple);
   }
 }
