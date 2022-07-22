@@ -23,10 +23,11 @@ export class TaskTimerService {
   }
 
   /**
-   * Emits the given timer state and taskIds array.
+   * Emits the given timer state and task ids array.
    * 
    * If you emit interruption of the timer, you can collect those tasks which are inprogress status.
-   * The app-task-timer component will close the inProgress tasks and stops the their timer counting.
+   * The app-task-timer component will close the inProgress tasks and stops the their timer counting 
+   * by the given ids.
    * 
    * The timer states:
    * * 0: Finsished
