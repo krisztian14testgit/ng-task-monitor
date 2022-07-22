@@ -6,6 +6,7 @@ import { AlertMessageService } from 'src/app/services/alert-message/alert-messag
 import { CountdownTimerService } from 'src/app/services/countdown-timer/countdown-timer.service';
 import { MockCountdownTimerService } from 'src/app/tests/mock-services/mock-countdown-timer.service';
 import { MockTaskService } from 'src/app/tests/mock-services/mock-task.service';
+import { TaskTimerService } from './services/task-timer/task-timer.service';
 import { TaskService } from './services/task.service';
 
 import { TaskComponent } from './task.component';
@@ -21,7 +22,8 @@ describe('TaskComponent', () => {
       providers: [
         { provide: TaskService, useClass: MockTaskService },
         { provide: CountdownTimerService, useClass: MockCountdownTimerService },
-        { provide: AlertMessageService }
+        { provide: AlertMessageService },
+        { provide: TaskTimerService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })

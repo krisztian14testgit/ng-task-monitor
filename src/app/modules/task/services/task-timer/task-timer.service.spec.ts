@@ -6,7 +6,9 @@ describe('TaskTimerService', () => {
   let service: TaskTimerService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [ TaskTimerService ]
+    });
     service = TestBed.inject(TaskTimerService);
   });
 

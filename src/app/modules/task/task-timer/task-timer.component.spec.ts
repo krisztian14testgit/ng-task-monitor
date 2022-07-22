@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TaskTimerComponent } from './task-timer.component';
+import { TaskTimerService } from '../services/task-timer/task-timer.service';
 
 describe('TaskTimerComponent', () => {
   let component: TaskTimerComponent;
@@ -8,7 +9,10 @@ describe('TaskTimerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TaskTimerComponent ]
+      declarations: [ TaskTimerComponent ],
+      providers: [
+        { provide: TaskTimerService }
+      ]
     })
     .compileComponents();
   });
