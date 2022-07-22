@@ -138,7 +138,7 @@ $app-blue-dragon: mat.define-light-theme((
     $menu-hover-color: rgb(8, 50, 92);
     $mneu-activated-color: darkblue;
     
-    @include mat.all-component-themes($app-blue-dragon);
+    @include mat.all-component-colors($app-blue-dragon);
     @include body($compBackground, $blueText);
     @include comboBox();
     @include task-card($compBackground, $blueText);
