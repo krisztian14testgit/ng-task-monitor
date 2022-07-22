@@ -15,6 +15,7 @@ import { TimerState } from './task-timer.model';
  */
 @Injectable()
 export class TaskTimerService {
+  /** This subject emits the last updated tuple value. */
   private _timerState$: BehaviorSubject<[number, string[]]>;
 
   constructor() {
@@ -37,8 +38,11 @@ export class TaskTimerService {
    * @param taskIds Task id array.
    */
    public emitState(timerState: TimerState, taskIds: string[]): void {
-    if (timerState > -1 && timerState < Object.values(TimerState).length) {
+    if (timerState && timerState > -1 && timerState < Object.values(TimerState).length
+        && taskIds instanceof Array) {
       this._timerState$.next([timerState, taskIds]);
+    } else {
+      this._timerState$.next([ -1, [] ]);
     }
   }
 
