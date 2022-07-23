@@ -5,7 +5,7 @@ import { exhaustMap } from 'rxjs/operators';
 import { MyValidator } from 'src/app/validators/my-validator';
 
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
-import { TimerState } from '../services/task-timer.model';
+import { TimerState } from '../services/task-timer/task-timer.model';
 import { Task, TaskStatus } from '../services/task.model';
 import { TaskService } from '../services/task.service';
 
@@ -15,11 +15,11 @@ import { TaskService } from '../services/task.service';
   styleUrls: ['./task-card.component.css']
 })
 export class TaskCardComponent implements OnChanges, AfterViewInit {
-  /** The current task reference which was given. */
+  /** The current task reference which is given. */
   @Input() public task: Task = new Task();
   /** 
    * The switcher of the Task card. 
-   * If it is true not display the 'edit' button of the card.
+   * If it is true, not display the 'edit' button of the card.
    */
   @Input() public isReadonly = false;
   @Output() public readonly newTaskCreationFailed: EventEmitter<string> = new EventEmitter();
@@ -32,12 +32,12 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   /** True: The card is selected, otherwise false. */
   public isSelected = false;
   /** 
-   * Readonly prop: in minutes: 1439 => 24h * 59min -minValue(1)  => 23:59:00 
+   * Readonly prop: in minutes: 1439 => 24h * 60min -minValue(1)  => 23:59:00 
    * @readonly
    */
   public readonly TASK_MAX_MINUTES = Task.MAX_MINUTES -1;
   /** 
-   * Stores the references of the formControls of the reactive form.
+   * Stores the references of the formControls of the reactive form by the prop name.
    * It is helping construction to get current formControl form the Formgroup.
    */
   public readonly taskControls: {[prop: string]: FormControl };
@@ -92,9 +92,9 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   }
 
   /**
-   * @event Click event.
    * It runs when the user click on the card.
    * Display the 'edit' button.
+   * @event Click
    */
   public onClickMatCard(): void {
     this.selectedTaskId = this.task.id;
@@ -102,13 +102,13 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   }
 
   /**
-   * @event Saving event.
    * This an event function.
    * It runs when the save button is clicked on.
    * 
    * Saving the task card.
    * @todo
    * If the task card is modified then the status of task will be Start again.
+   * @event Click
    */
   public onSaveCard(): void {
     this.updateTaskStatus(TaskStatus.Start);
@@ -116,11 +116,11 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   }
 
   /**
-   * @event TimeStatus Changes:
    * It runs when counterdown timer emits the status(started, finished, inprogress).
    * 
    * Updates the task status and timerDate properties after saving task instance.
    * @param timerTuple$ Stores the stateName and occuredDate of timer.
+   * @event Change
    */
   public onTimerStatus(timerTuple$: [string, Date]): void {
     const [timerStateName, timerDate] = timerTuple$;
@@ -131,12 +131,13 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   }
 
   /**
-   * @event Click event function.
+   * This is a click event function.
    * It runs when the user clicks on the 'edit'/'close' button on the card.
    * 
    * If the button is 'edit' then it will be 'colse' and after reverse.
    * * isEditable: true --> 'close'
-   * * isEditabée: false --> 'edit'
+   * * isEditable: false --> 'edit'
+   * @event Click
    */
   public onEdit_colseCard(): void {
     this.isEditable = !this.isEditable;
@@ -147,7 +148,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
       this.newTaskCreationFailed.next(this.task.id);
     }
     
-    // it is closed, reset task values to initial
+    // it is closed, reset task values to initial.
     if (!this.isEditable) {
       this.taskForm.reset(this._defaultFormValues);
     }
@@ -206,7 +207,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * Updates the status of the task by the given timerState.
    * 
    * @description
-   * Task status will be changed by timer state
+   * Task status will be changed by timer state:
    * * timer Started(1)     => task status: inProgress
    * * timer Interrupted(2) => task status: inProgress
    * * timer Finished(0)    => task status: Completed
@@ -214,7 +215,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    */
   private updateTaskStatusBy(timerStateName: string): void {
     this.isReadonly = false;
-    // converts enum string to enum value
+    // converts string to enum value
     const timerState = TimerState[timerStateName as keyof typeof TimerState];
     let taskStatusValue = TaskStatus.Completed;
     if (timerState > 0) {
@@ -228,7 +229,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   /**
    * Updates the timerStartedDate or timerFinishedDate of task by the given timerState value.
    * 
-   * If TimerState.Interrupted then timerFinishedDate will get that date when interrupted event is occured.
+   * If TimerState.Interrupted then timerFinishedDate will get that date when the interrupted event is occurred.
    * @param timerStateName It can be: Started, Finished, Inprogress.
    * @param timerDate That date of the timer when it is started, finished or interrupted!
    */
@@ -247,7 +248,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
 
   /**
    * Preserves the intital values of the given Task.
-   * @param task Reference of the Task
+   * @param task Reference of the Task.
    */
   private setDefaulFormValuesBy(task: Task): void {
     this._defaultFormValues['title'] = task.title;

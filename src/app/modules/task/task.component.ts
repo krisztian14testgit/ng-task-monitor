@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 import { MatSelectChange } from '@angular/material/select';
 
 import { TaskService } from './services/task.service';
@@ -7,7 +8,8 @@ import { Task, TaskStatus, TaskTime } from './services/task.model';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { AlertType } from 'src/app/components/alert-window/alert.model';
 import { CountdownTimerService } from 'src/app/services/countdown-timer/countdown-timer.service';
-import { Router } from '@angular/router';
+import { TaskTimerService } from './services/task-timer/task-timer.service';
+import { TimerState } from './services/task-timer/task-timer.model';
 
 @Component({
   selector: 'app-task',
@@ -15,7 +17,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./task.component.css']
 })
 export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
-  /** Stores the reference of the tasks. */
+  /** Stores task items. */
   public taskList: Task[] = [];
   /** Statuses of the Task. */
   public readonly taksStatusList: string[] = [];
@@ -38,6 +40,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   public isLockedTasks = false;
   public readonly MAX_LIMIT_TASKS = 10;
+  /** Stores the reference of task stream. */
   private _taskSubscription!: Subscription;
   /**
    * Stores the all original task items which got from the service.
@@ -48,6 +51,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   private _filteredTaskListByDate: Task[] = [];
 
   constructor(private readonly taskService: TaskService,
+              private readonly taskTimerService: TaskTimerService,
               private readonly alertMessageService: AlertMessageService,
               private readonly timerWorkerService: CountdownTimerService,
               private readonly router: Router) {
@@ -59,7 +63,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getAllTask();
   }
 
-  /** StatusList is filled in for the status filter. */
+  /** StatusList is filled in before the view rendering. */
   ngAfterViewInit(): void {
     this.fillInStatusSelection();
   }
@@ -83,9 +87,27 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       const statusKey = this.selectedStatus.toUpperCaseFirstChar();
       // convert string to enum type
       const statusValue = TaskStatus[statusKey as keyof typeof TaskStatus];
-      this.taskList = this._filteredTaskListByDate.filter((task:Task) => task.status === statusValue);
+
+      // If the task status is Completed or Start, stop all counterdown timers.
+      if (statusValue === TaskStatus.Completed || statusValue === TaskStatus.Start) {
+        // Collects those task' ids which their status is InProgress, stop them
+        const inProgressTasks = this._filteredTaskListByDate
+          .filter((task:Task) => task.status === TaskStatus.Inprogress);
+        const taskIds = inProgressTasks.map(task => task.id);
+        this.taskTimerService.emitState(TimerState.Interrupted, taskIds);
+      } else {
+        // If it is InProgess, calculate the rest time of all tasks again.
+        this.timerWorkerService.calculateTaskExpirationTime(this._filteredTaskListByDate);
+      }
+      
+      // Delay the main thread because of the background thread has time for the calculation.
+      const delayedMilliSec = 500;
+      setTimeout(() => {
+        // filters task items by the status
+        this.taskList = this._filteredTaskListByDate.filter((task:Task) => task.status === statusValue);
+      }, delayedMilliSec);
     } else {
-      // not filtering, contains all task statuses
+      // not filtering by status, all task will display
       this.taskList = this._filteredTaskListByDate;
     }
   }
@@ -169,13 +191,14 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       this.timerWorkerService.calculateTaskExpirationTime(this._preservedTaskList)
       .catch((err: Error) => console.error(err));
       
-      // Spleeping main thread a little the sub-thread timer calculation runs well.
+      // Waiting main thread a little the sub-thread timer calculation to be executed.
+      const delayMilliSec = 500;
       setTimeout(() => {
         this.taskList = this.filterTasksByDate(TaskTime.Today);
         // filters tasks by the selected status
         this.selectedStatus = this.getStatusFromUrl();
         this.onFilterStatus();
-      }, 500);
+      }, delayMilliSec);
     });
   }
 

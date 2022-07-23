@@ -17,6 +17,7 @@ import { TaskTimerComponent } from './task-timer/task-timer.component';
 import { CardHighlightDirective } from 'src/app/directives/card-highlight/card-highlight.directive';
 import { InputBorderDirective } from 'src/app/directives/input-border/input-border.directive';
 import { CountdownTimerService } from 'src/app/services/countdown-timer/countdown-timer.service';
+import { TaskTimerService } from './services/task-timer/task-timer.service';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { CountdownTimerService } from 'src/app/services/countdown-timer/countdow
   ],
   providers: [
     TaskService,
+    TaskTimerService,
     CountdownTimerService
   ]
 })

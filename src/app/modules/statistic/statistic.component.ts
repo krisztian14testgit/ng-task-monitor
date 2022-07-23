@@ -1,16 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { TaskService } from '../task/services/task.service';
 import { Task } from '../task/services/task.model';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-statistic',
   templateUrl: './statistic.component.html',
-  styleUrls: ['./statistic.component.css']
+  styleUrls: ['./statistic.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class StatisticComponent implements OnInit {
-  /** Contains the task instances from the task Service. */
+export class StatisticComponent implements OnInit, OnDestroy {
+  /** Contains the task instance from the task Service. */
   public taskList: Task[] = [];
   /**
    * This a switcher of the report. 
@@ -28,14 +30,16 @@ export class StatisticComponent implements OnInit {
   // showing count of the completed Tasks in daily, and weekly
   public selectedChartType = 0;
   /** Contains the daily report selection items. */
-  private readonly dailyReportCharts: string[];
+  private readonly _dailyReportCharts: string[];
   /** Contains the weekly report selection items. */
-  private readonly weeklyReportCharts: string[];
+  private readonly _weeklyReportCharts: string[];
+  /** The subcription of the task service. */
+  private _taskService$!: Subscription;
 
   constructor(private readonly taskService: TaskService,
               private readonly router: Router) {
-    this.dailyReportCharts = ['Task status counts'];
-    this.weeklyReportCharts = ['Task Status counts', 'Completed tasks in week', 'Spent time on tasks'];
+    this._dailyReportCharts = ['Task status counts'];
+    this._weeklyReportCharts = ['Task Status counts', 'Completed tasks in week', 'Spent time on tasks'];
   }
 
   /** Gets all tasks from the service. */
@@ -44,9 +48,14 @@ export class StatisticComponent implements OnInit {
     this.getAllTasks();
   }
 
+  /** Unsubscription from the task data streams */
+  ngOnDestroy(): void {
+    this._taskService$.unsubscribe();
+  }
+
   private getAllTasks(): void {
-    this.taskService.getAll()
-    .subscribe((tasks: Task[]) => this.taskList = tasks);
+    this._taskService$ = this.taskService.getAll()
+      .subscribe((tasks: Task[]) => this.taskList = tasks);
   }
 
   /**
@@ -55,7 +64,7 @@ export class StatisticComponent implements OnInit {
   private setReportTypeFromUrl(): void {
     const reportType = 'daily';
     this.isDailyReport = this.router.url.includes(reportType);
-    this.loadedReportCharts = this.isDailyReport ? this.dailyReportCharts : this.weeklyReportCharts;
+    this.loadedReportCharts = this.isDailyReport ? this._dailyReportCharts : this._weeklyReportCharts;
   }
 
 }

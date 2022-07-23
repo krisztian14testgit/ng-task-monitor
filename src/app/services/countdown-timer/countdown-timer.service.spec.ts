@@ -2,7 +2,7 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { CountdownTimerService } from './countdown-timer.service';
 import { Task } from '../../modules/task/services/task.model';
-import { TaskTimer } from 'src/app/modules/task/services/task-timer.model';
+import { TaskTimer } from 'src/app/modules/task/services/task-timer/task-timer.model';
 
 describe('CountdownTimerService', () => {
   let service: CountdownTimerService;

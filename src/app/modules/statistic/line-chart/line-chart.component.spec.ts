@@ -35,8 +35,8 @@ describe('LineChartComponent', () => {
     expect(component['lineChartType']).toBe('line');
     expect(component['lineChartOptions']).toBeDefined();
     expect(component['lineChartData']).toBeDefined();
-    expect(component['lineChartLabels'].length).toBe(2);
-    expect(component['lineChartDataCallBack'].length).toBe(2);
+    expect(component['_lineChartLabels'].length).toBe(2);
+    expect(component['_lineChartDataCallBack'].length).toBe(2);
   });
 
   it('should set line-chart data(label, data props), showing counted completed tasks', () => {
@@ -49,7 +49,7 @@ describe('LineChartComponent', () => {
     component.lineType = LineChartReport.CompletedTask;
     component.ngOnChanges(); // it will call the setLineChartData func
     // chart datasets
-    expect(component.lineChartData.datasets[0].label).toBe(component['lineChartLabels'][component.lineType]);
+    expect(component.lineChartData.datasets[0].label).toBe(component['_lineChartLabels'][component.lineType]);
     expect(component.lineChartData.datasets[0].label?.includes('Completed task')).toBeTrue();
     expect(component.lineChartData.datasets[0].data.length).toBeGreaterThan(0);
     // chart labels (x-axis)
@@ -66,7 +66,7 @@ describe('LineChartComponent', () => {
     component.lineType = LineChartReport.SpentTime;
     component.ngOnChanges(); // it will call the setLineChartData func
     // chart datasets
-    expect(component.lineChartData.datasets[0].label).toBe(component['lineChartLabels'][component.lineType]);
+    expect(component.lineChartData.datasets[0].label).toBe(component['_lineChartLabels'][component.lineType]);
     expect(component.lineChartData.datasets[0].label?.includes('spent times')).toBeTrue();
     expect(component.lineChartData.datasets[0].data.length).toBeGreaterThan(0);
     // chart labels (x-axis)

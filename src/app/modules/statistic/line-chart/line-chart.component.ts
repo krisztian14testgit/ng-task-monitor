@@ -2,14 +2,14 @@ import { WeekDay } from '@angular/common';
 import { Component, Input, OnChanges } from '@angular/core';
 import { ChartType, ChartConfiguration, ChartData } from 'chart.js';
 
-import { TaskDate } from '../../task/services/task-timer.model';
+import { TaskDate } from '../../task/services/task-timer/task-timer.model';
 import { Task } from '../../task/services/task.model';
 import { LineChartReport } from '../services/chart.model';
 
 /**
  * This line-chart component can show two type of charts:
  * * 1. Counted completed Tasks by creation date.
- * * 2. Amont of spent times on the completed tasks by creationd date.
+ * * 2. Amount of spent times on the completed tasks by creation date.
  */
 @Component({
   selector: 'app-line-chart',
@@ -36,9 +36,9 @@ export class LineChartComponent implements OnChanges {
   public readonly lineChartPlugins = [];
 
   /** Stores the line-chart titles which will be shown on the chart. */
-  private readonly lineChartLabels: string[];
+  private readonly _lineChartLabels: string[];
   /** Stores the callback funtion references which calculate the completed Task or spent time data. */
-  private readonly lineChartDataCallBack: ((taskList: Task[]) => number[])[];
+  private readonly _lineChartDataCallBack: ((taskList: Task[]) => number[])[];
 
   constructor() {
     this.lineChartType = 'line';
@@ -57,11 +57,11 @@ export class LineChartComponent implements OnChanges {
         fill: false,
       }]
     };
-    this.lineChartLabels = [
+    this._lineChartLabels = [
       'Completed task numbers in This week',
       'Amount of spent times on the completed tasks in This week'
     ];
-    this.lineChartDataCallBack = [
+    this._lineChartDataCallBack = [
       this.getCompletedTaskCounts,
       this.getSpentTimesOfWorkingOnTasks
     ];
@@ -85,18 +85,18 @@ export class LineChartComponent implements OnChanges {
    */
   private setLineChartDataBy(taskList: Task[]): void {
     this.sortTaskByDays(taskList);
-    /* Reset the line-Chart data stuct, because of the pointer of lineChartDate
-     * to refreshing the line-chart's data, refreshing the line-chart. */
+    /* Reset the line-Chart data struct, because of the pointer of lineChartDate
+     * to refreshing the line-chart's data by new reference. */
     this.lineChartData = {...this.lineChartData};
     // Set labels
     this.lineChartData.labels = this.getChartLabelDays(taskList);
     // Set datasets (label-title, data)
-    this.lineChartData.datasets[0].label = this.lineChartLabels[this.lineType];
-    this.lineChartData.datasets[0].data = this.lineChartDataCallBack[this.lineType](taskList);
+    this.lineChartData.datasets[0].label = this._lineChartLabels[this.lineType];
+    this.lineChartData.datasets[0].data = this._lineChartDataCallBack[this.lineType](taskList);
   }
 
   /**
-   * Insreasing orders of the task items by the day date.
+   * Increasing orders of the task items by the day date.
    * The ordering is changed in the same elements of the list, because of the reference.
    * @param taskList The elements of the taskList.
    */

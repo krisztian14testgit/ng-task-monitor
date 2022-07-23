@@ -1,4 +1,4 @@
-import { TaskTimer } from "./task-timer.model";
+import { TaskTimer } from "./task-timer/task-timer.model";
 
 /**
  * The statuses of the Task.

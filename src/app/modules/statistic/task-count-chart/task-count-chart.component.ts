@@ -36,13 +36,13 @@ export class TaskCountChartComponent implements OnChanges {
   public readonly pieChartPlugins = [];
 
   /** Stores the pie-chart titles which will be shown on the chart. */
-  private readonly pieChartLabels: string[];
+  private readonly _pieChartLabels: string[];
   /** 
    * The default value is 0. 
    * If this.isShowedTodayDate is true then it will be 0 as well,
    * otherwise it will be 1, showing inWeekly report.
    */
-  private indexOfChartLabel = 0;
+  private _indexOfChartLabel = 0;
 
   constructor() {
     this.pieChartType = 'pie';
@@ -72,7 +72,7 @@ export class TaskCountChartComponent implements OnChanges {
         ]
       } ]
     };
-    this.pieChartLabels = [
+    this._pieChartLabels = [
       'Counts of Task statuses today',
       'Counts of task statuses in weekly'
     ];
@@ -87,10 +87,10 @@ export class TaskCountChartComponent implements OnChanges {
   ngOnChanges(): void {
     if (this.isShowedTodayDate && this.taskList.length > 0) {
       this.filteredTaskList = this.filterByCreatedToday(this.taskList);
-      this.indexOfChartLabel = 0;
+      this._indexOfChartLabel = 0;
     } else if (this.taskList.length > 0) {
       this.filteredTaskList = this.taskList;
-      this.indexOfChartLabel = 1;
+      this._indexOfChartLabel = 1;
     }
 
     this.setPieChartDataBy(this.filteredTaskList);
@@ -114,21 +114,20 @@ export class TaskCountChartComponent implements OnChanges {
     // reset datasets
     const taskStatusCounts = this.getCountOfTaskStatuses(taskList);
     // set datasets (label, data)
-    this.pieChartData.datasets[0].label = this.pieChartLabels[this.indexOfChartLabel];
+    this.pieChartData.datasets[0].label = this._pieChartLabels[this._indexOfChartLabel];
     this.pieChartData.datasets[0].data = taskStatusCounts;
     // set chart labels
     this.pieChartData.labels = this.getChartLabelsByTaskStatus(taskStatusCounts);
   }
 
-
   /**
-   * Returns the collected status names of the given tasks
+   * Returns the collected status names of the given tasks.
    * The collected statuses will be shown on the x-axis of the pie-chart.
    * 
    * @description
    * The statuses with counted number like: Start(2), InProgress(1), Completed(3).
    * 
-   * @param displayStatusCounts The counts of the statuses which are printed at end of the statuses. 
+   * @param displayStatusCounts The count of the statuses which are printed at end of the statuses. 
    * @returns task statuses in string array.
    */
   private getChartLabelsByTaskStatus(displayStatusCounts: number[]): string[] {
