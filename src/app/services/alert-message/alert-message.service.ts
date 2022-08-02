@@ -7,6 +7,10 @@ import { AlertType } from 'src/app/components/alert-window/alert.model';
 /**
  * It allows to multicast the message from one component to other
  * which is the observer and subscribing on the 'message' stream to get current alert messeage from the component.
+ * 
+ * @Subscription
+ * Alert-window component also subscribes on the getMessage function of the service. 
+ * If this service emits next text message then Alert-window will be noticed and display it.
  */
 @Injectable()
 export class AlertMessageService {
