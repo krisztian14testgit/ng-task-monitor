@@ -42,7 +42,7 @@ function createWindow () {
     });
 
     // open/close the DevTools window by f12
-    let isOpenDevTool = false;
+    let isOpenDevTool = true;
     let devToolMethod = 'openDevTools';
     mainWindow.webContents.on("before-input-event", (event, input) => {
         if (input.type === 'keyDown' && input.key === 'F12') {
