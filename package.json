@@ -1,6 +1,7 @@
 {
   "name": "ng-task-monitor",
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "description": "This version is built in ElectronJs",
   "author": {
     "name": "Sára Krisztián",
     "email": "",
@@ -8,8 +9,8 @@
   },
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build.prod": "ng build --configuration production",
+    "start": "npm run build.prod && electron ./src/electronJs/app.js",
+    "build.prod": "ng build --configuration production --base-href ./",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --karma-config karma.conf.js --web-worker-ts-config tsconfig.worker.json"
   },
@@ -39,6 +40,7 @@
     "@types/node": "^12.20.45",
     "@typescript-eslint/eslint-plugin": "^5.10.1",
     "@typescript-eslint/parser": "^5.10.1",
+    "electron": "^20.0.3",
     "eslint": "^8.7.0",
     "jasmine-core": "~3.8.0",
     "karma": "^6.3.16",
