@@ -74,6 +74,11 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     this.timerWorkerService.terminateWorker();
   }
 
+  /** Performance helping for ngFor directive, iterable elements not rerendering all. */
+  trackByTaskID(index: number, task: Task): string {
+    return task.id;
+  }
+
   /**
    * This is an Model change event function.
    * It is triggered when the selection tag value is changed in the comboBox.
