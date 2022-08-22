@@ -35,7 +35,7 @@
 <div>&nbsp;</div>
 
 <div class="task-container">
-    <app-task-card *ngFor="let task of taskList"
+    <app-task-card *ngFor="let task of taskList; trackBy: trackByTaskID"
                     [task]="task"
                     [isReadonly]="isLockedTasks"
                     (newTaskCreationFailed)="onRemoveFailedNewTask($event)"></app-task-card>
