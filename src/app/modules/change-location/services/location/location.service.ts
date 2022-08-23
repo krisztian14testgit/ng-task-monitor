@@ -49,7 +49,7 @@ export class LocationService {
     // avoiding if condition
     (this._locSetting as {[prop: string]: string})[keyProperty] = path;
     
-    (window as any).electronAPI.ipcLocation.save(this._locSetting);
+    (window as any).electronAPI.ipcLocation.save(pathType, this._locSetting);
     return of(true);
   }
 }
