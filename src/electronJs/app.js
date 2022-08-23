@@ -61,6 +61,7 @@ function createWindow () {
 app.whenReady().then(() => {
     /** ipc protocol here*/
     IpcLocation.subscribeOnSaving();
+    IpcLocation.getLocationPaths();
 
     /** creating window */
     createWindow();
