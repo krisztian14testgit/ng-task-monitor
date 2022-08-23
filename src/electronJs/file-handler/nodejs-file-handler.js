@@ -1,16 +1,19 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-undef */
 // nodejs: fs, path module importing
 const fs = require('fs');
 const os = require('os');
 
 /**
- * FileHandler instance can read and write the file by the given path 
+ * FileHandler class reads and writes the file by the given path 
  * base on NodeJs fs module.
- * It is also able to make prev checking before writing file.
+ * It is also able to make previous checking before writing file.
  * 
  * @Todo using NodeJs file disciptor and path
  */
 class NodeJSFileHandler {
 
+    /** The path of the file. */
     path = '';
     /** 
      * Set the path of the location where you want to read/write your created file. 
@@ -22,12 +25,12 @@ class NodeJSFileHandler {
 
     /**
      * Writes the file with given content.
-     * The previous content of the file won't be lose, it is preserved!
+     * The previous content will be lose. Re-write it.
      * @param content The given text will be stored.
      * @returns Promise: boolean
      */
     writeFile(content = '') {
-        this.checkPath();
+        this.isEmptyPath();
         
         // get content from file, beacuse not lose previous content.
         const prevContent = this.readFile();
@@ -35,15 +38,16 @@ class NodeJSFileHandler {
             content = prevContent + content;
         }
         
-        // flag: w => Reading and writing, positioning the stream at the beginning of the file. The file is created if it does not exist.
+        // flag: w => Reading and writing, positioning the stream at the beginning of the file.
+        // The file is created if it does not exist.
         return new Promise((resolve, reject) => {
-            fs.writeFile(this.path, content, {flag: 'w+'}, err => {
+            fs.writeFile(this.path, content, {flag: 'w'}, err => {
                 if (err) {
                     console.error(err);
                     return reject(false);
                 }
     
-                //file written successfully
+                // file written successfully
                 return resolve(true);
             });        
 
@@ -51,19 +55,18 @@ class NodeJSFileHandler {
     }
 
     /**
-     * Returns the read content of the file by adjusted path.
+     * Returns the content of the file by adjusted path.
      * @returns string
      */
     readFile() {
-        this.checkPath();
+        this.isEmptyPath();
         try {
             const data = fs.readFileSync(this.path, 'utf-8');
             return data.toString();
         } catch (error) {
             console.error(error);
+            return Promise.resolve('The file not found!');
         }
-
-        return '';
     }
 
     /**
@@ -71,19 +74,19 @@ class NodeJSFileHandler {
      * @returns string path
      * @memberof NodeJs.os
      */
-    static getHomeDir() {
+    getHomeDir() {
         return os.homedir();
     }
 
     /** Throwing error if the local path is empty. */
-    checkPath() {
+    isEmptyPath() {
         if (this.path.trim() === '') {
             throw console.error('File path is empty! Set it in the constructor!');
         }
     }
 
     _isPathEndFolder() {
-        this.checkPath();
+        this.isEmptyPath();
         return new Promise((resolve, reject) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             fs.stat(this.path, (err, stats) => {
