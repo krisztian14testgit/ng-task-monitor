@@ -10,6 +10,7 @@
 const {app, BrowserWindow} = require('electron');
 const url = require("url");
 const path = require("path");
+const IpcLocation = require('./ipc/ipc-location');
 
 let mainWindow;
 const startedPage = '../../dist/ng-task-monitor/index.html';
@@ -26,8 +27,10 @@ function createWindow () {
         height: 800,
         webPreferences: {
             nodeIntegration: true,
-            sandbox: true, // for the securty reason: def OS file system
-            // preload: path.join(__dirname, 'src/electronJs/preload.js'),
+            // for the securty reason: def OS file system
+            sandbox: true,
+            // attaching preload.js shares the data to renderer process.
+            preload: path.join(__dirname, 'preload.js'),
         }
     });
 
@@ -57,7 +60,7 @@ function createWindow () {
 // The app is ready creating an window
 app.whenReady().then(() => {
     /** ipc protocol here*/
-    // FileSave.subscribeOnSavingInput('./src/electronJs/input.txt');
+    IpcLocation.subscribeOnSaving();
 
     /** creating window */
     createWindow();
