@@ -9,7 +9,7 @@ const os = require('os');
  * base on NodeJs fs module.
  * It is also able to make previous checking before writing file.
  * 
- * @Todo using NodeJs file disciptor and path
+ * @Todo using NodeJs file system and path
  */
 class NodeJSFileHandler {
 
@@ -30,26 +30,26 @@ class NodeJSFileHandler {
      * @returns Promise: boolean
      */
     writeFile(content = '') {
-        this.isEmptyPath();
+        this.checkEmptyPath();
         
         // get content from file, beacuse not lose previous content.
-        const prevContent = this.readFile();
+        /*const prevContent = this.readFile();
         if (prevContent !== '') {
             content = prevContent + content;
-        }
+        }*/
         
         // flag: w => Reading and writing, positioning the stream at the beginning of the file.
         // The file is created if it does not exist.
         return new Promise((resolve, reject) => {
-            fs.writeFile(this.path, content, {flag: 'w'}, err => {
+            fs.writeFile(this.path, content, 'utf8', err => {
                 if (err) {
                     console.error(err);
-                    return reject(false);
+                    throw Error(err);
                 }
     
                 // file written successfully
                 return resolve(true);
-            });        
+            });
 
         });
     }
@@ -59,7 +59,7 @@ class NodeJSFileHandler {
      * @returns string
      */
     readFile() {
-        this.isEmptyPath();
+        this.checkEmptyPath();
         try {
             const data = fs.readFileSync(this.path, 'utf-8');
             return data.toString();
@@ -79,14 +79,25 @@ class NodeJSFileHandler {
     }
 
     /** Throwing error if the local path is empty. */
-    isEmptyPath() {
+    checkEmptyPath() {
         if (this.path.trim() === '') {
             throw console.error('File path is empty! Set it in the constructor!');
         }
     }
 
+    /**
+     * Change the prevous adjusted path.
+     * It can be create a new folders line. It depends on the path string.
+     * @param newPath The path of the directory.
+     */
+    changeFilePath(newPath = '') {
+        if (newPath) {
+            this.path = newPath;
+        }
+    }
+
     _isPathEndFolder() {
-        this.isEmptyPath();
+        this.checkEmptyPath();
         return new Promise((resolve, reject) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             fs.stat(this.path, (err, stats) => {
