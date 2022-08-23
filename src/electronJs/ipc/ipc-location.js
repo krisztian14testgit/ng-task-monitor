@@ -12,14 +12,29 @@ const TASK_FILE = 'taskList.json';
  * Handles the ipc communication of the ng-task-monitor location with saving and returning paths.
  */
 class IpcLocation {
+    /** Contains the location path of the installed app. */
     static _locationDir = this._getAppDirectory();
     static _fileHandler = new NodeJSFileHandler(this._locationDir + APP_SETTING_FILE);
     static subscribeOnSaving() {
-        ipcMain.on('save-location', (event, locationSetting = { appSettingPath: '', taskPath: '' }) => {
+        ipcMain.on('save-location', (event,
+                                    pathType = 0,
+                                    locationSetting = { appSettingPath: '', taskPath: '' }) => {
             const locationStr = JSON.stringify(locationSetting);
-            this._fileHandler.writeFile(locationStr).then(() => {
-                console.log('SAVING SUCCESS');
-            });
+
+            // If AppSettingPath changed, create folder
+            if (pathType === 0) {
+                this._fileHandler.changeFilePath(locationSetting.appSettingPath + APP_SETTING_FILE);
+            }
+            
+            try {
+                this._fileHandler.writeFile(locationStr).then(() => {
+                    console.log('SAVING SUCCESS');
+                    return true;
+                });
+            } catch(err) {
+                console.log(err);
+                return Promise.reject(false);
+            }
         });
     }
 
@@ -30,8 +45,8 @@ class IpcLocation {
     static getLocationPaths() {
         ipcMain.handle('load-location', () => {
             const locationSetting = { appSettingPath: '', taskPath: '' };
-            locationSetting.appSettingPath = this._locationDir + APP_SETTING_FILE;
-            locationSetting.taskPath = this._locationDir + TASK_FILE;
+            locationSetting.appSettingPath = this._locationDir;
+            locationSetting.taskPath = this._locationDir;
             return locationSetting;
         });
     }
