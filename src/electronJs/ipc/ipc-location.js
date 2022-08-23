@@ -32,8 +32,8 @@ class IpcLocation {
                     return true;
                 });
             } catch(err) {
-                console.log(err);
-                return Promise.reject(false);
+                console.error(err);
+                return err;
             }
         });
     }
