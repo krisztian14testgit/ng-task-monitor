@@ -24,11 +24,11 @@ export class LocationService {
     * Returns the stored paths of AppSettingPath and TaskPath in the LocationSetting construction.
     * @returns LocationSetting instance
     */
-  public getLocationSetting(): Observable<LocationSetting> {
+  public getLocationSetting(): Promise<LocationSetting> {
     // return this.http.get<LocationSetting>(this._locationUrl, {headers: ServiceBase.HttpHeaders});
     
-    // TODO: temporary solution until the micro service is not done
-    return of(this._locSetting as LocationSetting);
+    // return the location's patsh from electron/ipc-location.js via ipc communcation
+    return (window as any).electronAPI.ipcLocation.getPaths();
   }
 
   /**

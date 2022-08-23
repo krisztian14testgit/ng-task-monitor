@@ -5,7 +5,8 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 const locationPath = {
     /** 
-     * Saves the location path via 'save-locaiton' channel, promise request.
+     * Saves the location paths via 'save-locaiton' channel, promise request.
+     * locationSetting has appSettingPath and taskPath.
      * Handle: async - await scope.
      * @param locationSetting It has two defined paths. AppSettingPath and, taskPath
      * @returns Promise<void>
@@ -14,12 +15,12 @@ const locationPath = {
         ipcRenderer.send('save-location', locationSetting);
     },
     /**
-     * Returns the current path by the given pathType.
+     * Returns the locationSetting object via 'load-location' channel, promise request.
+     * It has two paths: appSettingPath and taskPath.
      * Handle: async - await scope.
-     * @param pathType  Default value: AppSettingPath: 0, Other value is TaskPath: 1.
-     * @returns Promise<string>
+     * @returns Promise<object>
      */
-    get: (pathType = 0) => ipcRenderer.invoke('load-location', pathType)
+    getPaths: () => ipcRenderer.invoke('load-location')
 };
 
 contextBridge.exposeInMainWorld('electronAPI', {

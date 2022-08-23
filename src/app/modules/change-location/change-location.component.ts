@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import { from, Subscription } from 'rxjs';
 
 import { MyValidator } from 'src/app/validators/my-validator';
 import { LocationSetting, LocationPath } from './services/location/location-setting.model';
@@ -46,7 +46,7 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
 
   /** Sets the location paths by the location service which come from the server. */
   ngOnInit(): void {
-    this._locationService$ = this.locationService.getLocationSetting()
+    this._locationService$ = from(this.locationService.getLocationSetting())
     .subscribe((locSetting: LocationSetting) => {
       this.appSettingControl.setValue(locSetting.appSettingPath);
       this.taskDataControl.setValue(locSetting.taskPath);
