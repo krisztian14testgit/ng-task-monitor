@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { environment } from 'src/environments/environment';
 import { LocationPath, LocationSetting } from './location-setting.model';
-import ServiceBase from 'src/app/services/service-base';
 
 @Injectable()
 export class LocationService {
@@ -56,7 +54,7 @@ export class LocationService {
     // avoiding if condition
     (this._locSetting as {[prop: string]: string})[keyProperty] = path;
     
-    return this.http.post(this._locationUrl, this._locSetting, {headers: ServiceBase.HttpHeaders})
-    .pipe(map(_ => true));
+    (window as any).electronAPI.ipcLocation.save(this._locSetting);
+    return of(true);
   }
 }
