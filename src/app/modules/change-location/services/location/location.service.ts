@@ -8,16 +8,11 @@ import { LocationPath, LocationSetting } from './location-setting.model';
 @Injectable()
 export class LocationService {
 
-  private readonly _defaultPath: string;
   private readonly _locSetting!: LocationSetting | {[prop: string]: string};
   private readonly _locationUrl = `${environment.host}location`;
 
   constructor(private readonly http: HttpClient) {
-    this._defaultPath = 'C:/Users/../Documents/';
-
     this._locSetting = new LocationSetting();
-    this._locSetting.appSettingPath = this._defaultPath;
-    this._locSetting.taskPath = this._defaultPath;
    }
 
    /**
