@@ -41,6 +41,7 @@ class IpcLocation {
     /**
      * Returns the LocationSetting structure of application.
      * AppSettingPath and TaskPath will be filled in with paths.
+     * @return Promise<locationSetting object>
      */
     static getLocationPaths() {
         ipcMain.handle('load-location', () => {
