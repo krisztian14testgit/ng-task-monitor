@@ -60,15 +60,16 @@ export class Task {
      * * createdDate: is set up after the creation of the task instance.
      * * status: default value is TaskStatus.Start.
     */
-    constructor(id = '', title = '', description = '', inMinutes = 0) {
+     constructor(id = '', title = '', description = '', inMinutes = 0,
+     status = 0, createdDateStr = '') {
         this._id = id;
         this.title = title;
         this.description = description;
         this.timeMinutes = inMinutes;
         this._initialTime = inMinutes;
-        this._status = TaskStatus.Start;
-        // when it is created, not changeable
-        this._createdDate = new Date();
+        this._status = status;
+        this._createdDate = createdDateStr ? new Date(createdDateStr) : new Date();
+        
         this.timerStartedDate = undefined;
         this.timerFinishedDate = undefined;
     }
@@ -176,5 +177,32 @@ export class Task {
      */
     public setStatus(statusValue: TaskStatus) {
         this._status = statusValue;
+    }
+
+    /**
+     * Retruns new Task instance during converting the given object to the Task.
+     * 
+     * The one property of the object is different from the Task proprerties then 
+     * then converting process will break with error message.
+     * @param obj 
+     * @returns Task
+     */
+    public static convertObjectToTask(obj: {[prop: string]: any}): Task {
+        const propNames = Object.getOwnPropertyNames(obj);
+        const tempTask = new Task();
+
+        // checking the converting is possilbe
+        for (const objProp of propNames) {
+            if (!tempTask.isHasOwnPoperty(objProp)) {
+                throw new TypeError(`The conversation failed!
+                The given obj has one property(${objProp}) which Task class does NOT HAVE!`);
+            }
+        }
+
+        // Converting process
+        const retTask = new Task(obj._id, obj.title, obj.description,
+            obj.timeMinutes, obj._status, obj._createdDate);
+        
+        return retTask;
     }
 }
