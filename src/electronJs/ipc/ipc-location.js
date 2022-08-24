@@ -48,7 +48,6 @@ class IpcLocation {
             // read taskPath from the appSetting.json.
             const strLocSetting = this._fileHandler.readFile();
             locationSetting = JSON.parse(strLocSetting);
-            console.log('read fjosn', strLocSetting);
             
             // if tha taskPath does not exist, set default locationDir
             if (locationSetting.taskPath && !this._fileHandler.isExistedPath(locationSetting.taskPath)) {
