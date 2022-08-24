@@ -11,6 +11,7 @@ const {app, BrowserWindow} = require('electron');
 const url = require("url");
 const path = require("path");
 const IpcLocation = require('./ipc/ipc-location');
+const IpcTaskList = require('./ipc/ipc-task-list');
 
 let mainWindow;
 const startedPage = '../../dist/ng-task-monitor/index.html';
@@ -62,6 +63,7 @@ app.whenReady().then(() => {
     /** ipc protocol here*/
     IpcLocation.subscribeOnSaving();
     IpcLocation.getLocationPaths();
+    IpcTaskList.subscribeOnSaving();
 
     /** creating window */
     createWindow();

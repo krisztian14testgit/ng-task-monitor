@@ -24,6 +24,23 @@ const locationPath = {
     getPaths: () => ipcRenderer.invoke('load-location')
 };
 
+const taskList = {
+    /**
+     * Saves the given task list via 'save-taskList' channel, promise request.
+     * Handle: asyn - await scope.
+     * @param taskList the task items
+     * @returns Promise<void>
+     */
+    save: (taskList = []) => ipcRenderer.send('save-taskList', taskList),
+    /**
+     * Returns the task items into array, via 'load-taskList' channelm promise request.
+     * Handle: async - await scope.
+     * @returns Promise<array>
+     */
+    get: () => ipcRenderer.invoke('load-taskList')
+};
+
 contextBridge.exposeInMainWorld('electronAPI', {
-    ipcLocation: locationPath
+    ipcLocation: locationPath,
+    ipcTaskList: taskList
 });

@@ -70,9 +70,12 @@ export class TaskService {
       return newTask;
     }));*/
 
-    FakedTask.addNewTask(task);
-    this.taskList$.next(FakedTask.list);
-    return of(FakedTask.getLatestNewTask());
+    // get generated guid for task
+    task['_id'] = this._createUUID();
+    this._taskList.push(task);
+    this.taskList$.next(this._taskList);
+    this._electronSaveTasks(this._taskList);
+    return of(task);
   }
 
   /**
@@ -91,9 +94,10 @@ export class TaskService {
       return updatedTask;
     }));*/
 
-    const foundTaskIndex = FakedTask.list.findIndex(taskItem => taskItem.id === task.id);
-    FakedTask.list[foundTaskIndex] = task;
-    this.taskList$.next(FakedTask.list);
+    const foundTaskIndex = this._taskList.findIndex(taskItem => taskItem.id === task.id);
+    this._taskList[foundTaskIndex] = task;
+    this.taskList$.next(this._taskList);
+    this._electronSaveTasks(this._taskList);
     return of(task);
   }
 
@@ -117,4 +121,26 @@ export class TaskService {
     this.taskList$.next(FakedTask.list);
     return of(true);
   }
+
+  /**
+   * Emits the given taskList via ipc communication of electron to save list.
+   * @param taskList Task items
+   */
+  private _electronSaveTasks(taskList: Task[]) {
+    if (taskList.length > 0) {
+      try {
+        (window as any).electronAPI.ipcTaskList.save(taskList);
+      } catch (error: any) {
+        throw Error(error.message);
+      }
+    }
+  }
+
+  /** Returns the genereted Uuid/Guid as string. */
+  private _createUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+       const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+       return v.toString(16);
+    });
+ }
 }
