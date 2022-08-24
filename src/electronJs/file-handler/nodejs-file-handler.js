@@ -1,3 +1,4 @@
+"user strict";
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-undef */
 // nodejs: fs, path module importing
@@ -56,6 +57,8 @@ class NodeJSFileHandler {
 
     /**
      * Returns the content of the file by adjusted path.
+     * The path is adjusted when creating an instance from the class or 
+     * calling changeFilePath method.
      * @returns string
      */
     readFile() {
