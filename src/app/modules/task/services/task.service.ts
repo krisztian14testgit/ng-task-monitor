@@ -46,10 +46,14 @@ export class TaskService {
 
     return from(this._electronGetAllTask())
     .pipe(map((rawTasks: object[]) => {
-      return rawTasks.map(rawTask => {
+      const wrappedTasks = rawTasks.map(rawTask => {
         const task = Task.convertObjectToTask(rawTask);
         return task;
       });
+
+      this._taskList = wrappedTasks;
+      this.taskList$.next(wrappedTasks);
+      return wrappedTasks;
     }));
   }
 
