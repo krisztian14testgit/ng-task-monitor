@@ -61,11 +61,11 @@ class NodeJSFileHandler {
     readFile() {
         this.checkEmptyPath();
         try {
-            const data = fs.readFileSync(this.path, 'utf-8');
+            const data = fs.readFileSync(this.path, 'utf8');
             return data.toString();
         } catch (error) {
             console.error(error);
-            return Promise.resolve('The file not found!');
+            return Promise.reject('The file not found!');
         }
     }
 
@@ -101,6 +101,7 @@ class NodeJSFileHandler {
         return fs.existsSync(path);
     }
 
+    // checking the end of the path is dictionary
     _isPathEndFolder() {
         this.checkEmptyPath();
         return new Promise((resolve, reject) => {
