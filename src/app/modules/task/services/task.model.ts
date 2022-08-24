@@ -45,7 +45,8 @@ export class Task {
      * @info
      * The decimal range: [1 min, 1440 min]; 1440 min => 24 hours 
      */
-    timeMinutes: number;    /** The timer date when the counterClock is start counting. */
+    timeMinutes: number;    
+    /** The timer date when the counterClock is start counting. */
     timerStartedDate: Date | undefined;
      /** The timer date when the counterClock is over. */
     timerFinishedDate: Date | undefined;
@@ -61,7 +62,7 @@ export class Task {
      * * status: default value is TaskStatus.Start.
     */
      constructor(id = '', title = '', description = '', inMinutes = 0,
-     status = 0, createdDateStr = '') {
+     status = 0, createdDateStr = '', timerStartedDateStr = '', timerFinishedDateStr = '') {
         this._id = id;
         this.title = title;
         this.description = description;
@@ -69,9 +70,8 @@ export class Task {
         this._initialTime = inMinutes;
         this._status = status;
         this._createdDate = createdDateStr ? new Date(createdDateStr) : new Date();
-        
-        this.timerStartedDate = undefined;
-        this.timerFinishedDate = undefined;
+        this.timerStartedDate = timerStartedDateStr ? new Date(timerStartedDateStr) : undefined;
+        this.timerFinishedDate = timerFinishedDateStr ? new Date(timerFinishedDateStr) : undefined; 
     }
 
     /**
@@ -182,8 +182,8 @@ export class Task {
     /**
      * Retruns new Task instance during converting the given object to the Task.
      * 
-     * The one property of the object is different from the Task proprerties then 
-     * then converting process will break with error message.
+     * The one property of the object is different from the Task proprerties 
+     * then the converting process will break with the error message.
      * @param obj 
      * @returns Task
      */
@@ -201,7 +201,8 @@ export class Task {
 
         // Converting process
         const retTask = new Task(obj._id, obj.title, obj.description,
-            obj.timeMinutes, obj._status, obj._createdDate);
+            obj.timeMinutes, obj._status, obj._createdDate,
+            obj.timerStartedDate, obj.timerFinishedDate);
         
         return retTask;
     }
