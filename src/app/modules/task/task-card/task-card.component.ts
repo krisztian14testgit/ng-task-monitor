@@ -266,9 +266,10 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     this.setDefaulFormValuesBy(task);
 
     /* If initialTime contains origion adjusted time.
-     * The initial time will be loaded in 'edit' mode of the task form.
+     * The initial time will be loaded in 'edit' mode of the task form
+     * instead of the counterdown timer is inProgress.
      */
-    const timeMinutes = task.initialTime > 0 ? task.initialTime : task.timeMinutes;
+    const timeMinutes = task.timeMinutes === 0 && task.initialTime > 0 ? task.initialTime : task.timeMinutes;
 
     return new FormGroup({
       title: new FormControl(task.title, [
