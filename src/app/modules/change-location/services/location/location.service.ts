@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { from, Observable, of, throwError } from 'rxjs';
 
 import { LocationPath, LocationSetting } from './location-setting.model';
 
@@ -16,10 +16,8 @@ export class LocationService {
     * Returns the stored paths of AppSettingPath and TaskPath in the LocationSetting construction.
     * @returns LocationSetting instance
     */
-  public getLocationSetting(): Promise<LocationSetting> {
-    
-    // return the location's patsh from electron/ipc-location.js via ipc communcation
-    return (window as any).electronAPI.ipcLocation.getPaths();
+  public getLocationSetting(): Observable<LocationSetting> {
+    return from(this._electronGetLocationPaths());
   }
 
   /**
@@ -59,7 +57,7 @@ export class LocationService {
    * @returns Promise<LocationSetting>
    * @memberof Electron ipcLocation
    */
-  /*private _electronGetLocationPaths(): Promise<LocationSetting> {
+  private _electronGetLocationPaths(): Promise<LocationSetting> {
     return (window as any).electronAPI.ipcLocation.getPaths();
-  }*/
+  }
 }
