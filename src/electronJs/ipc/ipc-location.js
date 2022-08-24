@@ -45,20 +45,28 @@ class IpcLocation {
      */
     static getLocationPaths() {
         ipcMain.handle('load-location', () => {
-            let locationSetting = { appSettingPath: '', taskPath: '' };
+            let locationSetting = {
+                appSettingPath: this._locationDir,
+                taskPath: this._locationDir
+            };
             
-            // read taskPath from the appSetting.json.
-            const strLocSetting = this._fileHandler.readFile();
-            locationSetting = JSON.parse(strLocSetting);
-            
-            // if tha taskPath does not exist, set default locationDir
-            if (locationSetting.taskPath && !this._fileHandler.isExistedPath(locationSetting.taskPath)) {
-                locationSetting.taskPath = this._locationDir;
-            }
+            try {
+                // read taskPath from the appSetting.json.
+                const strLocSetting = this._fileHandler.readFile();
+                locationSetting = JSON.parse(strLocSetting);
 
-            // appSettingPath is always default path.
-            locationSetting.appSettingPath = this._locationDir;
-            return locationSetting;
+                // if tha taskPath does not exist, set default locationDir
+                if (!locationSetting.taskPath && !this._fileHandler.isExistedPath(locationSetting.taskPath)) {
+                    locationSetting.taskPath = this._locationDir;
+                }
+                
+                // appSettingPath is always default path.
+                locationSetting.appSettingPath = this._locationDir;
+                return locationSetting;
+            } catch (err) {
+                // if it is error, returns default location dictionary.
+                return locationSetting;
+            }
         });
     }
 }
