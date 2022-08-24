@@ -1,6 +1,7 @@
+"use strict";
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-undef */
-"use strict";
+
 
 const { ipcMain } = require('electron');
 const NodeJSFileHandler = require('../file-handler/nodejs-file-handler');
