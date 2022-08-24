@@ -96,6 +96,11 @@ class NodeJSFileHandler {
         }
     }
 
+    /** Returns true if the path is existed, otherwise returns false. */
+    isExistedPath(path = '') {
+        return fs.existsSync(path);
+    }
+
     _isPathEndFolder() {
         this.checkEmptyPath();
         return new Promise((resolve, reject) => {
