@@ -253,7 +253,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   private setDefaulFormValuesBy(task: Task): void {
     this._defaultFormValues['title'] = task.title;
     this._defaultFormValues['description'] = task.description;
-    this._defaultFormValues['timeMinutes'] = task.timeMinutes;
+    this._defaultFormValues['timeMinutes'] = task.initialTime;
   }
 
   /**
@@ -265,6 +265,11 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     // saving the intital values of the task
     this.setDefaulFormValuesBy(task);
 
+    /* If initialTime contains origion adjusted time.
+     * The initial time will be loaded in 'edit' mode of the task form.
+     */
+    const timeMinutes = task.initialTime > 0 ? task.initialTime : task.timeMinutes;
+
     return new FormGroup({
       title: new FormControl(task.title, [
         Validators.required,
@@ -273,7 +278,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
         Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.TaskName))
       ]),
       description: new FormControl(task.description, []),
-      timeMinutes: new FormControl(task.timeMinutes, [
+      timeMinutes: new FormControl(timeMinutes, [
         Validators.required,
         Validators.max(this.TASK_MAX_MINUTES),
         Validators.min(1), //min value: 1 min
