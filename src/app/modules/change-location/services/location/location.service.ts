@@ -1,17 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 
-import { environment } from 'src/environments/environment';
 import { LocationPath, LocationSetting } from './location-setting.model';
 
 @Injectable()
 export class LocationService {
 
   private readonly _locSetting!: LocationSetting | {[prop: string]: string};
-  private readonly _locationUrl = `${environment.host}location`;
 
-  constructor(private readonly http: HttpClient) {
+  constructor() {
     this._locSetting = new LocationSetting();
    }
 
@@ -20,7 +17,6 @@ export class LocationService {
     * @returns LocationSetting instance
     */
   public getLocationSetting(): Promise<LocationSetting> {
-    // return this.http.get<LocationSetting>(this._locationUrl, {headers: ServiceBase.HttpHeaders});
     
     // return the location's patsh from electron/ipc-location.js via ipc communcation
     return (window as any).electronAPI.ipcLocation.getPaths();
@@ -28,14 +24,15 @@ export class LocationService {
 
   /**
    * Saves the given path by pathType.
-   * Returns true the saving process is succed.
+   * Returns true the saving process is succeed.
    * 
    * @param pathType It can be LocationPath.AppSettingPath or LocationPath.TaskPath.
    * @param path The path to be stored.
    * @returns boolean
    */
   public saveLocation(pathType: LocationPath, path: string): Observable<boolean> {
-    let keyProperty = LocationPath[pathType]; // get enum name
+    // get enum name
+    let keyProperty = LocationPath[pathType];
 
     // first char to be lowerCase
     const firstChar = keyProperty[0].toLowerCase();
@@ -56,4 +53,13 @@ export class LocationService {
       return throwError(error);
     }
   }
+
+  /**
+   * Return the location's patsh from electron/ipc-location.js via ipc communcation of electron
+   * @returns Promise<LocationSetting>
+   * @memberof Electron ipcLocation
+   */
+  /*private _electronGetLocationPaths(): Promise<LocationSetting> {
+    return (window as any).electronAPI.ipcLocation.getPaths();
+  }*/
 }
