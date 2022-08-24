@@ -37,7 +37,7 @@ const taskList = {
      * Handle: async - await scope.
      * @returns Promise<array>
      */
-    get: () => ipcRenderer.invoke('load-taskList')
+    getAll: () => ipcRenderer.invoke('load-taskList')
 };
 
 contextBridge.exposeInMainWorld('electronAPI', {
