@@ -64,7 +64,7 @@ export class TaskService {
    */
   public get(taskId: string): Observable<Task> {
     // return this.http.get<Task>(`${this._taskUrl}/${taskId}`, {headers: ServiceBase.HttpHeaders});
-    return of(FakedTask.list.find(task => task.id === taskId) as Task);
+    return of(this._taskList.find(task => task.id === taskId) as Task);
   }
 
   /**
@@ -113,11 +113,11 @@ export class TaskService {
 
   /**
    * Returns true if the delete request run successfully.
-   * Deleting the task by task id from the server.
-   * @param taskId The id of the task which will be removed.
+   * Deleting the tasks by id from the server.
+   * @param taskIdArgs It can be one or more ids of the tasks which will be removed.
    * @returns boolean
    */
-  public delete(taskId: string): Observable<boolean> {
+  public delete(...taskIdArgs: string[]): Observable<boolean> {
     /*return this.http.delete(`${this._taskUrl}/${taskId}`, {headers: ServiceBase.HttpHeaders})
     .pipe(map(_ => {
       const taskIndex = this._taskList.findIndex(task => task.id === taskId);
@@ -126,9 +126,16 @@ export class TaskService {
       return true;
     }));*/
 
-    const fakedIndex = FakedTask.list.findIndex(task => task.id === taskId);
-    FakedTask.list.splice(fakedIndex, 1);
-    this.taskList$.next(FakedTask.list);
+    let taskIndex = -1;
+    for (const taskId of taskIdArgs) {
+      taskIndex = this._taskList.findIndex(task => task.id = taskId);
+      if (taskIndex > -1) {
+        this._taskList.splice(taskIndex, 1);
+      }
+    }
+
+    this.taskList$.next(this._taskList);
+    this._electronSaveTasks(this._taskList);
     return of(true);
   }
 
@@ -154,8 +161,10 @@ export class TaskService {
     return (window as any).electronAPI.ipcTaskList.getAll();
   }
 
-  /** Returns the genereted Uuid/Guid as string. */
-  private _createUUID() {
+  /** 
+   * Returns the genereted Uuid/Guid as string.
+   * @return string*/
+  private _createUUID(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
        const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
        return v.toString(16);
