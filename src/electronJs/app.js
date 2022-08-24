@@ -64,6 +64,7 @@ app.whenReady().then(() => {
     IpcLocation.subscribeOnSaving();
     IpcLocation.getLocationPaths();
     IpcTaskList.subscribeOnSaving();
+    IpcTaskList.getTaskList();
 
     /** creating window */
     createWindow();
