@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import ServiceBase from 'src/app/services/service-base';
 import { Task, TaskStatus } from './task.model';
 import { environment } from '../../../../environments/environment';
 
@@ -44,7 +43,14 @@ export class TaskService {
       this.taskList$.next(tasks);
       return tasks;
     }));*/
-    return of(FakedTask.list);
+
+    return from(this._electronGetAllTask())
+    .pipe(map((rawTasks: object[]) => {
+      return rawTasks.map(rawTask => {
+        const task = Task.convertObjectToTask(rawTask);
+        return task;
+      });
+    }));
   }
 
   /**
@@ -134,6 +140,14 @@ export class TaskService {
         throw Error(error.message);
       }
     }
+  }
+
+  /**
+   * Retruns the saved task items from task.list.json via ipc communication of electron.
+   * @returns Promise<Task[]>
+   */
+  private _electronGetAllTask(): Promise<Task[]> {
+    return (window as any).electronAPI.ipcTaskList.getAll();
   }
 
   /** Returns the genereted Uuid/Guid as string. */
