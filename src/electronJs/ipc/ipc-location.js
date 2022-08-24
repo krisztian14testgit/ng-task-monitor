@@ -5,17 +5,15 @@
 
 const { ipcMain } = require('electron');
 const NodeJSFileHandler = require('../file-handler/nodejs-file-handler');
-
-const APP_SETTING_FILE = 'appSetting.json';
-const TASK_FILE = 'taskList.json';
+const AppPath = require('../models/app-path');
 
 /**
  * Handles the ipc communication of the ng-task-monitor location with saving and returning paths.
  */
 class IpcLocation {
     /** Contains the location path of the installed app. */
-    static _locationDir = this._getAppDirectory();
-    static _fileHandler = new NodeJSFileHandler(this._locationDir + APP_SETTING_FILE);
+    static _locationDir = AppPath.getDirectory();
+    static _fileHandler = new NodeJSFileHandler(this._locationDir + AppPath.APP_SETTING_FILE);
     static subscribeOnSaving() {
         ipcMain.on('save-location', (event,
                                     pathType = 0,
@@ -24,7 +22,7 @@ class IpcLocation {
 
             // If AppSettingPath changed, create folder
             if (pathType === 0) {
-                this._fileHandler.changeFilePath(locationSetting.appSettingPath + APP_SETTING_FILE);
+                this._fileHandler.changeFilePath(locationSetting.appSettingPath + AppPath.APP_SETTING_FILE);
             }
             
             try {
@@ -60,19 +58,6 @@ class IpcLocation {
             locationSetting.appSettingPath = this._locationDir;
             return locationSetting;
         });
-    }
-
-    /**
-     * Returns the directory path of the Application.
-     * @returns string
-     */
-    static _getAppDirectory() {
-        // find all '\' signs by regExp
-        const regExp = /\\/g;
-        let appDir = __dirname.replace(regExp, '/');
-        const indexOfSrc = appDir.indexOf('src');
-        appDir = appDir.substring(0, indexOfSrc);
-        return appDir + 'storer/';
     }
 }
 
