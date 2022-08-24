@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { LocationPath, LocationSetting } from './location-setting.model';
@@ -46,10 +46,14 @@ export class LocationService {
     } else {
       this._locSetting.appSettingPath = path;
     }*/
-    // avoiding if condition
+    // avoiding if condition above
     (this._locSetting as {[prop: string]: string})[keyProperty] = path;
-    
-    (window as any).electronAPI.ipcLocation.save(pathType, this._locSetting);
-    return of(true);
+
+    try {
+      (window as any).electronAPI.ipcLocation.save(pathType, this._locSetting);
+      return of(true);
+    } catch (error) {
+      return throwError(error);
+    }
   }
 }
