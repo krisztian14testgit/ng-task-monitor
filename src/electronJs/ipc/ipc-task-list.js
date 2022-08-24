@@ -35,9 +35,13 @@ class IpcTaskList {
     static getTaskList() {
         ipcMain.handle('load-taskList', () => {
             // read task list from the taskList.json.
-            const strTasks = this._fileHandler.readFile();
-            const taskObj = JSON.parse(strTasks);
-            return taskObj.taskList ? taskObj.taskList: [];
+            try {
+                const strTasks = this._fileHandler.readFile();
+                const taskObj = JSON.parse(strTasks);
+                return taskObj.taskList ? taskObj.taskList: [];
+            } catch(err) {
+                return [];
+            }
         });
     }
 }
