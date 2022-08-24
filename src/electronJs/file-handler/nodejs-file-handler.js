@@ -1,4 +1,4 @@
-"user strict";
+"use strict";
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-undef */
 // nodejs: fs, path module importing
