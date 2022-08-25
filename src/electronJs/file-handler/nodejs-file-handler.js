@@ -101,7 +101,7 @@ class NodeJSFileHandler {
     /** Throwing error if the local path is empty. */
     checkEmptyPath() {
         if (this.path.trim() === '') {
-            throw console.error('File path is empty! Set it in the constructor!');
+            throw new Error('File path is empty! Set it in the constructor!');
         }
     }
 
