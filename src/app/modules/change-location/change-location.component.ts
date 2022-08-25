@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { debounceTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
 import { MyValidator } from 'src/app/validators/my-validator';
@@ -88,44 +87,39 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * This is an key-up event function.
-   * It runs when the typing is occured.
+   * This is an onClick event function.
+   * It runs when the 'Save changes' button is clicked on.
    * 
-   * Runs it by the every button is pressed.
-   * Saving the typed folder path if it is valid.
+   * Saving the folder paths of appSettingPath or taskPath if they are valid.
    *  
-   * @event keyup
-   * @param keyLocation It is string, value can be LocationPath(AppSettingPath, TaskPath)
-   * @param formControlRef the reference of the given formControl.
+   * @event click
    */
-  public onChangePath(keyLocation: string, formControlRef: FormControl): void {
-    if (formControlRef.valid) {
-      // const locKey = LocationPath[keyLocation as keyof typeof LocationPath];
+  public saveChangedPaths(): void {
+    if (this.taskDataControl.valid && this.appSettingControl.valid) {
       let locKey = -1;
-      if (keyLocation === 'TaskPath') {
+      // taskPath is changed
+      if (!this.taskDataControl.pristine) {
         locKey = LocationPath.TaskPath;
+        this.saveLocationPath(locKey, this.taskDataControl);
       }
-      if (keyLocation === 'AppSettingPath') {
+
+      // appSetting path is changed
+      if (!this.appSettingControl.pristine) {
         locKey = LocationPath.AppSettingPath;
+        this.saveLocationPath(locKey, this.appSettingControl);
       }
-      
-      if (locKey > -1) {
-        
-        this.saveLocationPath(locKey, formControlRef);
-      }
+    } else {
+      this.alertMessageService.sendMessage('One of paths is invalid', AlertType.Warning);
     }
   }
 
   /**
-   * Sending the adjusted location path to the server.
+   * Sending the adjusted location paths to the electron through the service.
    * @param keyLocation It is enum type, value can be LocationPath(AppSettingPath, TaskPath)
    */
   private saveLocationPath(keyLocation: LocationPath, formControlRef: FormControl): void {
-    const waitSeconds = 2000;
     
     this.locationService.saveLocation(keyLocation, formControlRef.value)
-    .pipe(
-      debounceTime(waitSeconds))
     .subscribe(() => {
       // saving was success
       this.alertMessageService.sendMessage('Path was saved!', AlertType.Success);
