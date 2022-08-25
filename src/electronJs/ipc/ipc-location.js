@@ -39,7 +39,7 @@ class IpcLocation {
                     return true;
                 });
             } catch(err) {
-                console.error(err);
+                console.log('ipc-location: GOT ERROR');
                 return err;
             }
         });
