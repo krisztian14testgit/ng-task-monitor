@@ -62,6 +62,7 @@ export class LocationService {
   private _electornSaveLocationPaths(pathType: LocationPath, locSetting: LocationSetting,
     prevLocSettingPaths: LocationSetting | undefined = undefined): Promise<boolean> {
     try {
+      // sending data to save via ipc, return NOTHING, not throw error
       (window as any).electronAPI.ipcLocation.save(pathType, locSetting);
       return Promise.resolve(true);
     } catch(err) {
