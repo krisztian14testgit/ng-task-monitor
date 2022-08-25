@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 import { ChangeLocationRoutingModule } from './change-location-routing.module';
 import { ChangeLocationComponent } from './change-location.component';
@@ -18,8 +19,10 @@ import { LocationService } from './services/location/location.service';
     CommonModule,
     ChangeLocationRoutingModule,
     ReactiveFormsModule,
+    /** Materail directives */
     MatCardModule,
-    MatInputModule
+    MatInputModule,
+    MatButtonModule
   ],
   providers: [
     LocationService
