@@ -73,6 +73,23 @@ class NodeJSFileHandler {
     }
 
     /**
+     * Removes the the file by the given filePath.
+     * @param filePath The path of the file to be removed.
+     * @returns Promise<never>
+     */
+    removeFile(filePath = '') {
+        try {
+            if (filePath) {
+                fs.unlinkSync(filePath);
+                Promise.resolve();
+            }
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(`The file not found to remove it: Path: ${filePath}!`);
+        }
+    }
+
+    /**
      * Return the path to the home directory of the current user.
      * @returns string path
      * @memberof NodeJs.os
