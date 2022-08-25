@@ -66,9 +66,12 @@ class IpcLocation {
                 if (!locationSetting.taskPath && !this._fileHandler.isExistedPath(locationSetting.taskPath)) {
                     locationSetting.taskPath = this._locationDir;
                 }
-                
-                // appSettingPath is always default path.
-                locationSetting.appSettingPath = this._locationDir;
+
+                // if tha appSetting path does not exist, set default locationDir
+                if (!locationSetting.appSettingPath && !this._fileHandler.isExistedPath(locationSetting.appSettingPath)) {
+                    locationSetting.appSettingPath = this._locationDir;
+                }
+
                 return locationSetting;
             } catch (err) {
                 // if it is error, returns default location dictionary.
