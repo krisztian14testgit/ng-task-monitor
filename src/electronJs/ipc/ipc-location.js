@@ -28,10 +28,10 @@ class IpcLocation {
             }
 
             // just create empty task file.
-            if (pathType === 1) {
+            /*if (pathType === 1) {
                 this._fileHandler.changeFilePath(locationSetting.taskPath + AppPath.TASK_FILE);
                 jsonStr = '';
-            }
+            }*/
             
             try {
                 return this._fileHandler.writeFile(jsonStr).then(() => {
