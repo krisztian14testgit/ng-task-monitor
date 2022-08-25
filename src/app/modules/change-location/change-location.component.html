@@ -20,7 +20,7 @@
 <!-- App settings card -->
 <mat-card>
     <mat-card-title>
-        <label for="storedData">Where would you like to store App settings?</label>
+        <label for="storedData">Where would you like to store App settings? (Just readonly)</label>
     </mat-card-title>
     <hr>
     <mat-card-content>
@@ -28,7 +28,8 @@
                         [ngClass]="{'input-valid': appSettingControl.valid}">
             <mat-label>Defalult app folder</mat-label>
             <input type="text" matInput [formControl]="appSettingControl"
-                    placeholder="C:/users/userName/Document/">
+                    placeholder="C:/users/userName/Document/"
+                    [readonly]="true">
             <mat-error *ngIf="appSettingControl.invalid && (appSettingControl.dirty || appSettingControl.touched)">
                 <strong>Please enter a valid path! E.g.: C:/folder/...</strong>
             </mat-error>
