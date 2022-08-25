@@ -19,16 +19,22 @@ class IpcLocation {
         ipcMain.on('save-location', (event,
                                     pathType = 0,
                                     locationSetting = { appSettingPath: '', taskPath: '' }) => {
-            const locationStr = JSON.stringify(locationSetting);
+            let jsonStr = JSON.stringify(locationSetting);
 
             // pathType: LocationPath {AppSettingPath: 0, TaskPath: 1}
             // If AppSettingPath changed, create folder
             if (pathType === 0) {
                 this._fileHandler.changeFilePath(locationSetting.appSettingPath + AppPath.APP_SETTING_FILE);
             }
+
+            // just create empty task file.
+            if (pathType === 1) {
+                this._fileHandler.changeFilePath(locationSetting.taskPath + AppPath.TASK_FILE);
+                jsonStr = '';
+            }
             
             try {
-                return this._fileHandler.writeFile(locationStr).map(() => {
+                return this._fileHandler.writeFile(jsonStr).then(() => {
                     console.log('SAVING SUCCESS');
                     return true;
                 });
