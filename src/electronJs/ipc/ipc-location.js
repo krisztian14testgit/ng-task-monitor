@@ -21,13 +21,14 @@ class IpcLocation {
                                     locationSetting = { appSettingPath: '', taskPath: '' }) => {
             const locationStr = JSON.stringify(locationSetting);
 
+            // pathType: LocationPath {AppSettingPath: 0, TaskPath: 1}
             // If AppSettingPath changed, create folder
             if (pathType === 0) {
                 this._fileHandler.changeFilePath(locationSetting.appSettingPath + AppPath.APP_SETTING_FILE);
             }
             
             try {
-                this._fileHandler.writeFile(locationStr).then(() => {
+                return this._fileHandler.writeFile(locationStr).map(() => {
                     console.log('SAVING SUCCESS');
                     return true;
                 });
