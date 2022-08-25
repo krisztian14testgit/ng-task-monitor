@@ -45,7 +45,7 @@ class NodeJSFileHandler {
             fs.writeFile(this.path, content, 'utf8', err => {
                 if (err) {
                     console.error(err);
-                    throw Error(err);
+                    throw new Error(err);
                 }
     
                 // file written successfully
