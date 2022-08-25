@@ -8,6 +8,7 @@ import { LocationService } from './services/location/location.service';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { AlertType } from 'src/app/components/alert-window/alert.model';
 
+type IndexStructure = { [property: string]:string };
 @Component({
   selector: 'app-change-location',
   templateUrl: './change-location.component.html',
@@ -25,6 +26,8 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
    * * Saving during: true
   */
   private _isSavingDone = false;
+  /** Preserve the pervious paths of the AppSettingPAth and TaskPath. */
+  private _previousLocationSetting!: LocationSetting;
 
   //#region Properties
   /** Returns the reference of taskData FormControl. */
@@ -47,6 +50,8 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._locationService$ = this.locationService.getLocationSetting()
     .subscribe((locSetting: LocationSetting) => {
+      // deep copy the locSetting fields.
+      this._previousLocationSetting = {...locSetting};
       this.appSettingControl.setValue(locSetting.appSettingPath);
       this.taskDataControl.setValue(locSetting.taskPath);
     });
@@ -122,10 +127,15 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     this.locationService.saveLocation(keyLocation, formControlRef.value)
     .subscribe(() => {
       // saving was success
-      this.alertMessageService.sendMessage('Path was saved!', AlertType.Success);
+      this.alertMessageService.sendMessage('Path is saved!', AlertType.Success);
     }, () => {
       // saving was unccess
-      this.alertMessageService.sendMessage('Path saving was failed!', AlertType.Error);
+      this.alertMessageService.sendMessage(`Path saving is failed at ${LocationPath[keyLocation]}! 
+        Perhaps, The app doesn't have permission to create folder.`, AlertType.Error);
+      // re-adjust the previous path
+      const propNames = ['appSettingPath', 'taskPath'];
+      const selectedLocProp = propNames[keyLocation];
+      formControlRef.setValue((this._previousLocationSetting as unknown as IndexStructure)[selectedLocProp]);
     }, () => {
       // finally branch
       this._isSavingDone = false;
