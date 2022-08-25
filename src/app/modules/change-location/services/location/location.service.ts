@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { from, Observable, of, throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { LocationPath, LocationSetting } from './location-setting.model';
 
@@ -45,10 +46,27 @@ export class LocationService {
     (this._locSetting as {[prop: string]: string})[keyProperty] = path;
 
     try {
-      (window as any).electronAPI.ipcLocation.save(pathType, this._locSetting);
-      return of(true);
+      return from(this._electornSaveLocationPaths(pathType, this._locSetting as any))
+      .pipe(map(() => true));
     } catch (error) {
       return throwError(error);
+    }
+  }
+
+  /**
+   * Saving the appSettingPath or TaskPath by the given pathType via electtron/ipc-location communication.
+   * @param pathType It can be LocationPath.AppSettingPath or LocationPath.TaskPath.
+   * @param locSetting It contains the appSettingPath and TaskPath.
+   * @returns Promise<boolean>
+   */
+  private _electornSaveLocationPaths(pathType: LocationPath, locSetting: LocationSetting,
+    prevLocSettingPaths: LocationSetting | undefined = undefined): Promise<boolean> {
+    try {
+      (window as any).electronAPI.ipcLocation.save(pathType, locSetting);
+      return Promise.resolve(true);
+    } catch(err) {
+      console.log('PROMISE ERRROR');
+      return Promise.reject();
     }
   }
 
