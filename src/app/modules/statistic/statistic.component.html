@@ -12,7 +12,7 @@
                 </mat-select>
             </mat-form-field>
         </div>
-        <div class="chart">
+        <div *ngIf="taskList.length > 0" class="chart">
             <!-- Daily report charts -->
             <ng-container *ngIf="isDailyReport">
                 <!-- pie-chart: task counts  -->
