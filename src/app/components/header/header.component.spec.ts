@@ -70,7 +70,9 @@ describe('HeaderComponent', () => {
   }));
 
   it('should get titleOfRoute from the router event', fakeAsync(() => {
-    expect(component.titleOfRoute).toBe('');
+    // default rediretion '/tasks/all' in app-routing.module.ts
+    const defaultRedirectionTitle = 'All tasks';
+    expect(component.titleOfRoute).toBe(defaultRedirectionTitle);
     // subscribe on the chaging router event by ngOnInit
     component.ngOnInit();
 

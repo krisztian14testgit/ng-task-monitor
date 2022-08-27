@@ -10,6 +10,7 @@
   "scripts": {
     "ng": "ng",
     "start": "npm run build.prod && electron ./src/electronJs/app.js",
+    "start.electron": "electron ./src/electronJs/app.js --trace-warnings",
     "build.prod": "ng build --configuration production --base-href ./",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --karma-config karma.conf.js --web-worker-ts-config tsconfig.worker.json"

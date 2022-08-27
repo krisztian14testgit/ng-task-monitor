@@ -1,25 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { from, Observable, of, throwError } from 'rxjs';
 
-import { environment } from 'src/environments/environment';
 import { LocationPath, LocationSetting } from './location-setting.model';
-import ServiceBase from 'src/app/services/service-base';
 
 @Injectable()
 export class LocationService {
 
-  private readonly _defaultPath: string;
   private readonly _locSetting!: LocationSetting | {[prop: string]: string};
-  private readonly _locationUrl = `${environment.host}location`;
 
-  constructor(private readonly http: HttpClient) {
-    this._defaultPath = 'C:/Users/../Documents/';
-
+  constructor() {
     this._locSetting = new LocationSetting();
-    this._locSetting.appSettingPath = this._defaultPath;
-    this._locSetting.taskPath = this._defaultPath;
    }
 
    /**
@@ -27,22 +17,20 @@ export class LocationService {
     * @returns LocationSetting instance
     */
   public getLocationSetting(): Observable<LocationSetting> {
-    // return this.http.get<LocationSetting>(this._locationUrl, {headers: ServiceBase.HttpHeaders});
-    
-    // TODO: temporary solution until the micro service is not done
-    return of(this._locSetting as LocationSetting);
+    return from(this._electronGetLocationPaths());
   }
 
   /**
    * Saves the given path by pathType.
-   * Returns true the saving process is succed.
+   * Returns true the saving process is succeed.
    * 
    * @param pathType It can be LocationPath.AppSettingPath or LocationPath.TaskPath.
    * @param path The path to be stored.
    * @returns boolean
    */
   public saveLocation(pathType: LocationPath, path: string): Observable<boolean> {
-    let keyProperty = LocationPath[pathType]; // get enum name
+    // get enum name
+    let keyProperty = LocationPath[pathType];
 
     // first char to be lowerCase
     const firstChar = keyProperty[0].toLowerCase();
@@ -53,10 +41,41 @@ export class LocationService {
     } else {
       this._locSetting.appSettingPath = path;
     }*/
-    // avoiding if condition
+    // avoiding if condition above
     (this._locSetting as {[prop: string]: string})[keyProperty] = path;
-    
-    return this.http.post(this._locationUrl, this._locSetting, {headers: ServiceBase.HttpHeaders})
-    .pipe(map(_ => true));
+
+    try {
+      this._electornSaveLocationPaths(pathType, this._locSetting as any);
+      return of(true);
+    } catch (error) {
+      return throwError(error);
+    }
+  }
+
+  /**
+   * Saving the appSettingPath or TaskPath by the given pathType via electtron/ipc-location communication.
+   * @param pathType It can be LocationPath.AppSettingPath or LocationPath.TaskPath.
+   * @param locSetting It contains the appSettingPath and TaskPath.
+   * @returns Promise<boolean>
+   */
+  private _electornSaveLocationPaths(pathType: LocationPath, locSetting: LocationSetting,
+    prevLocSettingPaths: LocationSetting | undefined = undefined): Promise<boolean> {
+    try {
+      // sending data to save via ipc, return NOTHING, not throw error
+      (window as any).electronAPI.ipcLocation.save(pathType, locSetting);
+      return Promise.resolve(true);
+    } catch(err) {
+      console.log('PROMISE ERRROR');
+      return Promise.reject();
+    }
+  }
+
+  /**
+   * Return the location's patsh from electron/ipc-location.js via ipc communcation of electron
+   * @returns Promise<LocationSetting>
+   * @memberof Electron ipcLocation
+   */
+  private _electronGetLocationPaths(): Promise<LocationSetting> {
+    return (window as any).electronAPI.ipcLocation.getPaths();
   }
 }

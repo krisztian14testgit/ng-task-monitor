@@ -96,20 +96,24 @@ describe('ChangeLocationComponent', () => {
   it('should change input value, saving the value of AppSettingPath', () => {
     spyOn(locService, 'saveLocation').and.callThrough();
 
-    const keyLocation = LocationPath[LocationPath.AppSettingPath];
     const expectedPathValue: string = component.appSettingControl.value;
+
+    // control.Pristine will be false by markAsDirty
+    component.appSettingControl.markAsDirty();
     // calling onChangePath event
-    component.onChangePath(keyLocation, component.appSettingControl);
+    component.saveChangedPaths();
     expect(locService.saveLocation).toHaveBeenCalledWith(LocationPath.AppSettingPath, expectedPathValue);
   });
 
   it('should change input value, saving the value of TaskPath', () => {
     spyOn(locService, 'saveLocation').and.callThrough();
 
-    const keyLocation = LocationPath[LocationPath.TaskPath];
     const expectedPathValue: string = component.taskDataControl.value;
+
+    // control.Pristine will be false by markAsDirty
+    component.taskDataControl.markAsDirty();
     // calling onChangePath event
-    component.onChangePath(keyLocation, component.taskDataControl);
+    component.saveChangedPaths();
     expect(locService.saveLocation).toHaveBeenCalledWith(LocationPath.TaskPath, expectedPathValue);
   });
 });

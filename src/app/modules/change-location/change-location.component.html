@@ -9,8 +9,7 @@
                         [ngClass]="{'input-valid': taskDataControl.valid}">
             <mat-label>Task folder path</mat-label>
             <input type="text" matInput [formControl]="taskDataControl"
-                    placeholder="C:/users/userName/Document/"
-                    (keyup)="onChangePath('TaskPath', taskDataControl)">
+                    placeholder="C:/users/userName/Document/">
             <mat-error *ngIf="taskDataControl.invalid && (taskDataControl.dirty || taskDataControl.touched)">
                 <strong>Please enter a valid path! E.g.: C:/folder/...</strong>
             </mat-error>
@@ -21,7 +20,7 @@
 <!-- App settings card -->
 <mat-card>
     <mat-card-title>
-        <label for="storedData">Where would you like to store App settings?</label>
+        <label for="storedData">Where would you like to store App settings? (Just readonly)</label>
     </mat-card-title>
     <hr>
     <mat-card-content>
@@ -30,10 +29,16 @@
             <mat-label>Defalult app folder</mat-label>
             <input type="text" matInput [formControl]="appSettingControl"
                     placeholder="C:/users/userName/Document/"
-                    (keyup)="onChangePath('AppSettingPath', appSettingControl)">
+                    [readonly]="true">
             <mat-error *ngIf="appSettingControl.invalid && (appSettingControl.dirty || appSettingControl.touched)">
                 <strong>Please enter a valid path! E.g.: C:/folder/...</strong>
             </mat-error>
         </mat-form-field>
     </mat-card-content>
+
+    <mat-card-actions class="location-save-right">
+        <button mat-raised-button
+                [disabled]="taskDataControl.pristine && appSettingControl.pristine"
+                (click)="saveChangedPaths()">Save changes</button>
+    </mat-card-actions>
 </mat-card>
