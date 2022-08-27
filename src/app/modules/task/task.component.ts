@@ -204,6 +204,8 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectedStatus = this.getStatusFromUrl();
         this.onFilterStatus();
       }, delayMilliSec);
+    }, () => {
+      this.alertMessageService.sendMessage('Your task list is empty!', AlertType.Info);
     });
   }
 
