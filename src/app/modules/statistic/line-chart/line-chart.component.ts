@@ -163,7 +163,7 @@ export class LineChartComponent implements OnChanges {
       }
     }
 
-    // returns only the values of the dict.
+    // returns only the values of the dict into number array
     return Object.values(completedCounts_dict);
   }
 
