@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { from, Observable, of, throwError } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { LocationPath, LocationSetting } from './location-setting.model';
 
@@ -46,8 +45,8 @@ export class LocationService {
     (this._locSetting as {[prop: string]: string})[keyProperty] = path;
 
     try {
-      return from(this._electornSaveLocationPaths(pathType, this._locSetting as any))
-      .pipe(map(() => true));
+      this._electornSaveLocationPaths(pathType, this._locSetting as any);
+      return of(true);
     } catch (error) {
       return throwError(error);
     }
