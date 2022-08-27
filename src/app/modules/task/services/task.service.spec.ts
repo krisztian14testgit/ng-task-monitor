@@ -1,4 +1,4 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { fakeAsync, inject, TestBed } from '@angular/core/testing';
 import { throwError } from 'rxjs';
 
@@ -38,11 +38,11 @@ describe('TaskService', () => {
     
   }));
 
-  it('should NOT get all tasks, bad request', fakeAsync(() =>{
-    spyOn(service, 'getAll').and.callFake(() => throwError(new Error('Bad request')));
+  it('should NOT get all tasks, Internal Electron Error', fakeAsync(() =>{
+    spyOn(service, 'getAll').and.callFake(() => throwError(new Error('Internal Electron Error')));
     
     service.getAll().subscribe(()=> {return ;}, (err: Error) => {
-      expect(err.message).toBe('Bad request');
+      expect(err.message).toBe('Internal Electron Error');
     });
 
   }));
@@ -90,11 +90,11 @@ describe('TaskService', () => {
   }));
 
   it('shoud NOT remove the taks, removing is failed', fakeAsync(() => {
-    spyOn(service, 'delete').and.callFake(() => throwError(new Error('Internal Server Error')));
+    spyOn(service, 'delete').and.callFake(() => throwError(new Error('Internal Electron Error')));
     
     const removedTaskId = FakedTask.list[0].id;
     service.delete(removedTaskId).subscribe(() => {return ;}, (err: Error) => {
-      expect(err.message).toBe('Internal Server Error');
+      expect(err.message).toBe('Internal Electron Error');
     });
   }));
 
