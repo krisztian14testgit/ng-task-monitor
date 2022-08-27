@@ -106,8 +106,8 @@ class NodeJSFileHandler {
     }
 
     /**
-     * Change the prevous adjusted path.
-     * It can be create a new folders line. It depends on the path string.
+     * Change the prevous adjusted path if you want to read/write file from the different path.
+     * It has to be called before reading or writing file.
      * @param newPath The path of the directory.
      */
     changeFilePath(newPath = '') {
