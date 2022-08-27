@@ -162,7 +162,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     if (this.taskForm.valid) {
       const isNewTask = this.task.isNewTask();
       const errorText = 'Updating/saving has been failed, server error!';
-      const successText = 'Saving has been success!';
+      const successText = 'Saving Tasks have been success!';
 
       // updating values by the taksForm in the Task instance
       this.updateTaskValuesByForm();
