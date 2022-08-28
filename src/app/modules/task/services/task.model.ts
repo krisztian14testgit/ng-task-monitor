@@ -98,7 +98,7 @@ export class Task {
      * * Completed = 2
      * @access Readonly
      * @defaultValue TaskStatus.Start
-     * @todo task-timer component only adjust the status by the setStatus
+     * @info task-timer component only adjust the status by the setStatus
      */
     public get status(): TaskStatus {
         return this._status;
@@ -172,7 +172,7 @@ export class Task {
 
     /**
      * Sets the status of the task.
-     * @todo countdown-timer adjusts it.
+     * @info countdown-timer adjusts it.
      * @param statusValue 
      */
     public setStatus(statusValue: TaskStatus) {

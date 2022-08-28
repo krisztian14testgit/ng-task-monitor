@@ -1,6 +1,6 @@
 import {Task, TaskStatus} from '../../modules/task/services/task.model';
 
-/** TODO: just for testing Task service */
+/** Contains faked task items for testing case to Task service */
 export class FakedTask {
     public static list: Task[] = [
         new Task('faked-task-45', 'fakedTask-45', 'This is faked Task45', 1.0),

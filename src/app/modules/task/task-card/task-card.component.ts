@@ -106,7 +106,6 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * It runs when the save button is clicked on.
    * 
    * Saving the task card.
-   * @todo
    * If the task card is modified then the status of task will be Start again.
    * @event Click
    */
