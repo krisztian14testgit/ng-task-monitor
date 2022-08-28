@@ -182,7 +182,6 @@ export class LineChartComponent implements OnChanges {
     const spentTimeSum_dict: {[isoDate: string]: number} = {};
     let isoDate: string;
 
-    
     for (const task of taskList) {
       isoDate = TaskDate.getYearMonthDaysISO(task.createdDate);
       // Adjusts the initial value: 0 if the key does not exist yet in dict.
@@ -196,7 +195,7 @@ export class LineChartComponent implements OnChanges {
       }
     }
 
-    // returns only the values of the dict.
+    // returns only the values of the dict into number array
     return Object.values(spentTimeSum_dict);
   }
 }
