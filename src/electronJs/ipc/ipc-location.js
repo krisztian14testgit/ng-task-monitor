@@ -63,12 +63,14 @@ class IpcLocation {
                 locationSetting = JSON.parse(strLocSetting);
 
                 // if tha taskPath does not exist, set default locationDir
-                if (!locationSetting.taskPath && !this._fileHandler.isExistedPath(locationSetting.taskPath)) {
+                if (!locationSetting.taskPath && 
+                    !this._fileHandler.isExistedPath(locationSetting.taskPath)) {
                     locationSetting.taskPath = this._locationDir;
                 }
 
                 // if tha appSetting path does not exist, set default locationDir
-                if (!locationSetting.appSettingPath && !this._fileHandler.isExistedPath(locationSetting.appSettingPath)) {
+                if (!locationSetting.appSettingPath &&
+                    !this._fileHandler.isExistedPath(locationSetting.appSettingPath)) {
                     locationSetting.appSettingPath = this._locationDir;
                 }
 
