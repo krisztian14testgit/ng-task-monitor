@@ -5,6 +5,7 @@
 const { ipcMain } = require('electron');
 const NodeJSFileHandler = require('../file-handler/nodejs-file-handler');
 const AppPath = require('../models/app-path');
+const TaskDate = require('../models/task-date');
 
 class IpcTaskList {
    /** Contains the location path of the installed app. */
@@ -54,7 +55,10 @@ class IpcTaskList {
 
                 const strTasks = this._fileHandler.readFile();
                 const taskObj = JSON.parse(strTasks);
-                return taskObj.taskList ? taskObj.taskList: [];
+                const taskList = taskObj.taskList ? taskObj.taskList: [];
+                
+                // removing those tasks which are older then 7 days (one week)
+                return TaskDate.removeOldTaskByDate('_createdDate', taskList);
             } catch(err) {
                 return [];
             }
