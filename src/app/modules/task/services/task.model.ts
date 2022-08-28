@@ -203,6 +203,8 @@ export class Task {
         const retTask = new Task(obj._id, obj.title, obj.description,
             obj.timeMinutes, obj._status, obj._createdDate,
             obj.timerStartedDate, obj.timerFinishedDate);
+        // for the line-chart: spentTime on chart
+        retTask['_initialTime'] = obj._initialTime;
         
         return retTask;
     }
