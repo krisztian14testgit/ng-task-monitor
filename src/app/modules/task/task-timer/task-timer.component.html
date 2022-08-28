@@ -1,6 +1,7 @@
 <div class="task-timer">
     <!-- start -->
     <button *ngIf="!isTimerStarted && !isTimerFinished" mat-button
+            [disabled]="timerInMinutes === 0"
             (click)="startTimer()">{{statusLabel}}</button>
     <!-- inProgress or completed -->
     <span *ngIf="isTimerStarted || isTimerFinished">{{statusLabel}}</span>

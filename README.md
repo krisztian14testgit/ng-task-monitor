@@ -31,6 +31,11 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `npm run build.prod` to build the project. The build artifacts will be stored in the `dist/ng-task-monitor` directory.
 
+## Deploying process
+1. Run the `npm run build.prod` command in cli
+2. Copy the code form `dist/ng-task-monitor` into that folder of the web server where it display the content. It depends on the configuration settings.
+    * Ordinary path in linux server: var/www/your-project
+
 ## Running unit tests
 
 Run `npm run test` to execute the unit tests

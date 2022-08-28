@@ -106,7 +106,6 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * It runs when the save button is clicked on.
    * 
    * Saving the task card.
-   * @todo
    * If the task card is modified then the status of task will be Start again.
    * @event Click
    */
@@ -187,7 +186,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     }
   }
 
-  /** Updates the editable properties(title, description, timeMinutes) in Task class. */
+  /** Updates the editable properties(title, description, timeMinutes) of Task instance. */
   private updateTaskValuesByForm(): void {
     this.task.title = this.taskForm.get('title')?.value;
     this.task.description = this.taskForm.get('description')?.value;
@@ -201,6 +200,12 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   private updateTaskStatus(taskStatus: TaskStatus): void {
     this.task.setStatus(taskStatus);
     this.statusLabel = TaskStatus[taskStatus];
+
+    if (taskStatus === TaskStatus.Completed) {
+      const timeMinutesControl = this.taskForm.get('timeMinutes');
+      timeMinutesControl?.setValue(0);
+      timeMinutesControl?.updateValueAndValidity();
+    }
   }
 
    /**
@@ -282,7 +287,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
       timeMinutes: new FormControl(timeMinutes, [
         Validators.required,
         Validators.max(this.TASK_MAX_MINUTES),
-        Validators.min(1), //min value: 1 min
+        Validators.min(0), //min value: 0 min
         Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.Number))
       ])
     });
