@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -37,7 +37,8 @@ export class StatisticComponent implements OnInit, OnDestroy {
   private _taskService$!: Subscription;
 
   constructor(private readonly taskService: TaskService,
-              private readonly router: Router) {
+              private readonly router: Router,
+              private readonly changeDetectorRef: ChangeDetectorRef) {
     this._dailyReportCharts = ['Task status counts'];
     this._weeklyReportCharts = ['Task Status counts', 'Completed tasks in week', 'Spent time on tasks'];
   }
@@ -55,7 +56,11 @@ export class StatisticComponent implements OnInit, OnDestroy {
 
   private getAllTasks(): void {
     this._taskService$ = this.taskService.getAll()
-      .subscribe((tasks: Task[]) => this.taskList = tasks);
+      .subscribe((tasks: Task[]) => {
+        this.taskList = tasks;
+        // triggers change detection manually to re-render view
+        this.changeDetectorRef.markForCheck();
+      });
   }
 
   /**
