@@ -58,7 +58,6 @@ export class StatisticComponent implements OnInit, OnDestroy {
     this._taskService$ = this.taskService.getAll()
       .subscribe((tasks: Task[]) => {
         this.taskList = tasks;
-        console.log('statistic comp list=', this.taskList);
         // triggers change detection manually to re-render view
         this.changeDetectorRef.markForCheck();
       });
