@@ -5,7 +5,6 @@
 const { ipcMain } = require('electron');
 const NodeJSFileHandler = require('../file-handler/nodejs-file-handler');
 const AppPath = require('../models/app-path');
-const TaskDate = require('../models/task-date');
 
 class IpcTaskList {
    /** Contains the location path of the installed app. */
@@ -42,6 +41,7 @@ class IpcTaskList {
      * @return Promise<array>
      */
     static getTaskList() {
+        const TaskDate = require('../models/task-date');
         ipcMain.handle('load-taskList', () => {
             try {
                 // reading taskPath from the appSetting.json.
