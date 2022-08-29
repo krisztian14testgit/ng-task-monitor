@@ -58,8 +58,7 @@ export class LocationService {
    * @param locSetting It contains the appSettingPath and TaskPath.
    * @returns Promise<boolean>
    */
-  private _electornSaveLocationPaths(pathType: LocationPath, locSetting: LocationSetting,
-    prevLocSettingPaths: LocationSetting | undefined = undefined): Promise<boolean> {
+  private _electornSaveLocationPaths(pathType: LocationPath, locSetting: LocationSetting): Promise<boolean> {
     try {
       // sending data to save via ipc, return NOTHING, not throw error
       (window as any).electronAPI.ipcLocation.save(pathType, locSetting);

@@ -41,6 +41,7 @@ class IpcTaskList {
      * @return Promise<array>
      */
     static getTaskList() {
+        const TaskDate = require('../models/task-date');
         ipcMain.handle('load-taskList', () => {
             try {
                 // reading taskPath from the appSetting.json.
@@ -54,7 +55,10 @@ class IpcTaskList {
 
                 const strTasks = this._fileHandler.readFile();
                 const taskObj = JSON.parse(strTasks);
-                return taskObj.taskList ? taskObj.taskList: [];
+                const taskList = taskObj.taskList ? taskObj.taskList: [];
+                
+                // removing those tasks which are older then 7 days (one week)
+                return TaskDate.removeOldTaskByDate('_createdDate', taskList);
             } catch(err) {
                 return [];
             }
