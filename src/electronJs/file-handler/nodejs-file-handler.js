@@ -42,6 +42,7 @@ class NodeJSFileHandler {
         // flag: w => Reading and writing, positioning the stream at the beginning of the file.
         // The file is created if it does not exist.
         return new Promise((resolve, reject) => {
+            // async writing file
             fs.writeFile(this.path, content, 'utf8', err => {
                 if (err) {
                     console.error(err);
@@ -80,8 +81,18 @@ class NodeJSFileHandler {
     removeFile(filePath = '') {
         try {
             if (filePath) {
-                fs.unlinkSync(filePath);
-                Promise.resolve();
+                // async removing file.
+                return new Promise((resolve) => {
+                    fs.unlink(filePath, (err) => {
+                        if (err) {
+                            console.error(err);
+                            throw new Error(err);
+                        }
+            
+                        // removing successfully
+                        return resolve();
+                    });
+                });
             }
         } catch (error) {
             console.error(error);
