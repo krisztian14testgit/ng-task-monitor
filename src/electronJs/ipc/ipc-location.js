@@ -14,6 +14,8 @@ class IpcLocation {
     /** Contains the location path of the installed app. */
     static _locationDir = AppPath.getDirectory();
     static _fileHandler = new NodeJSFileHandler(this._locationDir + AppPath.APP_SETTING_FILE);
+    /** Stores the previous path of the taskPath. Default is the local directory. */
+    static _prevTaskPath = this._locationDir + AppPath.TASK_FILE;
     /** Subscribes on the 'save-location' ipc channel to save the given path. */
     static subscribeOnSaving() {
         ipcMain.on('save-location', (event,
@@ -27,13 +29,14 @@ class IpcLocation {
                 this._fileHandler.changeFilePath(locationSetting.appSettingPath + AppPath.APP_SETTING_FILE);
             }
 
-            // just create empty task file.
-            /*if (pathType === 1) {
-                this._fileHandler.changeFilePath(locationSetting.taskPath + AppPath.TASK_FILE);
-                jsonStr = '';
-            }*/
+            // Removing previous path of the taskPath
+            if (this._prevTaskPath && this._fileHandler.isExistedPath(this._prevTaskPath) &&
+                this._prevTaskPath !== locationSetting.taskPath) {
+                this._fileHandler.removeFile(this._prevTaskPath);
+            }
             
             try {
+                this._prevTaskPath = locationSetting.taskPath + AppPath.TASK_FILE;
                 return this._fileHandler.writeFile(jsonStr).then(() => {
                     console.log('SAVING SUCCESS');
                     return true;
