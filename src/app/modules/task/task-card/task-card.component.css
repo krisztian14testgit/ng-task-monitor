@@ -40,18 +40,25 @@ mat-card-title > .card-title-button-box {
 }
 
 mat-card-content {
-    height: 20px;
+    height: auto;
+    width: 100%;
+    float: left;
 }
 
 .card-description {
     float: left;
     width: 60%;
-    height: initial;
+    height: fit-content;
 }
 
 .card-timer {
     float: right;
     width: 38%;
+}
+
+.card-divider-line {
+    float: left;
+    width: 100%;
 }
 
 /* progress-bar class */
