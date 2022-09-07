@@ -11,12 +11,12 @@
       </div>
     </mat-card-title>
     <mat-card-content>
-      <div class="card-description">{{task.description}}</div>
+      <div class="card-description"><pre>{{task.description}}</pre></div>
       <div class="card-timer">
         <div>Planed time(min): {{task.timeMinutes}}</div>
       </div>
+      <div class="card-divider-line"><hr></div>
     </mat-card-content>
-    <mat-divider inset></mat-divider>
     <mat-card-actions>
       <div>
         <app-task-timer [taskId]="task.id"
@@ -43,7 +43,7 @@
               type="text" placeholder="Task Title">
         <mat-error *ngIf="taskControls.title.invalid &&
                     (taskControls.title.dirty || taskControls.title.touched)">
-            <strong>Min letters: 3. Please use these letter: 0-9, a-z, -,_!</strong>
+            <strong>Min letters: 3 to 30. Please use these letter: 0-9, a-z, -,_!</strong>
         </mat-error>
       </div>
       <!-- close button -->
