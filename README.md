@@ -28,8 +28,12 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
 ## Build
+1. Run it to local: `npm start`.
+    * It creates a build from angular sources.
+    * After it runs the electron environment(in local) with the built version of the project.
+    * Finally, elentron window displays the app.
 
-missing
+2. Only just creating a build: `npm run build.prod`.
 
 ## Deploying process
 1. missing
@@ -65,6 +69,7 @@ ___
     * Using **web-workers** to delegate tasks in the background, using `requestIdleCallback()` for callback fn.
 5. Avoid attaching polyfills
     * Avoding JQuery using.
+        * Why? You have everything to do DOM manupalition by Angular features.
     * Polifill converts new features to older for older browser(IE). 
     The cromium engine (electronJs uses it) support new features, ES libraries, older func converting unwanted!
     * If you using `TypeScript`, the target ES library is the latest.
