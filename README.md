@@ -34,7 +34,7 @@ Run `npm run build.prod` to build the project. The build artifacts will be store
 ## Deploying process
 1. Run the `npm run build.prod` command in cli
 2. Copy the code form `dist/ng-task-monitor` into that folder of the web server where it display the content. It depends on the configuration settings.
-    * Ordinary path in linux server: var/www/your-project
+    * Ordinary path in linux server: var/www/domainName/public_html
 
 ## Running unit tests
 
