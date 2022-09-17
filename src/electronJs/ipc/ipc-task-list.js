@@ -60,6 +60,7 @@ class IpcTaskList {
                 // removing those tasks which are older then 7 days (one week)
                 return TaskDate.removeOldTaskByDate('_createdDate', taskList);
             } catch(err) {
+                // returns empty task list
                 return [];
             }
         });
