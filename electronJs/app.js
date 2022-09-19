@@ -14,7 +14,7 @@ const IpcLocation = require('./ipc/ipc-location');
 const IpcTaskList = require('./ipc/ipc-task-list');
 
 let mainWindow;
-const startedPage = '../../dist/ng-task-monitor/index.html';
+const startedPage = '../dist/ng-task-monitor/index.html';
 
 const indexUrl = url.format(path.join(__dirname, startedPage), {
     protocol: 'file',
