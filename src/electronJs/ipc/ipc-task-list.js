@@ -10,7 +10,11 @@ class IpcTaskList {
    /** Contains the location path of the installed app. */
    static _locationDir = AppPath.getDirectory();
    static _fileHandler = new NodeJSFileHandler(this._locationDir + AppPath.TASK_FILE);
-   /** Subscribes on the 'save-taskList' ipc channel to save the task items. */ 
+   /**
+    * Subscribes on the 'save-taskList' ipc channel to save the task items.
+    * @invoke save(taskList) in preload.js
+    * @return never
+    */ 
    static subscribeOnSaving() {
         ipcMain.on('save-taskList', (event, taskList = []) => {
             const taskObj = { "taskList": taskList };
@@ -38,6 +42,7 @@ class IpcTaskList {
 
     /**
      * Returns the task items from the taskList.json.
+     * @invoke getAll() in preload.js
      * @return Promise<array>
      */
     static getTaskList() {
@@ -51,6 +56,9 @@ class IpcTaskList {
                 if (taskPath && this._fileHandler.isExistedPath(taskPath)) {
                     // read task list from the adjusted task path
                     this._fileHandler.changeFilePath(taskPath + AppPath.TASK_FILE);
+                } else {
+                    // reset the deafult task path
+                    this._fileHandler.changeFilePath(this._locationDir + AppPath.TASK_FILE);
                 }
 
                 const strTasks = this._fileHandler.readFile();
@@ -60,7 +68,7 @@ class IpcTaskList {
                 // removing those tasks which are older then 7 days (one week)
                 return TaskDate.removeOldTaskByDate('_createdDate', taskList);
             } catch(err) {
-                // returns empty task list
+                // returns empty task list via IPC event channel
                 return [];
             }
         });
@@ -80,8 +88,6 @@ class IpcTaskList {
             taskPath = JSON.parse(strLocSetting)?.taskPath;
         }
 
-        // reset the deafult task path
-        this._fileHandler.changeFilePath(this._locationDir + AppPath.TASK_FILE);
         return taskPath;
     }
 }

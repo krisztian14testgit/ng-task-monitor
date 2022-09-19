@@ -14,7 +14,11 @@ class IpcLocation {
     /** Contains the location path of the installed app. */
     static _locationDir = AppPath.getDirectory();
     static _fileHandler = new NodeJSFileHandler(this._locationDir + AppPath.APP_SETTING_FILE);
-    /** Stores the previous path of the taskPath. Default is the local directory. */
+    /**
+     * Stores the previous path of the taskPath. Default is the local directory.
+     * @invoke save(pathType, locationObj) in preload.js
+     * @return never
+     */
     static _prevTaskPath = this._locationDir + AppPath.TASK_FILE;
     /** Subscribes on the 'save-location' ipc channel to save the given path. */
     static subscribeOnSaving() {
@@ -51,6 +55,7 @@ class IpcLocation {
     /**
      * Returns the LocationSetting structure of application.
      * AppSettingPath and TaskPath will be filled in with paths.
+     * @invoke getPaths() in preload.js
      * @return Promise<locationSetting object>
      */
     static getLocationPaths() {
@@ -79,7 +84,7 @@ class IpcLocation {
 
                 return locationSetting;
             } catch (err) {
-                // if it is error, returns default location dictionary.
+                // If it is error, returns default location dictionary via IPC channel.
                 return locationSetting;
             }
         });
