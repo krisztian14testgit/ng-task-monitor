@@ -24,6 +24,12 @@ $app-dark-theme: mat.define-dark-theme((
     color: $textColor;
 }
 
+@mixin location-card($textColor) {
+  .location .input-valid {
+    color: $textColor !important;
+  }
+}
+
 @mixin task-card($textColor) {
   $input-color: $textColor;
   $input-bgColor: black;
@@ -80,11 +86,13 @@ $app-dark-theme: mat.define-dark-theme((
 // It will be applay if you add it into body class
 .dark-theme {
     $textWhite:rgba(255, 255, 255, 0.8);
+    $text-valid: rgb(0, 200, 11);
     $menu-label-background: rgba(0, 0, 0, 0.33);
 
     @include mat.all-component-colors($app-dark-theme);
     @include body($textWhite);
     @include menu.container($menu-label-background, lightblue, darkgray);
+    @include location-card($text-valid);
     @include task-card($textWhite);
     @include alert-message();
     // chart?
