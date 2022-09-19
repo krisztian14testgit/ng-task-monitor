@@ -24,7 +24,7 @@ const indexUrl = url.format(path.join(__dirname, startedPage), {
 /** How to creata default eletron window */
 function createWindow () {
     mainWindow = new BrowserWindow({
-        width: 1000,
+        width: 800,
         height: 800,
         webPreferences: {
             nodeIntegration: true,
@@ -39,14 +39,14 @@ function createWindow () {
     mainWindow.loadURL(indexUrl);
 
     // Open the DevTools.(f12)
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', function () {
         mainWindow = null;
     });
 
     // open/close the DevTools window by f12
-    let isOpenDevTool = true;
+    let isOpenDevTool = false;
     let devToolMethod = 'openDevTools';
     mainWindow.webContents.on("before-input-event", (event, input) => {
         if (input.type === 'keyDown' && input.key === 'F12') {
