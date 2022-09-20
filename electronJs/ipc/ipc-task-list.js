@@ -56,9 +56,6 @@ class IpcTaskList {
                 if (taskPath && this._fileHandler.isExistedPath(taskPath)) {
                     // read task list from the adjusted task path
                     this._fileHandler.changeFilePath(taskPath + AppPath.TASK_FILE);
-                } else {
-                    // reset the deafult task path
-                    this._fileHandler.changeFilePath(this._locationDir + AppPath.TASK_FILE);
                 }
 
                 const strTasks = this._fileHandler.readFile();
@@ -86,6 +83,8 @@ class IpcTaskList {
             this._fileHandler.changeFilePath(appSettingPath);
             const strLocSetting = this._fileHandler.readFile();
             taskPath = JSON.parse(strLocSetting)?.taskPath;
+            // reset the deafult task path file saving, not forget to use original way
+            this._fileHandler.changeFilePath(this._locationDir + AppPath.TASK_FILE);
         }
 
         return taskPath;
