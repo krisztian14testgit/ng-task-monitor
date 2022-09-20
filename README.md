@@ -42,7 +42,7 @@ Run `ng generate component component-name` to generate a new component. You can 
 ## Deploying process
 Run `npm run package` to create a package - to be installed - from the app with Electron binary.
 * The package will be generated into __out__ folder.
-* The distribution build depends on the __host__ where you create the build. E.g.: Your host pc is window then the build is created for the window distribution.
+* **The distribution attention:** the build depends on the __host__ where you create the build. E.g.: Your host pc is window then the build is created for the window distribution.
 
 ### Deploying support docs:
 * [Electron forge configuration]( https://www.electronforge.io/configuration)
