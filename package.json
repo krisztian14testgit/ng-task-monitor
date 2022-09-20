@@ -7,13 +7,18 @@
     "email": "",
     "url": ""
   },
+  "main": "./electronJs/app.js",
   "scripts": {
     "ng": "ng",
-    "start": "npm run build.prod && electron ./src/electronJs/app.js",
-    "start.electron": "electron ./src/electronJs/app.js --trace-warnings",
+    "start": "electron-forge start --app-path ./electronJs/app.js",
+    "start.electron.withtemplate": "npm run build.prod && npm run start.electron",
+    "start.electron": "electron ./electronJs/app.js --trace-warnings",
+    "start.forge": "electron-forge start",
     "build.prod": "ng build --configuration production --base-href ./",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test --karma-config karma.conf.js --web-worker-ts-config tsconfig.worker.json"
+    "test": "ng test --karma-config karma.conf.js --web-worker-ts-config tsconfig.worker.json",
+    "package": "electron-forge package && mkdir out\\TaskMonitor-win32-x64\\storer",
+    "make": "electron-forge make"
   },
   "private": true,
   "dependencies": {
@@ -28,6 +33,7 @@
     "@angular/platform-browser-dynamic": "~12.2.0",
     "@angular/router": "~12.2.0",
     "chart.js": "^3.8.0",
+    "electron-squirrel-startup": "^1.0.0",
     "ng2-charts": "^3.0.11",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
@@ -37,6 +43,11 @@
     "@angular-devkit/build-angular": "~12.2.15",
     "@angular/cli": "~12.2.15",
     "@angular/compiler-cli": "~12.2.0",
+    "@electron-forge/cli": "^6.0.0-beta.66",
+    "@electron-forge/maker-deb": "^6.0.0-beta.66",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.66",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.66",
+    "@electron-forge/maker-zip": "^6.0.0-beta.66",
     "@types/jasmine": "~3.8.0",
     "@types/node": "^12.20.45",
     "@typescript-eslint/eslint-plugin": "^5.10.1",
@@ -51,5 +62,44 @@
     "karma-jasmine-html-reporter": "~1.7.0",
     "puppeteer": "^13.3.1",
     "typescript": "~4.3.5"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "name": "TaskMonitor",
+        "out": "out",
+        "ignore": [
+          "node_modules",
+          "\\.[beg].*",
+          "plan",
+          "src",
+          "tsconfig.*.json",
+          "angular.json",
+          "karma.conf.js"
+        ]
+      },
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "ng_task_monitor"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
   }
 }
