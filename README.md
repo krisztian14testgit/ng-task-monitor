@@ -21,18 +21,32 @@ Angular CLI version: 12.2.15
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+There are three cases to run app in local:
+1. `npm start` which create a build from the app.
+2. `start.electron` which create a build from the electronJs scripts and the template UI build is not changed.
+    * **ElectronJs renderer** includes the template index.html which come from /dist/ng-task-monitor/ that will display
+3. `start.electron.withtemplate` which create a build from the electronJs scripts and rebuild the template(angular UI app) again.
 
 ## Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
 ## Build
+1. Run it to local: `npm start`.
+    * Firstly, it creates a build from angular sources.
+    * Secodly, it runs the electron-forge to create a build from the electronJs/app.js in local.
+    * Finally, elentron window displays the app with UI.
 
-missing
+2. Only just creating a template(angular) build: `npm run build.prod`.
 
 ## Deploying process
-1. missing
+Run `npm run package` to create a package - to be installed - from the app with Electron binary.
+* The package will be generated into __out__ folder.
+* **The distribution attention:** the build depends on the __host__ where you create the build. E.g.: Your host pc is window then the build is created for the window distribution.
+
+### Deploying support docs:
+* [Electron forge configuration]( https://www.electronforge.io/configuration)
+* [Electron packager params](https://electron.github.io/electron-packager/main/interfaces/electronpackager.options.html#electronzipdir)
 
 ## Running unit tests
 
@@ -65,6 +79,7 @@ ___
     * Using **web-workers** to delegate tasks in the background, using `requestIdleCallback()` for callback fn.
 5. Avoid attaching polyfills
     * Avoding JQuery using.
+        * Why? You have everything to do DOM manupalition by Angular features.
     * Polifill converts new features to older for older browser(IE). 
     The cromium engine (electronJs uses it) support new features, ES libraries, older func converting unwanted!
     * If you using `TypeScript`, the target ES library is the latest.

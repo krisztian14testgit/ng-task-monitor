@@ -10,7 +10,11 @@ class IpcTaskList {
    /** Contains the location path of the installed app. */
    static _locationDir = AppPath.getDirectory();
    static _fileHandler = new NodeJSFileHandler(this._locationDir + AppPath.TASK_FILE);
-   /** Subscribes on the 'save-taskList' ipc channel to save the task items. */ 
+   /**
+    * Subscribes on the 'save-taskList' ipc channel to save the task items.
+    * @invoke save(taskList) in preload.js
+    * @return never
+    */ 
    static subscribeOnSaving() {
         ipcMain.on('save-taskList', (event, taskList = []) => {
             const taskObj = { "taskList": taskList };
@@ -38,6 +42,7 @@ class IpcTaskList {
 
     /**
      * Returns the task items from the taskList.json.
+     * @invoke getAll() in preload.js
      * @return Promise<array>
      */
     static getTaskList() {
@@ -60,6 +65,7 @@ class IpcTaskList {
                 // removing those tasks which are older then 7 days (one week)
                 return TaskDate.removeOldTaskByDate('_createdDate', taskList);
             } catch(err) {
+                // returns empty task list via IPC event channel
                 return [];
             }
         });
@@ -77,10 +83,10 @@ class IpcTaskList {
             this._fileHandler.changeFilePath(appSettingPath);
             const strLocSetting = this._fileHandler.readFile();
             taskPath = JSON.parse(strLocSetting)?.taskPath;
+            // reset the deafult task path file saving, not forget to use original way
+            this._fileHandler.changeFilePath(this._locationDir + AppPath.TASK_FILE);
         }
 
-        // reset the deafult task path
-        this._fileHandler.changeFilePath(this._locationDir + AppPath.TASK_FILE);
         return taskPath;
     }
 }

@@ -10,7 +10,7 @@ export namespace MyValidator {
      * @memberof MyValidator
      */
     export enum PatternRuleKeys {
-        /** library path regExp: C:/folder/sub-folder/ */
+        /** library path regExp: C:/folder/sub-folder/ or folder/../*/
         LibraryPath,
         /** task name regExp: digits, abc, -, _ */
         TaskName,
@@ -25,8 +25,8 @@ export namespace MyValidator {
      */
     export class Patterns {
         private static _rules: string[] = [
-            // library path regExp: C:/folder/sub-folder/
-            '[A-Z]?:/{1}([a-zA-Z0-9-_ ]+/{1})*$',
+            // library path regExp: C:/folder/sub-folder/ or folder/
+            '([a-zA-Z0-9-_: ]+/{1})*$',
             // task name regExp: tt, Task1, task-22, task_01
             '[^-0-9]{1}[a-zA-Z0-9-_]+',
             // decimal regExp: only allow the digits and dot sign.
