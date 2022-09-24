@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
-import { MyValidator } from 'src/app/validators/my-validator';
+import { FormValidator } from 'src/app/validators/my-validator';
 import { LocationSetting, LocationPath } from './services/location/location-setting.model';
 import { LocationService } from './services/location/location.service';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
@@ -143,11 +143,11 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     this._locationForm = new FormGroup({
       taskDataPath: new FormControl('', [
         Validators.required, 
-        Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.LibraryPath))
+        Validators.pattern(FormValidator.RegExpPatterns.getRule(FormValidator.RegExpKeys.LibraryPath))
       ]),
       appSettingPath: new FormControl('', [
         Validators.required,
-        Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.LibraryPath))
+        Validators.pattern(FormValidator.RegExpPatterns.getRule(FormValidator.RegExpKeys.LibraryPath))
       ])
     });
   }

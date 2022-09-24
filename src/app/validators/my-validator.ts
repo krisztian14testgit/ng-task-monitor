@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 /**
- * This module includes the validation features under the 'MyValidator' namespsace.
+ * This module includes the validation features under the 'FormValidator' namespsace.
  * It can comprise class, variables, functions, enum, interfaces.
  * @namespace
  */
-export namespace MyValidator {
+export namespace FormValidator {
     /** 
      * Contains the default Validdation patter keys.
-     * @memberof MyValidator
+     * @memberof FormValidator
      */
-    export enum PatternRuleKeys {
+    export enum RegExpKeys {
         /** library path regExp: C:/folder/sub-folder/ */
         LibraryPath,
         /** task name regExp: digits, abc, -, _ */
@@ -21,9 +21,9 @@ export namespace MyValidator {
     /**
      * This class contains the regExpressions in its own rules array.
      * You can get the actual rule by getRule() method with PatternRuleKeys.
-     * @memberof MyValidator
+     * @memberof FormValidator
      */
-    export class Patterns {
+    export class RegExpPatterns {
         private static _rules: string[] = [
             // library path regExp: C:/folder/sub-folder/
             '[A-Z]?:/{1}([a-zA-Z0-9-_ ]+/{1})*$',
@@ -34,11 +34,11 @@ export namespace MyValidator {
         ];
 
         /**
-         * Returns the actual regExp rule by PatternRuleKeys.
+         * Returns the actual regExp rule by RegExpKeys.
          * @returns string
-         * @memberof MyValidator.Patterns
+         * @memberof FormValidator.RegExpPatterns
          */
-        public static getRule(patterKey: PatternRuleKeys) {
+        public static getRule(patterKey: RegExpKeys) {
             return this._rules[patterKey];
         }
 

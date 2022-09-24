@@ -2,7 +2,7 @@ import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output } from
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { of } from 'rxjs';
 import { exhaustMap } from 'rxjs/operators';
-import { MyValidator } from 'src/app/validators/my-validator';
+import { FormValidator } from 'src/app/validators/my-validator';
 
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { TimerState } from '../services/task-timer/task-timer.model';
@@ -281,14 +281,14 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(30),
-        Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.TaskName))
+        Validators.pattern(FormValidator.RegExpPatterns.getRule(FormValidator.RegExpKeys.TaskName))
       ]),
       description: new FormControl(task.description, []),
       timeMinutes: new FormControl(timeMinutes, [
         Validators.required,
         Validators.max(this.TASK_MAX_MINUTES),
         Validators.min(0), //min value: 0 min
-        Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.Number))
+        Validators.pattern(FormValidator.RegExpPatterns.getRule(FormValidator.RegExpKeys.Number))
       ])
     });
   }
