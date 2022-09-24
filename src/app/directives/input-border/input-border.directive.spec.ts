@@ -70,55 +70,55 @@ describe('InputBorderDirective', () => {
     // add input-valid class
     let className = 'input-valid';
     inputTag.nativeElement.className += ' ' + className;
-    directive['refInput'] = inputTag.nativeElement;
-    expect(directive['refInput'].className.includes(className)).toBeTrue();
+    directive['_refInput'] = inputTag.nativeElement;
+    expect(directive['_refInput'].className.includes(className)).toBeTrue();
 
     // remove input-valid class by clearPreviousBorderClass
     directive['clearPreviousBorderClass']();
-    expect(directive['refInput'].className.includes(className)).toBeFalse();
+    expect(directive['_refInput'].className.includes(className)).toBeFalse();
 
     // add input-invalid class
     className = 'input-invalid';
     inputTag.nativeElement.className += ' ' + className;
-    directive['refInput'] = inputTag.nativeElement;
-    expect(directive['refInput'].className.includes(className)).toBeTrue();
+    directive['_refInput'] = inputTag.nativeElement;
+    expect(directive['_refInput'].className.includes(className)).toBeTrue();
 
     // remove input-invalid class by clearPreviousBorderClass
     directive['clearPreviousBorderClass']();
-    expect(directive['refInput'].className.includes(className)).toBeFalse();
+    expect(directive['_refInput'].className.includes(className)).toBeFalse();
 
     // add random class with 'input' keyword
     className = 'input-random';
     inputTag.nativeElement.className += ' ' + className;
-    directive['refInput'] = inputTag.nativeElement;
-    expect(directive['refInput'].className.includes(className)).toBeTrue();
+    directive['_refInput'] = inputTag.nativeElement;
+    expect(directive['_refInput'].className.includes(className)).toBeTrue();
 
     // remove random class by clearPreviousBorderClass
     directive['clearPreviousBorderClass']();
-    expect(directive['refInput'].className.includes(className)).toBeFalse();
+    expect(directive['_refInput'].className.includes(className)).toBeFalse();
   });
 
   it('should not call clearPreviousBorderClass, if input className is empy!', () => {
     spyOn(directive as any, 'findCurrentClassBy').and.callThrough();
     
     inputTag.nativeElement.className = '';
-    directive['refInput'] = inputTag.nativeElement;
+    directive['_refInput'] = inputTag.nativeElement;
     directive['clearPreviousBorderClass']();
     expect(directive['findCurrentClassBy']).not.toHaveBeenCalled();
   });
 
   it('should apply input classes(valid, invalid) base on isValid', () => {
-    directive['refInput'] = inputTag.nativeElement;
+    directive['_refInput'] = inputTag.nativeElement;
     // apply the input-valid
     directive.isValid = true;
     // calls changeBorderBy method
     directive.ngOnChanges();
-    expect(directive['refInput'].className.includes('input-valid')).toBeTrue();
+    expect(directive['_refInput'].className.includes('input-valid')).toBeTrue();
 
     // apply the input-invalid
     directive.isValid = false;
     // calls changeBorderBy method
     directive.ngOnChanges();
-    expect(directive['refInput'].className.includes('input-invalid')).toBeTrue();
+    expect(directive['_refInput'].className.includes('input-invalid')).toBeTrue();
   });
 });

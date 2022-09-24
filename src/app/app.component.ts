@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  public readonly apiTextInfo = `This app hasn't been linked with web API yet!`;
+  public readonly noApiLinkedText = `This app hasn't been linked with web API yet!`;
   constructor() {}
 
  

@@ -60,7 +60,7 @@ describe('HeaderComponent', () => {
   });
 
   it('should checked filled the rotuer dict after the component declaration', () => {
-    expect(component['routerDict']).toEqual(expectedRouterDict);
+    expect(component['_routerDict']).toEqual(expectedRouterDict);
   });
 
   it('should navigate to faked home site', fakeAsync(()=> {
@@ -83,7 +83,7 @@ describe('HeaderComponent', () => {
       tick(1);
       expect(location.path()).toBe(`/${navUrl}`);
       // routerDict contains the title of each router path.
-      expect(component.titleOfRoute).toBe(component['routerDict'][navUrl]);
+      expect(component.titleOfRoute).toBe(component['_routerDict'][navUrl]);
     }
 
     flush();

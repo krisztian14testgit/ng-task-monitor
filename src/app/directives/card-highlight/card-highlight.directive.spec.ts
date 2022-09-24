@@ -62,7 +62,7 @@ describe('CardHighlightDirective', () => {
     expect(isHighlighted).toBeFalse();
 
     // div is selected
-    cardDiv.className += directive['highlightBorderClass'];
+    cardDiv.className += directive['_highlightBorderClass'];
     isHighlighted = directive['isHighlighted'](cardDiv);
     expect(isHighlighted).toBeTrue();
   });
@@ -74,7 +74,7 @@ describe('CardHighlightDirective', () => {
     const actualClassDefList = cardDiv.className.split(' ');
     expect(actualClassDefList.length).toBe(2);
     expect(actualClassDefList[0]).toBe('card-test-class');
-    expect(actualClassDefList[1]).toBe(directive['highlightBorderClass']);
+    expect(actualClassDefList[1]).toBe(directive['_highlightBorderClass']);
   });
 
   it('should remove the highlighting from the cards', () => {
@@ -84,7 +84,7 @@ describe('CardHighlightDirective', () => {
     expect(directive['isHighlighted'](cardDiv)).toBeTrue();
     
     directive['removeHighLighting'](cardDiv);
-    expect(cardDiv.className).toBe(`card-test-class ${directive['originalBorderClass']}`);
+    expect(cardDiv.className).toBe(`card-test-class ${directive['_originalBorderClass']}`);
     expect(directive['isHighlighted'](cardDiv)).toBeFalse();
   });
 

@@ -19,11 +19,11 @@ export class StyleThemeComponent {
   public selectedTheme: string;
   private readonly STORAGE_KEY = 'savedTheme';
   /** Default theme is StyleThemes.Light, stored name: 'Light'. */
-  private readonly defaultTheme: string;
+  private readonly _defaultTheme: string;
 
   constructor(private readonly styleManagerService: StyleManagerService) {
     this.styleThemes = Object.keys(StyleThemes);
-    this.defaultTheme = this.styleThemes[0];
+    this._defaultTheme = this.styleThemes[0];
     this.selectedTheme = this.getStoredThemeFromLocalStorage();
     
     if (this.selectedTheme) {
@@ -52,7 +52,7 @@ export class StyleThemeComponent {
    */
   private getStoredThemeFromLocalStorage(): string {
     const theme = localStorage.getItem(this.STORAGE_KEY);
-    return theme ? theme : this.defaultTheme;
+    return theme ? theme : this._defaultTheme;
   }
 
   /**
