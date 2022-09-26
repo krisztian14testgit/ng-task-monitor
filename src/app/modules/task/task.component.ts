@@ -170,6 +170,10 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * @returns The filtered task by time period.
    */
   private filterTasksByDate(timePeriod: TaskTime): Task[] {
+    if (this._preservedTaskList.length === 0) {
+      return [];
+    }
+
     if (timePeriod === TaskTime.Today) {
       this._filteredTaskListByDate = this._preservedTaskList
         .filter((task:Task) => task.isCreatedToday() === true);
