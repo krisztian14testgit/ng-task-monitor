@@ -23,12 +23,8 @@ class IpcTaskList {
            try {
                 // reading taskPath from the appSetting.json.
                 const taskPath = this._getTaskPathFromAppSetting();
+                this._changeTaskPath(taskPath);
                 
-                // checnking the taskPath is valid to change file path
-                if (taskPath && this._fileHandler.isExistedPath(taskPath)) {
-                    // read task list from the adjusted task path
-                    this._fileHandler.changeFilePath(taskPath + AppPath.TASK_FILE);
-                }
                 this._fileHandler.writeFile(taskskStr).then(() => {
                     console.log('SAVING TASKS SUCCESS');
                     return true;
@@ -51,16 +47,9 @@ class IpcTaskList {
             try {
                 // reading taskPath from the appSetting.json.
                 const taskPath = this._getTaskPathFromAppSetting();
+                this._changeTaskPath(taskPath);
 
-                // checnking the taskPath is valid to change file path
-                if (taskPath && this._fileHandler.isExistedPath(taskPath)) {
-                    // read task list from the adjusted task path
-                    this._fileHandler.changeFilePath(taskPath + AppPath.TASK_FILE);
-                }
-
-                const strTasks = this._fileHandler.readFile();
-                const taskObj = JSON.parse(strTasks);
-                const taskList = taskObj.taskList ? taskObj.taskList: [];
+                const taskList = this._getTaskListFromFile();
                 
                 // removing those tasks which are older then 7 days (one week)
                 return TaskDate.removeOldTaskByDate('_createdDate', taskList);
@@ -88,6 +77,36 @@ class IpcTaskList {
         }
 
         return taskPath;
+    }
+
+    /**
+     * Changes the file path of the fileHandler where reads from the file
+     * if the given task path is valid.
+     * @param {*} taskPath 
+     */
+    static _changeTaskPath(taskPath) {
+        if (taskPath && this._fileHandler.isExistedPath(taskPath)) {
+            this._fileHandler.changeFilePath(taskPath + AppPath.TASK_FILE);
+        }
+
+    }
+
+    /**
+     * Returns the task items into array 
+     * if "taskList" key exists in the taskList.json file, 
+     * otherwise returns empty array.
+     * @returns Task[]
+     */
+    static _getTaskListFromFile() {
+        let retArray = [];
+        const tasksString = this._fileHandler.readFile();
+        const taskObj = JSON.parse(tasksString);
+
+        if (taskObj.taskList) {
+           retArray = taskObj.taskList;
+        }
+
+        return retArray;
     }
 }
 
