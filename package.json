@@ -73,6 +73,7 @@
           "\\.[begv].*",
           "plan",
           "src",
+          "storer",
           "tsconfig.*.json",
           "angular.json",
           "karma.conf.js"
