@@ -55,7 +55,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
               private readonly alertMessageService: AlertMessageService,
               private readonly timerWorkerService: CountdownTimerService,
               private readonly router: Router) {
-    this.defaultTaskTime = TaskTime.Today.toString();
+    this.defaultTaskTime = TaskTime.Week.toString();
   }
 
   /** Gets tasks form the service. */
@@ -199,7 +199,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       // Waiting main thread a little the sub-thread timer calculation to be executed.
       const delayMilliSec = 500;
       setTimeout(() => {
-        this.taskList = this.filterTasksByDate(TaskTime.Today);
+        this.taskList = this.filterTasksByDate(TaskTime.Week);
         // filters tasks by the selected status
         this.selectedStatus = this.getStatusFromUrl();
         this.onFilterStatus();
