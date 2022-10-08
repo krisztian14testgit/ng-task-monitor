@@ -100,8 +100,8 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   public onChangePath(keyLocation: string, formControlRef: FormControl): void {
     if (formControlRef.valid) {
       const locKey: number = LocationPath[keyLocation as keyof typeof LocationPath];
-      console.log('locKey', locKey);
-      if (locKey && locKey > -1) {
+      
+      if (locKey !== undefined && locKey > -1) {
         this.saveLocationPath(locKey, formControlRef);
       }
     }
