@@ -150,14 +150,17 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * It occures when the task creation is canceled, or is not saved.
    * Removes that empty card from the container which belongs to the removed id
    * @param $removedTaskId The id of new task which is not saved. The id includes 'new' keyword with number.
    */
   public onRemoveFailedNewTask($removedTaskId: string): void {
     if ($removedTaskId) {
       const removedIndex = this.taskList.findIndex((task: Task) => task.id === $removedTaskId);
-      this.taskList.splice(removedIndex, 1);
-      this.filteredTaskCount = this.taskList.length;
+      if (removedIndex > -1) {
+        this.taskList.splice(removedIndex, 1);
+        this.filteredTaskCount = this.taskList.length;
+      }
     }
   }
 
@@ -219,6 +222,9 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** 
    * Fills in taksStatusList from the TaskStatus enum items.
+   * The collected status names will be displayed on the status combobox
+   * on the template. 
+   * 
    * Result: tasksStatusList: ['start', 'inprogress', 'completed']
    */
   private fillInStatusSelection(): void {
