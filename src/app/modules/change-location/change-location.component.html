@@ -12,7 +12,7 @@
                     placeholder="C:/users/userName/Document/"
                     (keyup)="onChangePath('TaskPath', taskDataControl)">
             <mat-error *ngIf="taskDataControl.invalid && (taskDataControl.dirty || taskDataControl.touched)">
-                <strong>Please enter a valid path! E.g.: C:/folder/...</strong>
+                <strong>{{inputInvalidText}}</strong>
             </mat-error>
         </mat-form-field>
     </mat-card-content>
@@ -32,7 +32,7 @@
                     placeholder="C:/users/userName/Document/"
                     (keyup)="onChangePath('AppSettingPath', appSettingControl)">
             <mat-error *ngIf="appSettingControl.invalid && (appSettingControl.dirty || appSettingControl.touched)">
-                <strong>Please enter a valid path! E.g.: C:/folder/...</strong>
+                <strong>{{inputInvalidText}}</strong>
             </mat-error>
         </mat-form-field>
     </mat-card-content>
