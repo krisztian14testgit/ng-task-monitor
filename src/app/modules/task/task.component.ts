@@ -74,13 +74,13 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     this.timerWorkerService.terminateWorker();
   }
 
-  /** Performance helping for ngFor directive, iterable elements not rerendering all. */
+  /** Performance helping for ngFor directive, iterable elements not re-rendering all. */
   trackByTaskID(index: number, task: Task): string {
     return task.id;
   }
 
   /**
-   * This is an Model change event function.
+   * This is a combobox change event function.
    * It is triggered when the selection tag value is changed in the comboBox.
    * 
    * Filtering the taks elements by the selected status value.
@@ -118,7 +118,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * This an change event function.
+   * This a combobox change event function.
    * It run when the user select an item from Task time period combobox.
    * 
    * Filtering the tasks by the creationDate which is created today/yesterday or in week.
@@ -174,17 +174,23 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       return [];
     }
 
-    if (timePeriod === TaskTime.Today) {
-      this._filteredTaskListByDate = this._preservedTaskList
+    switch (timePeriod) {
+      case TaskTime.Today:
+        this._filteredTaskListByDate = this._preservedTaskList
         .filter((task:Task) => task.isCreatedToday() === true);
-    } else if (timePeriod === TaskTime.Yesterday) {
-      this._filteredTaskListByDate = this._preservedTaskList
+        break;
+
+      case TaskTime.Yesterday:
+        this._filteredTaskListByDate = this._preservedTaskList
         .filter((task:Task) => task.isCreatedYesterday() === true);
-    } else {
-      // show all tasks, deep copy origin task items
-      this._filteredTaskListByDate = [...this._preservedTaskList];
+        break;
+      
+      default:
+        // show all tasks, deep copy origin task items
+        this._filteredTaskListByDate = [...this._preservedTaskList];
+        break;
     }
-    
+
     this.filteredTaskCount = this._filteredTaskListByDate.length;
     return this._filteredTaskListByDate;
   }
@@ -200,7 +206,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       this.timerWorkerService.calculateTaskExpirationTime(this._preservedTaskList)
       .catch((err: Error) => console.error(err));
       
-      // Waiting main thread a little the sub-thread timer calculation to be executed.
+      // Sleeping main thread a little, hence the sub-thread timer calculation to be executed.
       const delayMilliSec = 500;
       setTimeout(() => {
         this.taskList = this.filterTasksByDate(TaskTime.Today);
@@ -228,7 +234,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * Returns task status from the navigated url.
-   * If returned value empty string(''), not selected statuses.
+   * If returned value empty string(''), not selected status.
    * @returns string
    */
   private getStatusFromUrl(): string {
