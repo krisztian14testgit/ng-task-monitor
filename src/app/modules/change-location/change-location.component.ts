@@ -16,6 +16,8 @@ import { AlertType } from 'src/app/components/alert-window/alert.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChangeLocationComponent implements OnInit, OnDestroy {
+  /** Stores the error message for the input is invalid. */
+  public readonly inputInvalidText: string;
   /** Stores the form validation behaviour. */
   private _locationForm!: FormGroup;
   /** The subcription of the location service. */
@@ -42,6 +44,7 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   constructor(private readonly locationService: LocationService,
               private readonly alertMessageService: AlertMessageService) {
     this.createLocationFormValidation();
+    this.inputInvalidText = 'Please enter a valid path! E.g.: C:/folder/...';
   }
 
   /** Sets the location paths by the location service which come from the server. */
@@ -59,10 +62,10 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * It is an event function.
+   * It is keydown.enter event function.
    * It is triggered by the enter keyword.
    * 
-   * Saving the task or application app path. Depends on which one is modified.
+   * Saving the task and application app path. Depends on which one is modified.
    * @event onEnter
    */
   @HostListener('window:keydown.enter', ['$event'])
@@ -100,17 +103,9 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
    */
   public onChangePath(keyLocation: string, formControlRef: FormControl): void {
     if (formControlRef.valid) {
-      // const locKey = LocationPath[keyLocation as keyof typeof LocationPath];
-      let locKey = -1;
-      if (keyLocation === 'TaskPath') {
-        locKey = LocationPath.TaskPath;
-      }
-      if (keyLocation === 'AppSettingPath') {
-        locKey = LocationPath.AppSettingPath;
-      }
-      
-      if (locKey > -1) {
-        
+      const locKey: number = LocationPath[keyLocation as keyof typeof LocationPath];
+      console.log('locKey', locKey);
+      if (locKey && locKey > -1) {
         this.saveLocationPath(locKey, formControlRef);
       }
     }
@@ -125,13 +120,14 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     
     this.locationService.saveLocation(keyLocation, formControlRef.value)
     .pipe(
+      // drop previous request if it get new request in during 2 sec
       debounceTime(waitSeconds))
     .subscribe(() => {
       // saving was success
-      this.alertMessageService.sendMessage('Path was saved!', AlertType.Success);
+      this.alertMessageService.sendMessage('Path is saved!', AlertType.Success);
     }, () => {
       // saving was unccess
-      this.alertMessageService.sendMessage('Path saving was failed!', AlertType.Error);
+      this.alertMessageService.sendMessage('Path saving is failed!', AlertType.Error);
     }, () => {
       // finally branch
       this._isSavingDone = false;
