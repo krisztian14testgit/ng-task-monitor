@@ -47,13 +47,9 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     this.inputInvalidText = 'Please enter a valid path! E.g.: C:/folder/...';
   }
 
-  /** Sets the location paths by the location service which come from the server. */
+  /** Sets saved tasks and appSetting paths. */
   ngOnInit(): void {
-    this._locationService$ = this.locationService.getLocationSetting()
-    .subscribe((locSetting: LocationSetting) => {
-      this.appSettingControl.setValue(locSetting.appSettingPath);
-      this.taskDataControl.setValue(locSetting.taskPath);
-    });
+    this.getlocationPathFromService();
   }
 
   /** Unsubscription from the API streams */
@@ -131,6 +127,15 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     }, () => {
       // finally branch
       this._isSavingDone = false;
+    });
+  }
+
+  /** Sets the location paths by the location service which come from the server. */
+  private getlocationPathFromService(): void {
+    this._locationService$ = this.locationService.getLocationSetting()
+    .subscribe((locSetting: LocationSetting) => {
+      this.appSettingControl.setValue(locSetting.appSettingPath);
+      this.taskDataControl.setValue(locSetting.taskPath);
     });
   }
 
