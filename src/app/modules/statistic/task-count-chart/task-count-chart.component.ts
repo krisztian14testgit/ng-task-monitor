@@ -81,19 +81,35 @@ export class TaskCountChartComponent implements OnChanges {
   /**
    * It triggers when taskList or isShowedTodayDate are changed.
    * 
-   * Filtering task list by creation date if this.isShowedTodayDate is true.
+   * Filtering tasks by the creation date if this.isShowedTodayDate is true.
    * Setting the labels and datasets of the pie-chart.
    */
   ngOnChanges(): void {
-    if (this.isShowedTodayDate && this.taskList.length > 0) {
-      this.filteredTaskList = this.filterByCreatedToday(this.taskList);
-      this._indexOfChartLabel = 0;
-    } else if (this.taskList.length > 0) {
-      this.filteredTaskList = this.taskList;
-      this._indexOfChartLabel = 1;
+    const todayReport = 0;
+    const weeklyReport = 1;
+    this._indexOfChartLabel = this.isShowedTodayDate ? todayReport : weeklyReport;
+    
+    if (this.taskList.length > 0) {
+      this.filteredTaskList = this.filterTasksByCreationDate(this.isShowedTodayDate);
+      this.setPieChartDataBy(this.filteredTaskList);
+    }
+  }
+
+  /**
+   * Return new array where task items are filterd by the creationDate.
+   * If the 'isTodayCreation' is true, returns those tasks which are created today only,
+   * otherwise returns the whole task items.
+   * @param isTodayCreation 
+   * @returns Task[] array
+   */
+  private filterTasksByCreationDate(isTodayCreation: boolean): Task[] {
+    let filteredTaskList = this.taskList;
+    
+    if (isTodayCreation) {
+      filteredTaskList = this.filterByCreatedToday(this.taskList);
     }
 
-    this.setPieChartDataBy(this.filteredTaskList);
+    return filteredTaskList;
   }
 
   /**
@@ -116,7 +132,7 @@ export class TaskCountChartComponent implements OnChanges {
     // set datasets (label, data)
     this.pieChartData.datasets[0].label = this._pieChartLabels[this._indexOfChartLabel];
     this.pieChartData.datasets[0].data = taskStatusCounts;
-    // set chart labels
+    // set chart labels: Start, Inprogress, Completed
     this.pieChartData.labels = this.getChartLabelsByTaskStatus(taskStatusCounts);
   }
 
@@ -134,6 +150,7 @@ export class TaskCountChartComponent implements OnChanges {
     const notBeIndexNumber = 1;
     const retLables = Object.keys(TaskStatus).filter(key => key.length > notBeIndexNumber);
     for (let i = 0; i < retLables.length; i++) {
+      // E.g.: Start(countNumber), Start(2)
       retLables[i] += `(${displayStatusCounts[i]})`;
     }
 
