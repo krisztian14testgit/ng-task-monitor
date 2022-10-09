@@ -29,7 +29,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   /** The name of TaskStatus. */
   public statusLabel = '';
   public selectedTaskId = '';
-  /** True: The card is selected, otherwise false. */
+  /** True: The card is selected, 'edit' button will appear. */
   public isSelected = false;
   /** 
    * Readonly prop: in minutes: 1439 => 24h * 60min -minValue(1)  => 23:59:00 
