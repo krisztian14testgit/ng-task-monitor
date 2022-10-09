@@ -18,10 +18,12 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   /** The current task reference which is given. */
   @Input() public task: Task = new Task();
   /** 
-   * The switcher of the Task card. 
+   * The switcher of the Task card.
    * If it is true, not display the 'edit' button of the card.
    */
   @Input() public isReadonly = false;
+  /** This switcher is true then Task-timer 'start' button is active, otherwise it is disabled. */
+  @Input() public isTimePeriodToday = true;
   @Output() public readonly newTaskCreationFailed: EventEmitter<string> = new EventEmitter();
   
   /** The switcher of the card is editable or not. */

@@ -36,7 +36,8 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /** 
    * Locker of the Task cards, if it is true then the card is not editable.
    * @description
-   * It will be true when task creation date is yesterday, or more later, NOT today.
+   * It will be true, when task creation date is yesterday or week,
+   * otherwise it's false when task creation date is today.
    */
   public isLockedTasks = false;
   public readonly MAX_LIMIT_TASKS = 10;

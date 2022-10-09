@@ -20,6 +20,8 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() public timerInMinutes = 0;
   /** The status label of the status. */
   @Input() public statusLabel = '';
+  /** This switcher is true then Task-timer 'start' button is active, otherwise it is disabled. */
+  @Input() public isTimePeriodToday = true;
   /** 
    * It triggers when the timer start counting or it is over.
    * 
@@ -106,7 +108,7 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
    * Measuring the time if the timerInmillisec is not zero.
    */
   public startTimer() {
-    if (this.timerInMillisec > 0) {
+    if (this.isTimePeriodToday && this.timerInMillisec > 0) {
       this.emitsTimerState(TimerState.Started);
       this.startCounterClock();
     }

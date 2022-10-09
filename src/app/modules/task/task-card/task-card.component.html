@@ -22,6 +22,7 @@
         <app-task-timer [taskId]="task.id"
                         [timerInMinutes]="task.timeMinutes"
                         [statusLabel]="statusLabel"
+                        [isTimePeriodToday]="isTimePeriodToday"
                         (timerStatusEmitter)="onTimerStatus($event)"></app-task-timer>
       </div>
     </mat-card-actions>
