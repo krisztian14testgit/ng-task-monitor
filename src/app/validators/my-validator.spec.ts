@@ -1,7 +1,7 @@
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { MyValidator } from "./my-validator";
+import { FormValidator } from "./my-validator";
 
-describe('MyValidator - regExp Pattern', () => {
+describe('FormValidator - regExp Pattern', () => {
     let formGroup: FormGroup;
     let libarryPathControl: FormControl;
     let taskNameControl: FormControl;
@@ -11,11 +11,11 @@ describe('MyValidator - regExp Pattern', () => {
         formGroup = new FormGroup({
             libraryPath: new FormControl('', [
                 Validators.required,
-                Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.LibraryPath))
+                Validators.pattern(FormValidator.RegExpPatterns.getRule(FormValidator.RegExpKeys.LibraryPath))
             ]),
             taskName: new FormControl('', [
                 Validators.required,
-                Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.TaskName))
+                Validators.pattern(FormValidator.RegExpPatterns.getRule(FormValidator.RegExpKeys.TaskName))
             ])
         });
 

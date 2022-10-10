@@ -38,5 +38,6 @@
     <app-task-card *ngFor="let task of taskList; trackBy: trackByTaskID"
                     [task]="task"
                     [isReadonly]="isLockedTasks"
+                    [isTimePeriodToday]="!isLockedTasks"
                     (newTaskCreationFailed)="onRemoveFailedNewTask($event)"></app-task-card>
 </div>

@@ -36,7 +36,8 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /** 
    * Locker of the Task cards, if it is true then the card is not editable.
    * @description
-   * It will be true when task creation date is yesterday, or more later, NOT today.
+   * It will be true, when task creation date is yesterday or week,
+   * otherwise it's false when task creation date is today.
    */
   public isLockedTasks = false;
   public readonly MAX_LIMIT_TASKS = 10;
@@ -74,13 +75,13 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     this.timerWorkerService.terminateWorker();
   }
 
-  /** Performance helping for ngFor directive, iterable elements not rerendering all. */
+  /** Performance helping for ngFor directive, iterable elements not re-rendering all. */
   trackByTaskID(index: number, task: Task): string {
     return task.id;
   }
 
   /**
-   * This is an Model change event function.
+   * This is a combobox change event function.
    * It is triggered when the selection tag value is changed in the comboBox.
    * 
    * Filtering the taks elements by the selected status value.
@@ -88,37 +89,37 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * @event onChange
    */
   public onFilterStatus(): void {
-    if (this.selectedStatus) {
-      const statusKey = this.selectedStatus.toUpperCaseFirstChar();
-      // convert string to enum type
-      const statusValue = TaskStatus[statusKey as keyof typeof TaskStatus];
+    // All: not filtering by status, all task will display
+    if (!this.selectedStatus) {
+      this.taskList = this._filteredTaskListByDate;
+      return;
+    }
 
-      // If the task status is Completed or Start, stop all counterdown timers.
-      if (statusValue === TaskStatus.Completed || statusValue === TaskStatus.Start) {
-        // Collects those task' ids which their status is InProgress, stop them
-        const inProgressTasks = this._filteredTaskListByDate
-          .filter((task:Task) => task.status === TaskStatus.Inprogress);
-        const taskIds = inProgressTasks.map(task => task.id);
-        this.taskTimerService.emitState(TimerState.Interrupted, taskIds);
-      } else {
-        // If it is InProgess, calculate the rest time of all tasks again.
-        this.timerWorkerService.calculateTaskExpirationTime(this._filteredTaskListByDate);
-      }
-      
-      // Delay the main thread because of the background thread has time for the calculation.
+    const statusKey = this.selectedStatus.toUpperCaseFirstChar();
+    // convert string to enum type
+    const statusValue = TaskStatus[statusKey as keyof typeof TaskStatus];
+
+    // If it is InProgess, calculate the rest time of all tasks again.
+    if (statusValue === TaskStatus.Inprogress) {
+      this.timerWorkerService.calculateTaskExpirationTime(this._filteredTaskListByDate);
+      // Sleeping the main thread, because of the background thread has time for the calculation.
       const delayedMilliSec = 500;
       setTimeout(() => {
         // filters task items by the status
         this.taskList = this._filteredTaskListByDate.filter((task:Task) => task.status === statusValue);
       }, delayedMilliSec);
-    } else {
-      // not filtering by status, all task will display
-      this.taskList = this._filteredTaskListByDate;
+    }
+
+    // Stop all countdown timers, status is Completed or Start,
+    if (statusValue === TaskStatus.Completed || statusValue === TaskStatus.Start) {
+      this.stopCountdownTimerOnInprogressTasks();
+      // filters task items by the status
+      this.taskList = this._filteredTaskListByDate.filter((task:Task) => task.status === statusValue);
     }
   }
 
   /**
-   * This an change event function.
+   * This a combobox change event function.
    * It run when the user select an item from Task time period combobox.
    * 
    * Filtering the tasks by the creationDate which is created today/yesterday or in week.
@@ -126,7 +127,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   public onChangedTimePeriod(matSelectionEvent: MatSelectChange): void {
     const lastTastTimeValue = TaskTime.Week;
-    if ( matSelectionEvent.value <= lastTastTimeValue) {
+    if (matSelectionEvent.value <= lastTastTimeValue) {
       const timeFilter = Number(matSelectionEvent.value);
       this.taskList = this.filterTasksByDate(timeFilter);
       // Yesterday, week tasks cannot be editable.
@@ -150,14 +151,17 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * It occures when the task creation is canceled, or is not saved.
    * Removes that empty card from the container which belongs to the removed id
    * @param $removedTaskId The id of new task which is not saved. The id includes 'new' keyword with number.
    */
   public onRemoveFailedNewTask($removedTaskId: string): void {
     if ($removedTaskId) {
       const removedIndex = this.taskList.findIndex((task: Task) => task.id === $removedTaskId);
-      this.taskList.splice(removedIndex, 1);
-      this.filteredTaskCount = this.taskList.length;
+      if (removedIndex > -1) {
+        this.taskList.splice(removedIndex, 1);
+        this.filteredTaskCount = this.taskList.length;
+      }
     }
   }
 
@@ -170,17 +174,27 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * @returns The filtered task by time period.
    */
   private filterTasksByDate(timePeriod: TaskTime): Task[] {
-    if (timePeriod === TaskTime.Today) {
-      this._filteredTaskListByDate = this._preservedTaskList
-        .filter((task:Task) => task.isCreatedToday() === true);
-    } else if (timePeriod === TaskTime.Yesterday) {
-      this._filteredTaskListByDate = this._preservedTaskList
-        .filter((task:Task) => task.isCreatedYesterday() === true);
-    } else {
-      // show all tasks, deep copy origin task items
-      this._filteredTaskListByDate = [...this._preservedTaskList];
+    if (this._preservedTaskList.length === 0) {
+      return [];
     }
-    
+
+    switch (timePeriod) {
+      case TaskTime.Today:
+        this._filteredTaskListByDate = this._preservedTaskList
+        .filter((task:Task) => task.isCreatedToday() === true);
+        break;
+
+      case TaskTime.Yesterday:
+        this._filteredTaskListByDate = this._preservedTaskList
+        .filter((task:Task) => task.isCreatedYesterday() === true);
+        break;
+      
+      default:
+        // show all tasks, deep copy origin task items
+        this._filteredTaskListByDate = [...this._preservedTaskList];
+        break;
+    }
+
     this.filteredTaskCount = this._filteredTaskListByDate.length;
     return this._filteredTaskListByDate;
   }
@@ -196,7 +210,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       this.timerWorkerService.calculateTaskExpirationTime(this._preservedTaskList)
       .catch((err: Error) => console.error(err));
       
-      // Waiting main thread a little the sub-thread timer calculation to be executed.
+      // Sleeping main thread a little, hence the sub-thread timer calculation to be executed.
       const delayMilliSec = 500;
       setTimeout(() => {
         this.taskList = this.filterTasksByDate(TaskTime.Today);
@@ -209,6 +223,9 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** 
    * Fills in taksStatusList from the TaskStatus enum items.
+   * The collected status names will be displayed on the status combobox
+   * on the template. 
+   * 
    * Result: tasksStatusList: ['start', 'inprogress', 'completed']
    */
   private fillInStatusSelection(): void {
@@ -224,7 +241,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * Returns task status from the navigated url.
-   * If returned value empty string(''), not selected statuses.
+   * If returned value empty string(''), not selected status.
    * @returns string
    */
   private getStatusFromUrl(): string {
@@ -239,5 +256,14 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     return status;
+  }
+
+  /** Stops all countdown timer where the status of tasks are inprogress. */
+  private stopCountdownTimerOnInprogressTasks(): void {
+    // Collects those tasks' id where their status is InProgress, stop those timers
+    const inProgressTasks = this._filteredTaskListByDate
+    .filter((task:Task) => task.status === TaskStatus.Inprogress);
+    const inprogressTaskIds = inProgressTasks.map(task => task.id);
+    this.taskTimerService.emitState(TimerState.Interrupted, inprogressTaskIds);
   }
 }

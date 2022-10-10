@@ -11,10 +11,10 @@ export class InputBorderDirective implements OnChanges {
   /** The switch of the validation. */
   @Input() public isValid = false;
 
-  /** Stores the pre def keyword of the input-valid, input-invalid class. */
-  private readonly preClassKey = 'input';
+  /** Stores the pre-define keyword of the 'input'-valid, 'input'-invalid class. */
+  private readonly _preClassKey = 'input';
   /** The needle of the input element. */
-  private refInput!: HTMLInputElement;
+  private _refInput!: HTMLInputElement;
 
   /**
    * It triggers when the user click on the input field.
@@ -23,7 +23,7 @@ export class InputBorderDirective implements OnChanges {
   @HostListener('click', ['$event'])
   public onClick(target: Event): void {
     if (target.currentTarget) {
-      this.refInput = target.currentTarget as HTMLInputElement;
+      this._refInput = target.currentTarget as HTMLInputElement;
       // it runs fist to change border of the input field
       this.changeBorderBy(this.isValid);
     }
@@ -31,7 +31,7 @@ export class InputBorderDirective implements OnChanges {
 
   /** It is triggered when the isValid input changes. */
   ngOnChanges(): void {
-    if (this.refInput) {
+    if (this._refInput) {
       this.changeBorderBy(this.isValid);
     }
   }
@@ -46,7 +46,7 @@ export class InputBorderDirective implements OnChanges {
   private changeBorderBy(isValid: boolean): void {
     const classValue = isValid ? 'valid': 'invalid';
     this.clearPreviousBorderClass();
-    this.refInput.className += ` ${this.preClassKey}-${classValue}`;
+    this._refInput.className += ` ${this._preClassKey}-${classValue}`;
   }
 
   /**
@@ -58,16 +58,16 @@ export class InputBorderDirective implements OnChanges {
     let delIndex = -1;
     let classes: string[] = [];
 
-    if (this.refInput.className.length > 0) {
-      classes = this.refInput.className.split(' ');
-      delIndex = this.findCurrentClassBy(classes, this.preClassKey);
+    if (this._refInput.className.length > 0) {
+      classes = this._refInput.className.split(' ');
+      delIndex = this.findCurrentClassBy(classes, this._preClassKey);
     }
     
     if (delIndex > -1) {
       // remove class by delIndex
       classes.splice(delIndex, 1);
       // save the rest class definiton without the removed one.
-      this.refInput.className = classes.join(' ');
+      this._refInput.className = classes.join(' ');
     }
   }
 

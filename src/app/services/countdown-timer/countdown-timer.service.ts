@@ -47,7 +47,7 @@ export class CountdownTimerService {
         console.log('Main thread received Date form web-worker');
         const restTimeList = wEvent.data as number[];
 
-        // the taskList.length and restTimeList are equivalent array size.
+        // the taskList.length and restTimeList.length are equivalent array size.
         if (restTimeList && restTimeList.length > 0) {
           for (let i = 0; i < taskList.length; i++) {
             if (restTimeList[i] === 0) {
