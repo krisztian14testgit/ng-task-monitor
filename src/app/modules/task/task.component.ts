@@ -56,7 +56,10 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
               private readonly alertMessageService: AlertMessageService,
               private readonly timerWorkerService: CountdownTimerService,
               private readonly router: Router) {
+    // In Electron versoin the, the default time period: week report
+    // The listed tasks are locked, not showing 'edit button'.
     this.defaultTaskTime = TaskTime.Week.toString();
+    this.isLockedTasks = true;
   }
 
   /** Gets tasks form the service. */

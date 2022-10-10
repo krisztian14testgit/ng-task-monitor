@@ -22,7 +22,7 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
   /** The status label of the status. */
   @Input() public statusLabel = '';
   /** This switcher is true then Task-timer 'start' button is active, otherwise it is disabled. */
-  @Input() public isTimePeriodToday = true;
+  @Input() public isTimePeriodToday!: boolean;
   /** 
    * It triggers when the timer start counting or it is over.
    * 
