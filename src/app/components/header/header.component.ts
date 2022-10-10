@@ -22,7 +22,7 @@ export class HeaderComponent implements OnInit {
    *  'linkey': 'menuTitle'
    * }
    */
-  private routerDict: {[routerKey: string]: string} = {};
+  private _routerDict: {[routerKey: string]: string} = {};
 
   constructor(private readonly router: Router) {
     this.appMenus = new AppMenu();
@@ -70,7 +70,7 @@ export class HeaderComponent implements OnInit {
         // remove slash sign
         const urlKey = event.url.substring(1);
         if (urlKey) {
-          this.titleOfRoute = this.routerDict[urlKey];
+          this.titleOfRoute = this._routerDict[urlKey];
         }
       }
     });
@@ -85,7 +85,7 @@ export class HeaderComponent implements OnInit {
     const listInList = Object.values(labelDict);
     for (let index = 0, k = listInList.length; index < k; index++) {
       for (const item of listInList[index]) {
-        this.routerDict[item.linkKey] = item.title;
+        this._routerDict[item.linkKey] = item.title;
       }
     }
   }

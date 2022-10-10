@@ -32,13 +32,13 @@ describe('StyleThemeComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-    expect(component['defaultTheme']).toBe('Light');
+    expect(component['_defaultTheme']).toBe('Light');
     expect(component['selectedTheme']).toBe('Light');
   });
 
   it('should store theme into the localStorage', () => {
     // when the localStorage is empty.
-    expect(component['selectedTheme']).toBe(component['defaultTheme']);
+    expect(component['selectedTheme']).toBe(component['_defaultTheme']);
 
     // stores the theme
     let expectedTheme = 'Dark';
@@ -60,7 +60,7 @@ describe('StyleThemeComponent', () => {
     expectedTheme = 'fail';
     component['changeTheme'](expectedTheme);
     storedTheme = component['getStoredThemeFromLocalStorage']();
-    expect(storedTheme).toBe(component['defaultTheme']);
+    expect(storedTheme).toBe(component['_defaultTheme']);
   });
 
   it('should render the 3 radio button themes', () => {

@@ -11,7 +11,7 @@
             <input type="text" matInput [formControl]="taskDataControl"
                     placeholder="C:/users/userName/Document/">
             <mat-error *ngIf="taskDataControl.invalid && (taskDataControl.dirty || taskDataControl.touched)">
-                <strong>Please enter a valid path! E.g.: C:/folder/...</strong>
+                <strong>{{inputInvalidText}}</strong>
             </mat-error>
         </mat-form-field>
     </mat-card-content>
@@ -31,7 +31,7 @@
                     matInput [formControl]="appSettingControl" [readonly]="true"
                     placeholder="C:/users/userName/Document/">
             <mat-error *ngIf="appSettingControl.invalid && (appSettingControl.dirty || appSettingControl.touched)">
-                <strong>Please enter a valid path! E.g.: C:/folder/...</strong>
+                <strong>{{inputInvalidText}}</strong>
             </mat-error>
         </mat-form-field>
     </mat-card-content>

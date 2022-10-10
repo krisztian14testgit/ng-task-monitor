@@ -10,7 +10,7 @@
 # dependencies
 /node_modules
 
-# electron build out
+# electron build out folder
 /out
 
 # profiling files

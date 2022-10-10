@@ -2,7 +2,7 @@ import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output } from
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { of } from 'rxjs';
 import { exhaustMap } from 'rxjs/operators';
-import { MyValidator } from 'src/app/validators/my-validator';
+import { FormValidator } from 'src/app/validators/my-validator';
 
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { TimerState } from '../services/task-timer/task-timer.model';
@@ -18,10 +18,12 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   /** The current task reference which is given. */
   @Input() public task: Task = new Task();
   /** 
-   * The switcher of the Task card. 
+   * The switcher of the Task card.
    * If it is true, not display the 'edit' button of the card.
    */
   @Input() public isReadonly = false;
+  /** This switcher is true then Task-timer 'start' button is active, otherwise it is disabled. */
+  @Input() public isTimePeriodToday = true;
   @Output() public readonly newTaskCreationFailed: EventEmitter<string> = new EventEmitter();
   
   /** The switcher of the card is editable or not. */
@@ -29,7 +31,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   /** The name of TaskStatus. */
   public statusLabel = '';
   public selectedTaskId = '';
-  /** True: The card is selected, otherwise false. */
+  /** True: The card is selected, 'edit' button will appear. */
   public isSelected = false;
   /** 
    * Readonly prop: in minutes: 1439 => 24h * 60min -minValue(1)  => 23:59:00 
@@ -38,7 +40,8 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   public readonly TASK_MAX_MINUTES = Task.MAX_MINUTES -1;
   /** 
    * Stores the references of the formControls of the reactive form by the prop name.
-   * It is helping construction to get current formControl form the Formgroup.
+   * It is helping construction to get current formControl by name.
+   * It is used on edit form template.
    */
   public readonly taskControls: {[prop: string]: FormControl };
   /** The FromGroup structure of the task. */
@@ -160,10 +163,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     this.taskForm.updateValueAndValidity();
     if (this.taskForm.valid) {
       const isNewTask = this.task.isNewTask();
-      const errorText = 'Updating/saving has been failed, server error!';
-      const successText = 'Saving Tasks have been success!';
-
-      // updating values by the taksForm in the Task instance
+      // updating Task object by the taksForm
       this.updateTaskValuesByForm();
       const serviceMethod = !isNewTask ? 'update': 'add';
 
@@ -172,13 +172,18 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
       saving$.pipe(
         // ignore new request(insert, update) when the previous one is not completed!
         exhaustMap(task =>  this.taskService[serviceMethod](task))
-      ).subscribe(savedTask => {
-        // success branch
-        this.task = savedTask;
-        this.setDefaulFormValuesBy(savedTask);
-        this.alertMessageService.sendMessage(successText);
-      },
-        () => this.alertMessageService.sendMessage(errorText),
+        ).subscribe(savedTask => {
+          // success branch
+          this.task = savedTask;
+          this.savingInitialFormValues(savedTask);
+          const successText = 'Saving has been success!';
+          this.alertMessageService.sendMessage(successText);
+        },
+        () => {
+          // error branch
+          const errorText = 'Updating/saving has been failed, server error!';
+          this.alertMessageService.sendMessage(errorText);
+        },
         () => {
           // finally branch, Close the edit mode
           this.isEditable = false;
@@ -195,6 +200,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
 
   /**
    * Updates the status number of the Task and statusLabel.
+   * If the status is completed then timeMinutes will be zero.
    * @param taskStatus 
    */
   private updateTaskStatus(taskStatus: TaskStatus): void {
@@ -223,11 +229,13 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     // converts string to enum value
     const timerState = TimerState[timerStateName as keyof typeof TimerState];
     let taskStatusValue = TaskStatus.Completed;
+    
     if (timerState > 0) {
       taskStatusValue = TaskStatus.Inprogress;
       // Inprogress task is not editable
       this.isReadonly = true;
     }
+    
     this.updateTaskStatus(taskStatusValue);
   }
 
@@ -255,10 +263,23 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * Preserves the intital values of the given Task.
    * @param task Reference of the Task.
    */
-  private setDefaulFormValuesBy(task: Task): void {
+  private savingInitialFormValues(task: Task): void {
     this._defaultFormValues['title'] = task.title;
     this._defaultFormValues['description'] = task.description;
     this._defaultFormValues['timeMinutes'] = task.initialTime;
+  }
+
+  /** 
+   * Returns the adjsuted timeMinutes of Task.
+   * 
+   * The Task initialTime contains origion adjusted time by the user.
+   * The initial time will be loaded into timeMinutes in 'edit' mode.
+   * Exclude the counterdown timer is inProgress.
+   * @param task The instance of the given task.
+   * @return number
+   */
+  private getTaskTimeMinutesByInitialTime(task: Task): number {
+    return task.timeMinutes === 0 && task.initialTime > 0 ? task.initialTime : task.timeMinutes;
   }
 
   /**
@@ -268,27 +289,22 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    */
   private generateReactiveForm(task: Task): FormGroup {
     // saving the intital values of the task
-    this.setDefaulFormValuesBy(task);
-
-    /* If initialTime contains origion adjusted time.
-     * The initial time will be loaded in 'edit' mode of the task form
-     * instead of the counterdown timer is inProgress.
-     */
-    const timeMinutes = task.timeMinutes === 0 && task.initialTime > 0 ? task.initialTime : task.timeMinutes;
+    this.savingInitialFormValues(task);
+    const timeMinutes = this.getTaskTimeMinutesByInitialTime(task);
 
     return new FormGroup({
       title: new FormControl(task.title, [
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(30),
-        Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.TaskName))
+        Validators.pattern(FormValidator.RegExpPatterns.getRule(FormValidator.RegExpKeys.TaskName))
       ]),
       description: new FormControl(task.description, []),
       timeMinutes: new FormControl(timeMinutes, [
         Validators.required,
         Validators.max(this.TASK_MAX_MINUTES),
         Validators.min(0), //min value: 0 min
-        Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.Number))
+        Validators.pattern(FormValidator.RegExpPatterns.getRule(FormValidator.RegExpKeys.Number))
       ])
     });
   }

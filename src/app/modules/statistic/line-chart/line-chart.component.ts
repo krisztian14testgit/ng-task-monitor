@@ -84,7 +84,7 @@ export class LineChartComponent implements OnChanges {
    * @param taskList The elements of the taskList.
    */
   private setLineChartDataBy(taskList: Task[]): void {
-    this.sortTaskByDays(taskList);
+    taskList = this.sortTaskByDays(taskList);
     /* Reset the line-Chart data struct, because of the pointer of lineChartDate
      * to refreshing the line-chart's data by new reference. */
     this.lineChartData = {...this.lineChartData};
@@ -96,16 +96,19 @@ export class LineChartComponent implements OnChanges {
   }
 
   /**
-   * Increasing orders of the task items by the day date.
-   * The ordering is changed in the same elements of the list, because of the reference.
+   * Returns new sorted task array where tasks are increased by date.
    * @param taskList The elements of the taskList.
+   * @return Task[] array
    */
-  private sortTaskByDays(taskList: Task[]): void {
-    taskList.sort((task1: Task, task2: Task) => {
+  private sortTaskByDays(taskList: Task[]): Task[] {
+    const orderedTasks = [...taskList];
+    orderedTasks.sort((task1: Task, task2: Task) => {
       const date1 = new Date(task1.createdDate);
       const date2 = new Date(task2.createdDate);
       return date1.getTime() - date2.getTime();
     });
+
+    return orderedTasks;
   }
 
   /**
@@ -168,8 +171,8 @@ export class LineChartComponent implements OnChanges {
   }
 
   /**
-   * Returns spent times sum on the completed tasks by the creation date.
-   * Return them into array, as creation date of thask can be differnt.
+   * Returns spent times summation of the completed tasks by the creation date.
+   * The summary data will be into array, as creation date of thask can be differnt.
    * If the creation date are same returns the one element in the array.
    * 
    * @description
