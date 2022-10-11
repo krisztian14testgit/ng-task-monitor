@@ -48,7 +48,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * It is helping for the task filtering methods.
    */
   private _preservedTaskList: Task[] = [];
-  /** Stores those tasks which are filtered by the date. Created: today/yesterday or in the week. */
+  /** Stores those tasks which are filtered by the time period. Created: today/yesterday or in the week. */
   private _filteredTaskListByDate: Task[] = [];
 
   constructor(private readonly taskService: TaskService,
@@ -56,10 +56,9 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
               private readonly alertMessageService: AlertMessageService,
               private readonly timerWorkerService: CountdownTimerService,
               private readonly router: Router) {
-    // In Electron versoin the, the default time period: week report
-    // The listed tasks are locked, not showing 'edit button'.
-    this.defaultTaskTime = TaskTime.Week.toString();
-    this.isLockedTasks = true;
+    // In Electron versoin the, the default time period: Today report
+    this.defaultTaskTime = TaskTime.Today.toString();
+    this.isLockedTasks = false;
   }
 
   /** Gets tasks form the service. */
@@ -93,9 +92,13 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   public onFilterStatus(): void {
     // All: not filtering by status, all task will display
-    if (!this.selectedStatus) {
-      this.taskList = this._filteredTaskListByDate;
+    if (!this.selectedStatus || this._filteredTaskListByDate.length === 0) {
+      this.taskList = [...this._preservedTaskList];
       return;
+    }
+
+    if (this._filteredTaskListByDate.length > 0) {
+      this.taskList = [...this._filteredTaskListByDate];
     }
 
     const statusKey = this.selectedStatus.toUpperCaseFirstChar();
@@ -169,34 +172,33 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Returns the reference of the filtered Task list.
-   * Tasks is filtered by the created date when they are created.
+   * Returns the reference of the filtered Task list by the time period.
+   * Tasks are filtered by the created date when they are created.
    * 
    * If timePeriod is week, showing all tasks.
    * @param timePeriod Can be 'today' | 'yesterday' | 'week'.
    * @returns The filtered task by time period.
    */
   private filterTasksByDate(timePeriod: TaskTime): Task[] {
-    if (this._preservedTaskList.length === 0) {
-      return [];
-    }
+    this._filteredTaskListByDate = [];
+    if (this._preservedTaskList.length > 0) {
+      switch (timePeriod) {
+        case TaskTime.Today:
+          this._filteredTaskListByDate = this._preservedTaskList
+          .filter((task:Task) => task.isCreatedToday() === true);
+          break;
 
-    switch (timePeriod) {
-      case TaskTime.Today:
-        this._filteredTaskListByDate = this._preservedTaskList
-        .filter((task:Task) => task.isCreatedToday() === true);
-        break;
-
-      case TaskTime.Yesterday:
-        this._filteredTaskListByDate = this._preservedTaskList
-        .filter((task:Task) => task.isCreatedYesterday() === true);
-        break;
-      
-      default:
-        // show all tasks, deep copy origin task items
-        this._filteredTaskListByDate = [...this._preservedTaskList];
-        break;
-    }
+        case TaskTime.Yesterday:
+          this._filteredTaskListByDate = this._preservedTaskList
+          .filter((task:Task) => task.isCreatedYesterday() === true);
+          break;
+        
+        case TaskTime.Week:
+          // show all tasks, deep copy origin task items
+          this._filteredTaskListByDate = [...this._preservedTaskList];
+          break;
+      }
+   }
 
     this.filteredTaskCount = this._filteredTaskListByDate.length;
     return this._filteredTaskListByDate;
@@ -218,8 +220,9 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       // Sleeping main thread a little, hence the sub-thread timer calculation to be executed.
       const delayMilliSec = 500;
       setTimeout(() => {
-        this.taskList = this.filterTasksByDate(TaskTime.Week);
-        
+        this.taskList = this.filterTasksByDate(TaskTime.Today);
+        this.onFilterStatus();
+
         // If there is inProgress task, re-saved all changes, 
         // because the web-worker changes inprogress Task data by reference
         if (inProgressTasks.length > 0) {
@@ -228,7 +231,6 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
         
         // filters tasks by the selected status
         this.selectedStatus = this.getStatusFromUrl();
-        this.onFilterStatus();
       }, delayMilliSec);
     }, () => {
       this.alertMessageService.sendMessage('Your task list is empty!', AlertType.Info);
