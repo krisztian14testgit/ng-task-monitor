@@ -51,10 +51,14 @@ export class CountdownTimerService {
         if (restTimeList && restTimeList.length > 0) {
           for (let i = 0; i < taskList.length; i++) {
             if (restTimeList[i] === 0) {
-              // status will start, if them are zero
-              taskList[i].setStatus(TaskStatus.Start);
+              // if rest Time = 0, task is completed
+              taskList[i].setStatus(TaskStatus.Completed);
+              taskList[i].timeMinutes = 0;
+            } else {
+              // stores the calculated rest time.
+              taskList[i].timeMinutes = restTimeList[i];
             }
-            taskList[i].timeMinutes = restTimeList[i];
+            
           }
         }
       };
