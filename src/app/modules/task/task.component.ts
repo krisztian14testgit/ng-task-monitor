@@ -207,10 +207,11 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * taskList is filtered by the "today" date.
    */
   private getAllTask(): void {
+    let inProgressTasks: Task[] = [];
     this._taskSubscription = this.taskService.getAll()
     .subscribe(tasks => {
       this._preservedTaskList = [...tasks];
-      const inProgressTasks = this._preservedTaskList.filter(task => task.isInProgress());
+      inProgressTasks = this._preservedTaskList.filter(task => task.isInProgress());
       this.timerWorkerService.calculateTaskExpirationTime(inProgressTasks)
       .catch((err: Error) => console.error(err));
       
@@ -218,6 +219,13 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       const delayMilliSec = 500;
       setTimeout(() => {
         this.taskList = this.filterTasksByDate(TaskTime.Week);
+        
+        // If there is inProgress task, re-saved all changes, 
+        // because the web-worker changes inprogress Task data by reference
+        if (inProgressTasks.length > 0) {
+          this.saveAllTask(this.taskList);
+        }
+        
         // filters tasks by the selected status
         this.selectedStatus = this.getStatusFromUrl();
         this.onFilterStatus();
@@ -271,5 +279,24 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     .filter((task:Task) => task.status === TaskStatus.Inprogress);
     const inprogressTaskIds = inProgressTasks.map(task => task.id);
     this.taskTimerService.emitState(TimerState.Interrupted, inprogressTaskIds);
+  }
+
+  /**
+   * Saving task list which are in the list.
+   * @param taskList The task items.
+   */
+  private saveAllTask(taskList: Task[]): void {
+    if (taskList.length > 0) {
+      this.taskService.saveAllTask(taskList)
+      .subscribe((isSaved: boolean) => {
+        if (isSaved) {
+          this.alertMessageService.sendMessage('Tasks are saved.', AlertType.Success);
+        }
+      }, (error => {
+        if (error) {
+          this.alertMessageService.sendMessage('Saving tasks is failed!', AlertType.Error);
+        }
+      }));
+    }
   }
 }

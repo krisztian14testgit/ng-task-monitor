@@ -26,7 +26,7 @@ export class TaskService {
         const task = Task.convertObjectToTask(rawTask);
         return task;
       });
-
+      
       this._taskList = wrappedTasks;
       this.taskList$.next(wrappedTasks);
       return wrappedTasks;
@@ -67,6 +67,22 @@ export class TaskService {
     this.taskList$.next(this._taskList);
     this._electronSaveTasks(this._taskList);
     return of(task);
+  }
+
+  /**
+   * Return true if the saving all tasks is run well, 
+   * otherwise returns false there is a trouble during saving.
+   * @param tasks Task items
+   * @returns boolean
+   */
+  public saveAllTask(tasks: Task[]): Observable<boolean> {
+    if (tasks.length > 0) {
+      this.taskList$.next(this._taskList);
+      this._electronSaveTasks(this._taskList);
+      return of(true);
+    }
+
+    return of(false);
   }
 
   /**
