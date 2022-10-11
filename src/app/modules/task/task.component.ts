@@ -210,7 +210,8 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     this._taskSubscription = this.taskService.getAll()
     .subscribe(tasks => {
       this._preservedTaskList = [...tasks];
-      this.timerWorkerService.calculateTaskExpirationTime(this._preservedTaskList)
+      const inProgressTasks = this._preservedTaskList.filter(task => task.isInProgress());
+      this.timerWorkerService.calculateTaskExpirationTime(inProgressTasks)
       .catch((err: Error) => console.error(err));
       
       // Sleeping main thread a little, hence the sub-thread timer calculation to be executed.
