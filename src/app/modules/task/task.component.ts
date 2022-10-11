@@ -107,7 +107,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // If it is InProgess, calculate the rest time of all tasks again.
     if (statusValue === TaskStatus.Inprogress) {
-      this.timerWorkerService.calculateTaskExpirationTime(this._filteredTaskListByDate);
+      this.calculateRestTimeOfTasksByWebWorker(this._filteredTaskListByDate);
       // Sleeping the main thread, because of the background thread has time for the calculation.
       const delayedMilliSec = 500;
       setTimeout(() => {
@@ -213,9 +213,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     this._taskSubscription = this.taskService.getAll()
     .subscribe(tasks => {
       this._preservedTaskList = [...tasks];
-      inProgressTasks = this._preservedTaskList.filter(task => task.isInProgress());
-      this.timerWorkerService.calculateTaskExpirationTime(inProgressTasks)
-      .catch((err: Error) => console.error(err));
+      inProgressTasks = this.calculateRestTimeOfTasksByWebWorker(this._preservedTaskList);
       
       // Sleeping main thread a little, hence the sub-thread timer calculation to be executed.
       const delayMilliSec = 500;
@@ -300,5 +298,27 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }));
     }
+  }
+
+  /**
+   * Web-wroker process.
+   * Returns the inproess tasks into array.
+   * 
+   * @description
+   * Calculates the rest time of the tasks which are inProgress.
+   * Fills the timeMinutes property with the rest time.
+   * 
+   * Rest time: How much time is left when the task Countdown-Timer is over.
+   * @param taskList The task items.
+   * @returns inProgress task array
+   */
+  private calculateRestTimeOfTasksByWebWorker(taskList: Task[]): Task[] {
+    const inProgressTasks = taskList.filter(task => task.isInProgress());
+    if (inProgressTasks.length > 0) {
+      this.timerWorkerService.calculateTaskExpirationTime(inProgressTasks)
+      .catch((err: Error) => console.error(err));
+    }
+
+    return inProgressTasks;
   }
 }
