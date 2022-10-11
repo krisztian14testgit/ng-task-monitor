@@ -78,7 +78,7 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
    * Sets the statusLabel by the TaskStatus enum key.
    */
   ngOnChanges(changes : SimpleChanges): void {
-    if (changes.timerInMinutes?.isFirstChange() && this.timerInMinutes > 0) {
+    if (changes.timerInMinutes?.currentValue === this.timerInMinutes && this.timerInMinutes > 0) {
       this.timerInMillisec = TaskTimer.convertsToMilliSec(this.timerInMinutes);
       this._preTimerInMillisec = this.timerInMillisec;
       
@@ -110,7 +110,7 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
    * Measuring the time if the timerInmillisec is not zero.
    */
   public startTimer() {
-    if (this.isTimePeriodToday && this.timerInMillisec > 0) {
+    if (this.timerInMillisec > 0) {
       this.emitsTimerState(TimerState.Started);
       this.startCounterClock();
     }
