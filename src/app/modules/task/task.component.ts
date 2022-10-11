@@ -92,13 +92,15 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   public onFilterStatus(): void {
     // All: not filtering by status, all task will display
-    if (!this.selectedStatus || this._filteredTaskListByDate.length === 0) {
-      this.taskList = [...this._preservedTaskList];
+    if (!this.selectedStatus) {
+      // If time period filtering was run at once time
+      if (this._filteredTaskListByDate.length > 0) {
+        this.taskList = [...this._filteredTaskListByDate];
+      } else {
+        this.taskList = [...this._preservedTaskList];
+        this._filteredTaskListByDate = [...this._preservedTaskList];
+      }
       return;
-    }
-
-    if (this._filteredTaskListByDate.length > 0) {
-      this.taskList = [...this._filteredTaskListByDate];
     }
 
     const statusKey = this.selectedStatus.toUpperCaseFirstChar();
@@ -149,6 +151,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.taskList.length < this.MAX_LIMIT_TASKS) {
       // add new task with new-$count id
       this.taskList.unshift(new Task(`new-${this.taskList.length}`));
+      this._preservedTaskList = [...this.taskList];
       this.filteredTaskCount = this.taskList.length;
     } else {
       this.alertMessageService.sendMessage(`You cannot add news task, max: ${this.MAX_LIMIT_TASKS}!`, 
