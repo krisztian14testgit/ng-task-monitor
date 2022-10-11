@@ -11,10 +11,10 @@
   "scripts": {
     "ng": "ng",
     "start": "electron-forge start --app-path ./electronJs/app.js",
-    "start.electron.withtemplate": "npm run build.prod && npm run start.electron",
     "start.electron": "electron ./electronJs/app.js --trace-warnings",
     "start.forge": "electron-forge start",
     "build.prod": "ng build --configuration production --base-href ./",
+    "build.electron.withtemplate": "npm run build.prod && npm run start.electron",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --karma-config karma.conf.js --web-worker-ts-config tsconfig.worker.json",
     "package": "electron-forge package && mkdir out\\TaskMonitor-win32-x64\\storer",
