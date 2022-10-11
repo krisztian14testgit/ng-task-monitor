@@ -92,15 +92,13 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   public onFilterStatus(): void {
     // All: not filtering by status, all task will display
-    if (!this.selectedStatus) {
-      // If time period filtering was run at once time
-      if (this._filteredTaskListByDate.length > 0) {
-        this.taskList = [...this._filteredTaskListByDate];
-      } else {
-        this.taskList = [...this._preservedTaskList];
-        this._filteredTaskListByDate = [...this._preservedTaskList];
-      }
-      return;
+    
+    // If time period filtering was run at once time
+    if (this._filteredTaskListByDate.length > 0) {
+      this.taskList = [...this._filteredTaskListByDate];
+    } else {
+      this.taskList = [...this._preservedTaskList];
+      this._filteredTaskListByDate = [...this._preservedTaskList];
     }
 
     const statusKey = this.selectedStatus.toUpperCaseFirstChar();
@@ -305,7 +303,9 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * Web-wroker process.
-   * Returns the inproess tasks into array.
+   * Returns the inProgress tasks into array.
+   * If There is no inPrgoress tasks the calculaton wont run,
+   * returns empty array.
    * 
    * @description
    * Calculates the rest time of the tasks which are inProgress.
