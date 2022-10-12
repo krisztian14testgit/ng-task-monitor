@@ -115,7 +115,7 @@ export class Task {
 
     /** Returns true if task status is inprogress. */
     public isInProgress(): boolean {
-        return this._status === TaskStatus.Inprogress && this.timeMinutes > 0;
+        return this._status === TaskStatus.Inprogress && this.timeMinutes >= 0;
     }
 
     /** Returns true if task status is completed/done. */
