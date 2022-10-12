@@ -48,7 +48,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * It is helping for the task filtering methods.
    */
   private _preservedTaskList: Task[] = [];
-  /** Stores those tasks which are filtered by the date. Created: today/yesterday or in the week. */
+  /** Stores those tasks which are filtered by the time period. Created: today/yesterday or in the week. */
   private _filteredTaskListByDate: Task[] = [];
 
   constructor(private readonly taskService: TaskService,
@@ -90,18 +90,25 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   public onFilterStatus(): void {
     // All: not filtering by status, all task will display
-    if (!this.selectedStatus) {
-      this.taskList = this._filteredTaskListByDate;
-      return;
+    
+    // If time period filtering was run at once time
+     if (this._filteredTaskListByDate.length > 0) {
+      this.taskList = [...this._filteredTaskListByDate];
+    } else {
+      this.taskList = [...this._preservedTaskList];
+      this._filteredTaskListByDate = [...this._preservedTaskList];
     }
 
-    const statusKey = this.selectedStatus.toUpperCaseFirstChar();
     // convert string to enum type
-    const statusValue = TaskStatus[statusKey as keyof typeof TaskStatus];
+    let statusValue = -1;
+    if (this.selectedStatus) {
+      const statusKey = this.selectedStatus.toUpperCaseFirstChar();
+      statusValue = TaskStatus[statusKey as keyof typeof TaskStatus];
+    }
 
     // If it is InProgess, calculate the rest time of all tasks again.
     if (statusValue === TaskStatus.Inprogress) {
-      this.timerWorkerService.calculateTaskExpirationTime(this._filteredTaskListByDate);
+      this.calculateRestTimeOfTasksByWebWorker(this._filteredTaskListByDate);
       // Sleeping the main thread, because of the background thread has time for the calculation.
       const delayedMilliSec = 500;
       setTimeout(() => {
@@ -143,6 +150,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.taskList.length < this.MAX_LIMIT_TASKS) {
       // add new task with new-$count id
       this.taskList.unshift(new Task(`new-${this.taskList.length}`));
+      this._preservedTaskList = [...this.taskList];
       this.filteredTaskCount = this.taskList.length;
     } else {
       this.alertMessageService.sendMessage(`You cannot add news task, max: ${this.MAX_LIMIT_TASKS}!`, 
@@ -166,33 +174,32 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Returns the reference of the filtered Task list.
-   * Tasks is filtered by the created date when they are created.
+   * Returns the reference of the filtered Task list by the time period.
+   * Tasks are filtered by the created date when they are created.
    * 
    * If timePeriod is week, showing all tasks.
    * @param timePeriod Can be 'today' | 'yesterday' | 'week'.
    * @returns The filtered task by time period.
    */
   private filterTasksByDate(timePeriod: TaskTime): Task[] {
-    if (this._preservedTaskList.length === 0) {
-      return [];
-    }
+    this._filteredTaskListByDate = [];
+    if (this._preservedTaskList.length > 0) {
+      switch (timePeriod) {
+        case TaskTime.Today:
+          this._filteredTaskListByDate = this._preservedTaskList
+          .filter((task:Task) => task.isCreatedToday() === true);
+          break;
 
-    switch (timePeriod) {
-      case TaskTime.Today:
-        this._filteredTaskListByDate = this._preservedTaskList
-        .filter((task:Task) => task.isCreatedToday() === true);
-        break;
-
-      case TaskTime.Yesterday:
-        this._filteredTaskListByDate = this._preservedTaskList
-        .filter((task:Task) => task.isCreatedYesterday() === true);
-        break;
-      
-      default:
-        // show all tasks, deep copy origin task items
-        this._filteredTaskListByDate = [...this._preservedTaskList];
-        break;
+        case TaskTime.Yesterday:
+          this._filteredTaskListByDate = this._preservedTaskList
+          .filter((task:Task) => task.isCreatedYesterday() === true);
+          break;
+        
+        default:
+          // show all tasks, deep copy origin task items
+          this._filteredTaskListByDate = [...this._preservedTaskList];
+          break;
+      }
     }
 
     this.filteredTaskCount = this._filteredTaskListByDate.length;
@@ -204,12 +211,12 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * taskList is filtered by the "today" date.
    */
   private getAllTask(): void {
+    let inProgressTasks: Task[] = [];
     this._taskSubscription = this.taskService.getAll()
     .subscribe(tasks => {
       this._preservedTaskList = [...tasks];
-      this.timerWorkerService.calculateTaskExpirationTime(this._preservedTaskList)
-      .catch((err: Error) => console.error(err));
-      
+      inProgressTasks = this.calculateRestTimeOfTasksByWebWorker(this._preservedTaskList);
+
       // Sleeping main thread a little, hence the sub-thread timer calculation to be executed.
       const delayMilliSec = 500;
       setTimeout(() => {
@@ -217,7 +224,15 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
         // filters tasks by the selected status
         this.selectedStatus = this.getStatusFromUrl();
         this.onFilterStatus();
+
+        // If there is inProgress task, re-saved all changes, 
+        // because the web-worker changes inprogress Task data by reference
+        if (inProgressTasks.length > 0) {
+          this.saveAllTask(this.taskList);
+        }
       }, delayMilliSec);
+    }, () => {
+      this.alertMessageService.sendMessage('Your task list is empty!', AlertType.Info);
     });
   }
 
@@ -265,5 +280,48 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     .filter((task:Task) => task.status === TaskStatus.Inprogress);
     const inprogressTaskIds = inProgressTasks.map(task => task.id);
     this.taskTimerService.emitState(TimerState.Interrupted, inprogressTaskIds);
+  }
+
+  /**
+   * Saving task list which are in the list.
+   * @param taskList The task items.
+   */
+  private saveAllTask(taskList: Task[]): void {
+    if (taskList.length > 0) {
+      this.taskService.saveAllTask(taskList)
+      .subscribe((isSaved: boolean) => {
+        if (isSaved) {
+          this.alertMessageService.sendMessage('Tasks are saved.', AlertType.Success);
+        }
+      }, ((error: Error) => {
+        if (error) {
+          this.alertMessageService.sendMessage('Saving tasks is failed!', AlertType.Error);
+        }
+      }));
+    }
+  }
+  
+  /**
+   * Web-wroker process.
+   * Returns the inProgress tasks into array.
+   * If There is no inPrgoress tasks the calculaton wont run,
+   * returns empty array.
+   * 
+   * @description
+   * Calculates the rest time of the tasks which are inProgress.
+   * Fills the timeMinutes property with the rest time.
+   * 
+   * Rest time: How much time is left when the task Countdown-Timer is over.
+   * @param taskList The task items.
+   * @returns inProgress task array
+   */
+  private calculateRestTimeOfTasksByWebWorker(taskList: Task[]): Task[] {
+    const inProgressTasks = taskList.filter(task => task.isInProgress());
+    if (inProgressTasks.length > 0) {
+      this.timerWorkerService.calculateTaskExpirationTime(inProgressTasks)
+      .catch((err: Error) => console.error(err));
+    }
+
+    return inProgressTasks;
   }
 }
