@@ -101,9 +101,12 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       this._filteredTaskListByDate = [...this._preservedTaskList];
     }
 
-    const statusKey = this.selectedStatus.toUpperCaseFirstChar();
     // convert string to enum type
-    const statusValue = TaskStatus[statusKey as keyof typeof TaskStatus];
+    let statusValue = -1;
+    if (this.selectedStatus) {
+      const statusKey = this.selectedStatus.toUpperCaseFirstChar();
+      statusValue = TaskStatus[statusKey as keyof typeof TaskStatus];
+    }
 
     // If it is InProgess, calculate the rest time of all tasks again.
     if (statusValue === TaskStatus.Inprogress) {
@@ -220,6 +223,8 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       const delayMilliSec = 500;
       setTimeout(() => {
         this.taskList = this.filterTasksByDate(TaskTime.Today);
+        // filters tasks by the selected status
+        this.selectedStatus = this.getStatusFromUrl();
         this.onFilterStatus();
 
         // If there is inProgress task, re-saved all changes, 
@@ -227,9 +232,6 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
         if (inProgressTasks.length > 0) {
           this.saveAllTask(this.taskList);
         }
-        
-        // filters tasks by the selected status
-        this.selectedStatus = this.getStatusFromUrl();
       }, delayMilliSec);
     }, () => {
       this.alertMessageService.sendMessage('Your task list is empty!', AlertType.Info);
