@@ -35,6 +35,12 @@ function createWindow () {
         }
     });
 
+    // clear session chache of chromium
+    mainWindow.webContents.clearHistory();
+    mainWindow.webContents.session.clearCache().then(() => {
+        console.log('Electron.js session cache has been cleaned');
+    });
+
     // load the url of the startedPage, which you can see on the window.
     mainWindow.loadURL(indexUrl);
 
