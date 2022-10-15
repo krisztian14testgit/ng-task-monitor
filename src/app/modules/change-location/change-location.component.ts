@@ -17,7 +17,7 @@ type IndexStructure = { [property: string]:string };
 })
 export class ChangeLocationComponent implements OnInit, OnDestroy {
   /** Stores the error message for the input is invalid. */
-  public readonly inputInvalidText: string;
+  public inputInvalidText = '';
   /** Stores the form validation behaviour. */
   private _locationForm!: FormGroup;
   /** The subcription of the location service. */
@@ -46,7 +46,7 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   constructor(private readonly locationService: LocationService,
               private readonly alertMessageService: AlertMessageService) {
     this.createLocationFormValidation();
-    this.inputInvalidText = 'Please enter a valid path! E.g.: C:/folder/...';
+    this.inputInvalidText = 'Please enter a valid path! E.g.: C:/folder/sub-forlders/...';
   }
 
   /** Sets saved tasks and appSetting paths. */
