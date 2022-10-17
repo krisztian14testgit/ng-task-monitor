@@ -5,13 +5,14 @@
     </mat-card-title>
     <hr>
     <mat-card-content>
+        <small>If you change the path then all previous tasks will be removed!</small>
         <mat-form-field class="fields-max-width" appearance="fill"
                         [ngClass]="{'input-valid': taskDataControl.valid}">
             <mat-label>Task folder path</mat-label>
             <input type="text" matInput [formControl]="taskDataControl"
                     placeholder="C:/users/userName/Document/">
             <mat-error *ngIf="taskDataControl.invalid && (taskDataControl.dirty || taskDataControl.touched)">
-                <strong>Please enter a valid path! E.g.: C:/folder/...</strong>
+                <strong>{{inputInvalidText}}</strong>
             </mat-error>
         </mat-form-field>
     </mat-card-content>
@@ -31,7 +32,7 @@
                     matInput [formControl]="appSettingControl" [readonly]="true"
                     placeholder="C:/users/userName/Document/">
             <mat-error *ngIf="appSettingControl.invalid && (appSettingControl.dirty || appSettingControl.touched)">
-                <strong>Please enter a valid path! E.g.: C:/folder/...</strong>
+                <strong>{{inputInvalidText}}</strong>
             </mat-error>
         </mat-form-field>
     </mat-card-content>

@@ -5,7 +5,8 @@ import { TaskTimerService } from '../services/task-timer/task-timer.service';
 import { TaskStatus } from '../services/task.model';
 
 /**
- * It is responsible the start countdown timer. Start counting.
+ * This component is responsible for the start countdown timer,
+ * Start timer counting 
  * 
  * Emits/handles status of the timer if it is over or interrupted.
  */
@@ -20,6 +21,8 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() public timerInMinutes = 0;
   /** The status label of the status. */
   @Input() public statusLabel = '';
+  /** This switcher is true then Task-timer 'start' button is active, otherwise it is disabled. */
+  @Input() public isTimePeriodToday!: boolean;
   /** 
    * It triggers when the timer start counting or it is over.
    * 
@@ -70,12 +73,12 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /** 
-   * It runs when the task input is changed.
+   * It runs when the task inputs are changed.
    * Sets this.timerInMillisec by converting task.timeMinutes to millisec.
    * Sets the statusLabel by the TaskStatus enum key.
    */
   ngOnChanges(changes : SimpleChanges): void {
-    if (changes.timerInMinutes?.isFirstChange() && this.timerInMinutes > 0) {
+    if (changes.timerInMinutes?.currentValue === this.timerInMinutes && this.timerInMinutes > 0) {
       this.timerInMillisec = TaskTimer.convertsToMilliSec(this.timerInMinutes);
       this._preTimerInMillisec = this.timerInMillisec;
       
@@ -102,6 +105,7 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
+   * This a button click event.
    * Starts counterdown timer of the task by clicking on 'start' button.
    * Measuring the time if the timerInmillisec is not zero.
    */
@@ -147,7 +151,7 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
    * 
    * The eventDate: when timer is started, over or interrupted.
    *
-   * The timer mode can be
+   * The timerState can be
    * * 0: Finsished
    * * 1: Started
    * * 2: Interrupted
@@ -170,6 +174,7 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * Returns the spent time percentage from the current timer value.
+   * It is on charge of the progressBar animation.
    * 
    * Spent time = The percentage of the difference the preserved timer and current timer.
    * @param timerInMillisec actual value of the Timer.

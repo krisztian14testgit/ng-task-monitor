@@ -18,6 +18,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "aot": true,
+            "baseHref": "/",
             "outputPath": "dist/ng-task-monitor",
             "index": "src/index.html",
             "main": "src/main.ts",

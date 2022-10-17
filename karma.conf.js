@@ -51,7 +51,8 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     autoWatch: true,
     browsers: ['MyHeadlessChromium'],
-    singleRun: false,
+    // karma exits when test running is over
+    singleRun: true,
     restartOnFileChange: true
   });
 };

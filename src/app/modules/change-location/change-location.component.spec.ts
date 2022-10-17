@@ -64,7 +64,7 @@ describe('ChangeLocationComponent', () => {
     expect(component.appSettingControl.valid).toBeFalse();
 
     // taskDataControl input field controler
-    wrongValue = 'c:/folder/adf/';
+    wrongValue = 'c:/folder/adf';  
     component.taskDataControl.setValue(wrongValue);
     component.taskDataControl.updateValueAndValidity();
 

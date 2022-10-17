@@ -47,14 +47,18 @@ export class CountdownTimerService {
         console.log('Main thread received Date form web-worker');
         const restTimeList = wEvent.data as number[];
 
-        // the taskList.length and restTimeList are equivalent array size.
+        // the taskList.length and restTimeList.length are equivalent array size.
         if (restTimeList && restTimeList.length > 0) {
           for (let i = 0; i < taskList.length; i++) {
             if (restTimeList[i] === 0) {
-              // status will start, if them are zero
-              taskList[i].setStatus(TaskStatus.Start);
+              // if rest Time = 0, task is completed
+              taskList[i].setStatus(TaskStatus.Completed);
+              taskList[i].timeMinutes = 0;
+            } else {
+              // stores the calculated rest time.
+              taskList[i].timeMinutes = restTimeList[i];
             }
-            taskList[i].timeMinutes = restTimeList[i];
+            
           }
         }
       };

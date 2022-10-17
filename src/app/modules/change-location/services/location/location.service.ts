@@ -64,7 +64,6 @@ export class LocationService {
       (window as any).electronAPI.ipcLocation.save(pathType, locSetting);
       return Promise.resolve(true);
     } catch(err) {
-      console.log('PROMISE ERRROR');
       return Promise.reject();
     }
   }

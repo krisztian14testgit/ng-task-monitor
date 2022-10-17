@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } f
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { MyValidator } from 'src/app/validators/my-validator';
+import { FormValidator } from 'src/app/validators/my-validator';
 import { LocationSetting, LocationPath } from './services/location/location-setting.model';
 import { LocationService } from './services/location/location.service';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
@@ -16,6 +16,8 @@ type IndexStructure = { [property: string]:string };
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChangeLocationComponent implements OnInit, OnDestroy {
+  /** Stores the error message for the input is invalid. */
+  public inputInvalidText = '';
   /** Stores the form validation behaviour. */
   private _locationForm!: FormGroup;
   /** The subcription of the location service. */
@@ -44,17 +46,12 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   constructor(private readonly locationService: LocationService,
               private readonly alertMessageService: AlertMessageService) {
     this.createLocationFormValidation();
+    this.inputInvalidText = 'Please enter a valid path! E.g.: C:/folder/sub-forlders/...';
   }
 
-  /** Sets the location paths by the location service which come from the server. */
+  /** Sets saved tasks and appSetting paths. */
   ngOnInit(): void {
-    this._locationService$ = this.locationService.getLocationSetting()
-    .subscribe((locSetting: LocationSetting) => {
-      // deep copy the locSetting fields.
-      this._previousLocationSetting = {...locSetting};
-      this.appSettingControl.setValue(locSetting.appSettingPath);
-      this.taskDataControl.setValue(locSetting.taskPath);
-    });
+    this.getlocationPathFromService();
   }
 
   /** Unsubscription from the API streams */
@@ -63,10 +60,10 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * It is an event function.
+   * It is keydown.enter event function.
    * It is triggered by the enter keyword.
    * 
-   * Saving the task or application app path. Depends on which one is modified.
+   * Saving the task and application app path. Depends on which one is modified.
    * @event onEnter
    */
   @HostListener('window:keydown.enter', ['$event'])
@@ -142,16 +139,27 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** Sets the location paths by the location service which come from the appSetting.json file. */
+  private getlocationPathFromService(): void {
+    this._locationService$ = this.locationService.getLocationSetting()
+    .subscribe((locSetting: LocationSetting) => {
+      // deep copy the locSetting fields.
+      this._previousLocationSetting = {...locSetting};
+      this.appSettingControl.setValue(locSetting.appSettingPath);
+      this.taskDataControl.setValue(locSetting.taskPath);
+    });
+  }
+
   /** Initialization the locationFrom instance from the FormGroup. */
   private createLocationFormValidation(): void {
     this._locationForm = new FormGroup({
       taskDataPath: new FormControl('', [
         Validators.required, 
-        Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.LibraryPath))
+        Validators.pattern(FormValidator.RegExpPatterns.getRule(FormValidator.RegExpKeys.LibraryPath))
       ]),
       appSettingPath: new FormControl('', [
         Validators.required,
-        Validators.pattern(MyValidator.Patterns.getRule(MyValidator.PatternRuleKeys.LibraryPath))
+        Validators.pattern(FormValidator.RegExpPatterns.getRule(FormValidator.RegExpKeys.LibraryPath))
       ])
     });
   }

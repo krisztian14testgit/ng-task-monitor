@@ -9,9 +9,9 @@ import { Directive, ElementRef, HostListener } from '@angular/core';
 })
 export class CardHighlightDirective {
   /** Normal border of the class. The Definition in task-card.comp.css */
-  private readonly originalBorderClass = 'task-card-default-border';
+  private readonly _originalBorderClass = 'task-card-default-border';
   /** Highlighted border of the class. The class definition in task-card.comp.css */
-  private readonly highlightBorderClass = 'task-card-highlight';
+  private readonly _highlightBorderClass = 'task-card-highlight';
 
   constructor(private readonly elementRef: ElementRef) { }
 
@@ -75,9 +75,9 @@ export class CardHighlightDirective {
    * @param divRef The reference of the Div tag.
    */
   private highLightBorder(divRef: HTMLDivElement): void {
-    this.removeClass(divRef, this.originalBorderClass);
+    this.removeClass(divRef, this._originalBorderClass);
     // add highlighted class
-    this.insertClass(divRef, this.highlightBorderClass);
+    this.insertClass(divRef, this._highlightBorderClass);
   }
 
   /**
@@ -85,9 +85,9 @@ export class CardHighlightDirective {
    * @param divRef The reference of the Div tag.
    */
   private removeHighLighting(divRef: HTMLDivElement): void {
-    this.removeClass(divRef, this.highlightBorderClass);
+    this.removeClass(divRef, this._highlightBorderClass);
     // set default border class
-    this.insertClass(divRef, this.originalBorderClass);
+    this.insertClass(divRef, this._originalBorderClass);
   }
 
   /**
@@ -96,7 +96,7 @@ export class CardHighlightDirective {
    * @returns booelan
    */
   private isHighlighted(divRef: HTMLDivElement | Element): boolean {
-    return divRef.className.includes(this.highlightBorderClass);
+    return divRef.className.includes(this._highlightBorderClass);
   }
 
   /** Removes the highlighting from the all card if they was selected before. */

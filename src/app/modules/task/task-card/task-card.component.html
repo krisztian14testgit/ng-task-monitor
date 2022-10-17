@@ -22,6 +22,7 @@
         <app-task-timer [taskId]="task.id"
                         [timerInMinutes]="task.timeMinutes"
                         [statusLabel]="statusLabel"
+                        [isTimePeriodToday]="isTimePeriodToday"
                         (timerStatusEmitter)="onTimerStatus($event)"></app-task-timer>
       </div>
     </mat-card-actions>
@@ -63,7 +64,7 @@
               id="taskTime" type="number" placeholder="in minutes">
         <mat-error *ngIf="taskControls.timeMinutes.invalid &&
                (taskControls.timeMinutes.dirty || taskControls.timeMinutes.touched)">
-          <strong>It's range [1, {{TASK_MAX_MINUTES}}] in minutes!</strong>
+          <strong>It's range [0, {{TASK_MAX_MINUTES}}] in minutes!</strong>
         </mat-error>
       </div>
     </mat-card-content>
