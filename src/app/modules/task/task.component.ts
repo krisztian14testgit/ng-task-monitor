@@ -30,7 +30,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * * Yesterday = 1
    * * Week = 2
    */
-  public readonly defaultTaskTime: string;
+  public selectedTaskTime = '';
   /** Contains the count of tasks which are filtered by date. */
   public filteredTaskCount = 0;
   /** 
@@ -57,7 +57,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
               private readonly timerWorkerService: CountdownTimerService,
               private readonly router: Router) {
     // In Electron versoin the, the default time period: Today report
-    this.defaultTaskTime = TaskTime.Today.toString();
+    this.selectedTaskTime = TaskTime.Today.toString();
     this.isLockedTasks = false;
   }
 
@@ -137,6 +137,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   public onChangedTimePeriod(matSelectionEvent: MatSelectChange): void {
     const lastTastTimeValue = TaskTime.Week;
     if (matSelectionEvent.value <= lastTastTimeValue) {
+      this.selectedTaskTime = matSelectionEvent.value;
       const timeFilter = Number(matSelectionEvent.value);
       this.taskList = this.filterTasksByDate(timeFilter);
       // Yesterday, week tasks cannot be editable.
