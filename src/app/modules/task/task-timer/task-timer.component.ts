@@ -112,6 +112,7 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
   public startTimer() {
     if (this.timerInMillisec > 0) {
       this.emitsTimerState(TimerState.Started);
+      clearInterval(this._clockIntervalId);
       this.startCounterClock();
     }
   }
