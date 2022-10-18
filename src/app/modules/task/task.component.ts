@@ -30,7 +30,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * * Yesterday = 1
    * * Week = 2
    */
-  public selectedTaskTime = '';
+  public selectedTaskTime = '0';
   /** Contains the count of tasks which are filtered by date. */
   public filteredTaskCount = 0;
   /** 
@@ -94,11 +94,11 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     // All: not filtering by status, all task will display
     
     // If time period filtering was run at once time
-    if (this._filteredTaskListByDate.length > 0) {
+	const timeFilterLength = this._filteredTaskListByDate.length;
+    if (timeFilterLength > 0) {
       this.taskList = [...this._filteredTaskListByDate];
     } else {
-      this.taskList = [...this._preservedTaskList];
-      this._filteredTaskListByDate = [...this._preservedTaskList];
+      this.taskList = [];
     }
 
     // convert string to enum type
@@ -109,7 +109,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // If it is InProgess, calculate the rest time of all tasks again.
-    if (statusValue === TaskStatus.Inprogress) {
+    if (timeFilterLength > 0 && statusValue === TaskStatus.Inprogress) {
       this.calculateRestTimeOfTasksByWebWorker(this._filteredTaskListByDate);
       // Sleeping the main thread, because of the background thread has time for the calculation.
       const delayedMilliSec = 500;
@@ -120,7 +120,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Stop all countdown timers, status is Completed or Start,
-    if (statusValue === TaskStatus.Completed || statusValue === TaskStatus.Start) {
+    if (timeFilterLength > 0 && (statusValue === TaskStatus.Completed || statusValue === TaskStatus.Start)) {
       this.stopCountdownTimerOnInprogressTasks();
       // filters task items by the status
       this.taskList = this._filteredTaskListByDate.filter((task:Task) => task.status === statusValue);
@@ -321,6 +321,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   private calculateRestTimeOfTasksByWebWorker(taskList: Task[]): Task[] {
     const inProgressTasks = taskList.filter(task => task.isInProgress());
     if (inProgressTasks.length > 0) {
+	  this.timerWorkerService.terminateWorker();
       this.timerWorkerService.calculateTaskExpirationTime(inProgressTasks)
       .catch((err: Error) => console.error(err));
     }
