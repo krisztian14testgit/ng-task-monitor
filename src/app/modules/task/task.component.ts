@@ -30,7 +30,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * * Yesterday = 1
    * * Week = 2
    */
-  public readonly defaultTaskTime: string;
+  public selectedTaskTime: string;
   /** Contains the count of tasks which are filtered by date. */
   public filteredTaskCount = 0;
   /** 
@@ -56,7 +56,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
               private readonly alertMessageService: AlertMessageService,
               private readonly timerWorkerService: CountdownTimerService,
               private readonly router: Router) {
-    this.defaultTaskTime = TaskTime.Today.toString();
+    this.selectedTaskTime = TaskTime.Today.toString();
   }
 
   /** Gets tasks form the service. */
@@ -92,11 +92,11 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     // All: not filtering by status, all task will display
     
     // If time period filtering was run at once time
-     if (this._filteredTaskListByDate.length > 0) {
+    const timeFilterLength = this._filteredTaskListByDate.length;
+     if (timeFilterLength > 0) {
       this.taskList = [...this._filteredTaskListByDate];
     } else {
-      this.taskList = [...this._preservedTaskList];
-      this._filteredTaskListByDate = [...this._preservedTaskList];
+      this.taskList = [];
     }
 
     // convert string to enum type
@@ -107,7 +107,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // If it is InProgess, calculate the rest time of all tasks again.
-    if (statusValue === TaskStatus.Inprogress) {
+    if (timeFilterLength > 0 && statusValue === TaskStatus.Inprogress) {
       this.calculateRestTimeOfTasksByWebWorker(this._filteredTaskListByDate);
       // Sleeping the main thread, because of the background thread has time for the calculation.
       const delayedMilliSec = 500;
@@ -118,7 +118,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Stop all countdown timers, status is Completed or Start,
-    if (statusValue === TaskStatus.Completed || statusValue === TaskStatus.Start) {
+    if (timeFilterLength > 0 && (statusValue === TaskStatus.Completed || statusValue === TaskStatus.Start)) {
       this.stopCountdownTimerOnInprogressTasks();
       // filters task items by the status
       this.taskList = this._filteredTaskListByDate.filter((task:Task) => task.status === statusValue);
@@ -135,8 +135,13 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   public onChangedTimePeriod(matSelectionEvent: MatSelectChange): void {
     const lastTastTimeValue = TaskTime.Week;
     if (matSelectionEvent.value <= lastTastTimeValue) {
+      // time period filtering on the taskList
       const timeFilter = Number(matSelectionEvent.value);
       this.taskList = this.filterTasksByDate(timeFilter);
+      // status filtering on the taskList
+      this.selectedTaskTime = matSelectionEvent.value;
+      this.onFilterStatus();
+      
       // Yesterday, week tasks cannot be editable.
       this.isLockedTasks = timeFilter !== TaskTime.Today;
     }
@@ -318,6 +323,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   private calculateRestTimeOfTasksByWebWorker(taskList: Task[]): Task[] {
     const inProgressTasks = taskList.filter(task => task.isInProgress());
     if (inProgressTasks.length > 0) {
+      this.timerWorkerService.terminateWorker();
       this.timerWorkerService.calculateTaskExpirationTime(inProgressTasks)
       .catch((err: Error) => console.error(err));
     }
