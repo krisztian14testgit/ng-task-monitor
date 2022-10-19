@@ -17,7 +17,7 @@ import { AlertType } from 'src/app/components/alert-window/alert.model';
 })
 export class ChangeLocationComponent implements OnInit, OnDestroy {
   /** Stores the error message for the input is invalid. */
-  public readonly inputInvalidText: string;
+  public inputInvalidText = '';
   /** Stores the form validation behaviour. */
   private _locationForm!: FormGroup;
   /** The subcription of the location service. */
