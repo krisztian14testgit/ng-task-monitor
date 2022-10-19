@@ -137,9 +137,13 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   public onChangedTimePeriod(matSelectionEvent: MatSelectChange): void {
     const lastTastTimeValue = TaskTime.Week;
     if (matSelectionEvent.value <= lastTastTimeValue) {
-      this.selectedTaskTime = matSelectionEvent.value;
+      // time period filtering on the taskList
       const timeFilter = Number(matSelectionEvent.value);
       this.taskList = this.filterTasksByDate(timeFilter);
+      // status filtering on the taskList
+      this.selectedTaskTime = matSelectionEvent.value;
+      this.onFilterStatus();
+      
       // Yesterday, week tasks cannot be editable.
       this.isLockedTasks = timeFilter !== TaskTime.Today;
     }
@@ -321,7 +325,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   private calculateRestTimeOfTasksByWebWorker(taskList: Task[]): Task[] {
     const inProgressTasks = taskList.filter(task => task.isInProgress());
     if (inProgressTasks.length > 0) {
-	  this.timerWorkerService.terminateWorker();
+      this.timerWorkerService.terminateWorker();
       this.timerWorkerService.calculateTaskExpirationTime(inProgressTasks)
       .catch((err: Error) => console.error(err));
     }
