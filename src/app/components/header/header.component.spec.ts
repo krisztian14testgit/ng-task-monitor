@@ -3,7 +3,6 @@ import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core
 import { Router } from '@angular/router';
 import { Location } from "@angular/common";
 import { RouterTestingModule } from '@angular/router/testing';
-import { MatGridListModule } from '@angular/material/grid-list';
 
 import { HeaderComponent } from './header.component';
 
@@ -34,8 +33,7 @@ describe('HeaderComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule.withRoutes(routeTable),
-        MatGridListModule
+        RouterTestingModule.withRoutes(routeTable)
       ],
       declarations: [ HeaderComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -64,12 +62,16 @@ describe('HeaderComponent', () => {
   });
 
   it('should navigate to faked home site', fakeAsync(()=> {
-    router.navigate(['']); // navige to tasks/inprogress
+    // navige to home site
+    spyOn(router, 'navigate').and.callThrough();
+    router.navigate(['']);
+    fixture.autoDetectChanges();
     tick(1);
     expect(location.path()).toBe('/home');
   }));
 
   it('should get titleOfRoute from the router event', fakeAsync(() => {
+    spyOn(router, 'navigate').and.callThrough();
     // default rediretion '/tasks/all' in app-routing.module.ts
     const defaultRedirectionTitle = 'All tasks';
     expect(component.titleOfRoute).toBe(defaultRedirectionTitle);
@@ -80,6 +82,7 @@ describe('HeaderComponent', () => {
     const navigationPaths = ['tasks/inprogress', 'weekly'];
     for (const navUrl of navigationPaths) {
       router.navigate([ navUrl ]);
+      fixture.autoDetectChanges();
       tick(1);
       expect(location.path()).toBe(`/${navUrl}`);
       // routerDict contains the title of each router path.
