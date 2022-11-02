@@ -5,7 +5,6 @@ import { Location } from "@angular/common";
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { HeaderComponent } from './header.component';
-import { NavigationExtras } from '@angular/router';
 
 @Component({})
 class FakedRouteComponent {}
