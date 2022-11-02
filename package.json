@@ -70,7 +70,7 @@
         "out": "out",
         "ignore": [
           "node_modules",
-          "\\.[begv].*",
+          "\\.[abegv].*",
           "plan",
           "src",
           "storer",
