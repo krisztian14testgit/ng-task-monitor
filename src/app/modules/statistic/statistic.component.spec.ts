@@ -47,6 +47,7 @@ describe('StatisticComponent', () => {
   });
   
   it('should get report type from the url, isDailyReport to be true', fakeAsync(() => {
+    spyOn(router, 'navigate').and.callThrough();
     router.navigateByUrl('statistic/daily');
     tick(100);
     
@@ -56,6 +57,7 @@ describe('StatisticComponent', () => {
   }));
 
   it('should get report type from the url, isDailyReport to be false', fakeAsync(() => {
+    spyOn(router, 'navigate').and.callThrough();
     router.navigateByUrl('statistic/weekly');
     tick(100);
     
