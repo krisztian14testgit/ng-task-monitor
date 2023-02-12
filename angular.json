@@ -110,9 +110,22 @@
             "scripts": [],
             "webWorkerTsConfig": "tsconfig.worker.json"
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
-  "defaultProject": "ng-task-monitor"
+  "cli": {
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
+  }
 }
