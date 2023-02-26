@@ -3,9 +3,9 @@
 ## Purpose
 This is a little demo project which represents a part of my knowledge what I worked at the previous workplace.
 
-It has been written with Angular12 framework.
+It has been written with Angular 14v framework.
 
-Angular CLI version: 12.2.15
+Angular CLI version: 14.2.7
 
 ## Feautres
 * Thema changing: ligth, dark, blueDragon
@@ -13,13 +13,25 @@ Angular CLI version: 12.2.15
 * Task statistic with chart.js
 * Measuring task time: Countdown clock
 * Reactive programming: RxJs
-* Rest time calculation: Web-worker
+* Rest time calculation: Web-worker, sub-threading
 
 ## Platform types
-* Web - storing data online
-* Desktop with ElectronJs
+* Web version 
+* Desktop version by ElectronJs
+
+## Branch types
+* main: is sealed, incluces Angular front-end only.
+* inElectronJs: is sealed, implemented ElectronJs framework to run in desktop.
+* inFirebase: is sealed, connected with Google Firebase. It haven't been done yet!
+    * Temporary: storing data in cookies storage.
+* sub-folder names:
+    - frontend/ => Angular front-end changes
+    - el/       => Changes for the ElectronJs branch
+    - fb/       => Features for the Firebase branch
+    - bug/      => bug fixxing for all branch
 
 ## Development server
+__Pay attantion:__ It is different in "inElectornJs" and "inFirebase" branch!
 
 There are three cases to run app in local:
 1. `npm start` which create a build from the app.
@@ -51,6 +63,11 @@ Run `npm run package` to create a package - to be installed - from the app with 
 ## Running unit tests
 
 Run `npm run test` to execute the unit tests
+
+## Running eslint 
+Check js syntax error, code format in your project.
+
+Run `npm run lint` to execute the eslint running.
 
 ## Running end-to-end tests
 
