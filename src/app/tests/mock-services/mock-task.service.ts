@@ -57,6 +57,22 @@ export class MockTaskService {
     }
 
     /**
+     * Return true if the saving all tasks is run well, 
+     * otherwise returns false there is a trouble during saving.
+     * @param tasks Task items
+     * @returns boolean
+     */
+    public saveAllTask(tasks: Task[]): Observable<boolean> {
+        if (tasks.length > 0) {
+            FakedTask.list = tasks;
+            this.taskList$.next(FakedTask.list);
+            return of(true);
+        }
+
+        return of(false);
+    }
+
+    /**
      * Returns true if the delete request run successfully.
      * Deleting the task by task id from the faked taskList.
      * @param taskId The id of the task which will be removed.

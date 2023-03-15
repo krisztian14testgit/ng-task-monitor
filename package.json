@@ -17,6 +17,7 @@
     "build.electron.withtemplate": "npm run build.prod && npm run start.electron",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --karma-config karma.conf.js --web-worker-ts-config tsconfig.worker.json",
+    "lint": "ng lint",
     "package": "electron-forge package && mkdir out\\TaskMonitor-win32-x64\\storer && xcopy /s /y dist\\ng-task-monitor out\\TaskMonitor-win32-x64\\resources\\app\\dist\\ng-task-monitor",
     "make": "electron-forge make"
   },
@@ -41,6 +42,11 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^14.2.8",
+    "@angular-eslint/builder": "14.4.0",
+    "@angular-eslint/eslint-plugin": "14.4.0",
+    "@angular-eslint/eslint-plugin-template": "14.4.0",
+    "@angular-eslint/schematics": "14.4.0",
+    "@angular-eslint/template-parser": "14.4.0",
     "@angular/cli": "~14.2.8",
     "@angular/compiler-cli": "~14.2.8",
     "@electron-forge/cli": "^6.0.0",
