@@ -52,6 +52,7 @@ Run `ng generate component component-name` to generate a new component. You can 
 2. Only just creating a template(angular) build: `npm run build.prod`.
 
 ## Deploying process
+Don't forget to run front-end build: `npm run build.prod` before you want to create an installable package.
 Run `npm run package` to create a package - to be installed - from the app with Electron binary.
 * The package will be generated into __out__ folder.
 * **The distribution attention:** the build depends on the __host__ where you create the build. E.g.: Your host pc is window then the build is created for the window distribution.

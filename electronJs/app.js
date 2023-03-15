@@ -13,27 +13,54 @@ const path = require("path");
 const IpcLocation = require('./ipc/ipc-location');
 const IpcTaskList = require('./ipc/ipc-task-list');
 
-let mainWindow;
+/** Stores the needles of the Electron window obj. */
+let mainWindow = undefined;
 const startedPage = '../dist/ng-task-monitor/index.html';
 
 const indexUrl = url.format(path.join(__dirname, startedPage), {
     protocol: 'file',
     slashes: true,
 });
+/** Contains true if one instance is already running of window. */
+const isAppInstanceLocked = app.requestSingleInstanceLock();
 
-/** How to creata default eletron window */
-function createWindow () {
-    mainWindow = new BrowserWindow({
+/** Creating default eletron window. */
+function createBrowserWindow() {
+    return  new BrowserWindow({
         width: 800,
         height: 800,
         webPreferences: {
             nodeIntegration: true,
-            // for the securty reason: def OS file system
+            // for the securty reason: defensee OS file system
             sandbox: true,
             // attaching preload.js shares the data to renderer process.
             preload: path.join(__dirname, 'preload.js'),
         }
     });
+}
+
+/**
+ * Open/close the DevTools window by f12 button.
+ * Default: DevTools is closed.
+ */
+function devToolController(mainWindow) {
+    if (mainWindow) {
+        let isOpenDevTool = false;
+        let devToolMethod = 'openDevTools';
+        mainWindow.webContents.on("before-input-event", (event, input) => {
+            if (input.type === 'keyDown' && input.key === 'F12') {
+                devToolMethod = !isOpenDevTool ? 'openDevTools' : 'closeDevTools';
+                mainWindow.webContents[devToolMethod]();
+                console.log(devToolMethod);
+                isOpenDevTool = !isOpenDevTool;
+            }
+        });
+    }
+}
+
+/** Opening eletron window. */
+function openWindow () {
+    mainWindow = createBrowserWindow();
 
     // clear session chache of chromium
     mainWindow.webContents.clearHistory();
@@ -52,19 +79,16 @@ function createWindow () {
     });
 
     // open/close the DevTools window by f12
-    let isOpenDevTool = false;
-    let devToolMethod = 'openDevTools';
-    mainWindow.webContents.on("before-input-event", (event, input) => {
-        if (input.type === 'keyDown' && input.key === 'F12') {
-            devToolMethod = !isOpenDevTool ? 'openDevTools' : 'closeDevTools';
-            mainWindow.webContents[devToolMethod]();
-            console.log(devToolMethod);
-            isOpenDevTool = !isOpenDevTool;
-        }
-    });
+    devToolController(mainWindow);
 }
 
-// The app is ready creating an window
+// If there is one isntance running, other will be closed.
+if (!isAppInstanceLocked) {
+    app.quit();
+    return;
+}
+
+// The app is ready opening main window
 app.whenReady().then(() => {
     /** ipc protocol here*/
     IpcLocation.subscribeOnSaving();
@@ -72,14 +96,14 @@ app.whenReady().then(() => {
     IpcTaskList.subscribeOnSaving();
     IpcTaskList.getTaskList();
 
-    /** creating window */
-    createWindow();
+    /** open mian window */
+    openWindow();
 
     // for Mac: mac app running in background without any window is open.
     //  Activating the app when no windows are available should open a new one.
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
-            createWindow();
+            openWindow();
         }
     });
 });
