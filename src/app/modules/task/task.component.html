@@ -4,7 +4,7 @@
             Task numbers: <span>{{filteredTaskCount}}</span>
             <span *ngIf="!isLockedTasks">/{{MAX_LIMIT_TASKS}}</span>
         </div>
-        <button *ngIf="selectedTaskTime!== '1'"
+        <button *ngIf="selectedTaskTime!== TASK_TIME_YESTERDAY"
                 mat-raised-button (click)="addNewTask()">+ New task</button>
     </div>
 
