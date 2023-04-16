@@ -12,12 +12,12 @@ export interface IBaseChart {
      * The chartjs options settings.
      * @memberof IBaseChart
      */
-    readonly currentChartOption: ChartConfiguration['options'];
+    readonly currentChartOptions: ChartConfiguration['options'];
     /**
      * The chartjs Data structure.
      * @memberof IBaseChart
      */
-    currentChartDate: ChartData<'pie' | 'line', number[], string | string[]>;
+    currentChartData: ChartData<'pie' | 'line', number[], string | string[]>;
     /**
      * The chartjs plugins setting.
      * @memberof IBaseChart
