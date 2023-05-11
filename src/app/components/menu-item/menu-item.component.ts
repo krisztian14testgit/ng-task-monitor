@@ -11,7 +11,9 @@ import { MenuItem } from 'src/app/services/models/app-menu.model';
 })
 export class MenuItemComponent implements OnChanges {
   /** The title of the menu. */
-  @Input() public title!: string;
+  @Input() public title = '';
+  /** The main menu icon will be displayed if it get value from outside. */
+  @Input() public mainMenuIcon: string | undefined = undefined;
   /** The structure of the menu items with label in dictionary. */
   @Input() public menuItems_dict!: {[label: string]: MenuItem[] };
   /** Showing labels of the sub-menus if it is true otherwise it hides the labels. */
@@ -40,12 +42,11 @@ export class MenuItemComponent implements OnChanges {
       }
       // reset menu labels
       this.menuLabelKeys = [];
-    } 
+    }
     
     if (this.menuItems_dict && this.isDisplayedLabels) {
       // displayed true to collect labelKeys again.
       this.menuLabelKeys = Object.keys(this.menuItems_dict);
     }
   }
-
 }
