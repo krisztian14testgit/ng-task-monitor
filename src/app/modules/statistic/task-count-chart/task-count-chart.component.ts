@@ -3,6 +3,7 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 
 import { Task, TaskStatus } from '../../task/services/task.model';
 import { ChartBackGroundColor } from '../services/chart.model';
+import { IBaseChart } from '../../../interfaces/base-chart.interface';
 
 /**
  * This pie-chart component can show daily and weekly reports
@@ -13,7 +14,7 @@ import { ChartBackGroundColor } from '../services/chart.model';
   templateUrl: './task-count-chart.component.html',
   styleUrls: ['./task-count-chart.component.css']
 })
-export class TaskCountChartComponent implements OnChanges {
+export class TaskCountChartComponent implements OnChanges, IBaseChart {
   /** The tasks elements. */
   @Input() taskList: Task[] = [];
   /** 
@@ -27,16 +28,16 @@ export class TaskCountChartComponent implements OnChanges {
   public filteredTaskList: Task[] = [];
 
   /** The chartjs types: line, pie, bar, ... */
-  public readonly pieChartType: ChartType;
+  public readonly currentChartType: ChartType;
   /** The chartjs options settings. */
-  public readonly pieChartOptions: ChartConfiguration['options'];
+  public readonly currentChartOptions: ChartConfiguration['options'];
   /** The chartjs Data structure. */
-  public readonly pieChartData: ChartData<'pie', number[], string | string[]>;
+  public readonly currentChartData: ChartData<'pie', number[], string | string[]>;
   /** The chartjs plugins setting. */
-  public readonly pieChartPlugins = [];
+  public readonly currentChartPlugins = [];
 
   /** Stores the pie-chart titles which will be shown on the chart. */
-  private readonly _pieChartLabels: string[];
+  public readonly _chartLabels: string[];
   /** 
    * The default value is 0. 
    * If this.isShowedTodayDate is true then it will be 0 as well,
@@ -45,8 +46,8 @@ export class TaskCountChartComponent implements OnChanges {
   private _indexOfChartLabel = 0;
 
   constructor() {
-    this.pieChartType = 'pie';
-    this.pieChartOptions = {
+    this.currentChartType = 'pie';
+    this.currentChartOptions = {
       responsive: true,
       plugins: {
         legend: {
@@ -55,7 +56,7 @@ export class TaskCountChartComponent implements OnChanges {
         }
       }
     };
-    this.pieChartData = {
+    this.currentChartData = {
       labels: [],
       datasets: [ {
         label: 'Empty label of the chart',
@@ -72,7 +73,7 @@ export class TaskCountChartComponent implements OnChanges {
         ]
       } ]
     };
-    this._pieChartLabels = [
+    this._chartLabels = [
       'Counts of Task statuses today',
       'Counts of task statuses in weekly'
     ];
@@ -91,7 +92,7 @@ export class TaskCountChartComponent implements OnChanges {
     
     if (this.taskList.length > 0) {
       this.filteredTaskList = this.filterTasksByCreationDate(this.isShowedTodayDate);
-      this.setPieChartDataBy(this.filteredTaskList);
+      this._setCurrentChartDataBy(this.filteredTaskList);
     }
   }
 
@@ -126,14 +127,14 @@ export class TaskCountChartComponent implements OnChanges {
    * Settings the label and datasets of the pie-chart.
    * @param taskList The elements of the taskList.
    */
-  private setPieChartDataBy(taskList: Task[]): void {
+  public _setCurrentChartDataBy(taskList: Task[]): void {
     // reset datasets
     const taskStatusCounts = this.getCountOfTaskStatuses(taskList);
     // set datasets (label, data)
-    this.pieChartData.datasets[0].label = this._pieChartLabels[this._indexOfChartLabel];
-    this.pieChartData.datasets[0].data = taskStatusCounts;
+    this.currentChartData.datasets[0].label = this._chartLabels[this._indexOfChartLabel];
+    this.currentChartData.datasets[0].data = taskStatusCounts;
     // set chart labels: Start, Inprogress, Completed
-    this.pieChartData.labels = this.getChartLabelsByTaskStatus(taskStatusCounts);
+    this.currentChartData.labels = this.getChartLabelsByTaskStatus(taskStatusCounts);
   }
 
   /**

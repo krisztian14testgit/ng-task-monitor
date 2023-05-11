@@ -39,7 +39,7 @@ describe('MenuItemComponent', () => {
   });
 
   it('should display title button', () => {
-    expect(component.title).toBeUndefined();
+    expect(component.title).toBe('');
     component.title = 'TestTitle';
 
     fixture.detectChanges();

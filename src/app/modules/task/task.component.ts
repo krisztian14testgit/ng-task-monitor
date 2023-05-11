@@ -41,6 +41,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   public isLockedTasks = false;
   public readonly MAX_LIMIT_TASKS = 10;
+  public readonly TASK_TIME_YESTERDAY = String(TaskTime.Yesterday);
   /** Stores the reference of task stream. */
   private _taskSubscription!: Subscription;
   /**

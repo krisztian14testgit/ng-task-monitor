@@ -129,6 +129,7 @@ $app-blue-dragon: mat.define-light-theme((
   }
 }
 
+// It will be applay if you add it into body class
 .blue-dragon-theme {
     $blueText: darkblue;
     $compBackground: rgba(0, 186, 237, 0.9);

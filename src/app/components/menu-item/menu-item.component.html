@@ -1,7 +1,10 @@
 <!-- menu title -->
 <button mat-raised-button
         mat-button [matMenuTriggerFor]="beforeMenu">
-        {{title}}
+        <mat-icon *ngIf="mainMenuIcon" class="menu-main-icon ">
+          {{mainMenuIcon}}
+        </mat-icon>
+        <span>{{title}}</span>
 </button>
 <!-- nested menu template -->
 <mat-menu #beforeMenu="matMenu" xPosition="before">
@@ -10,12 +13,14 @@
     <div *ngFor="let labelKey of menuLabelKeys">
       <div class="menu-label">{{labelKey}}</div>
       <hr> <!--line -->
-      <app-style-theme *ngIf="labelKey === 'Themes'"></app-style-theme>
+        <app-style-theme *ngIf="labelKey === 'Themes'"></app-style-theme>
       <!-- menu-items -->
-      <a *ngFor="let menuItem of menuItems_dict[labelKey]" mat-menu-item
-        [routerLink]="['/' + menuItem.linkKey]" routerLinkActive="activated-route">
-        {{menuItem.title}}
-      </a>
+      <span *ngFor="let menuItem of menuItems_dict[labelKey]">
+        <a mat-menu-item [routerLink]="['/' + menuItem.linkKey]" routerLinkActive="activated-route">
+          <mat-icon *ngIf="menuItem.icon" [ngStyle]="{'color':'inherit'}">{{menuItem.icon}}</mat-icon>
+          {{menuItem.title}}
+        </a>
+      </span>
     </div>
   </ng-container>
 

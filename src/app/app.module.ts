@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { AppRoutingModule } from './app-routing.module';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatIconModule } from '@angular/material/icon';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -39,6 +40,7 @@ import { StyleManagerService } from './services/style-manager/style-manager.serv
     MatButtonModule,
     MatGridListModule,
     MatRadioModule,
+    MatIconModule
   ],
   providers: [
     AlertMessageService,
