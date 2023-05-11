@@ -27,15 +27,16 @@ export class HeaderComponent implements OnInit {
   constructor(private readonly router: Router) {
     this.appMenus = new AppMenu();
     this.appMenus.title = 'Menu';
+    this.appMenus.icon = 'menu'
     this.appMenus.isDisplayedLable = true;
     this.appMenus.menuItemsWithLabel = {
       Tasks: [
         {linkKey: "tasks/all", title: "All tasks"},
-        {linkKey: "tasks/finished", title: "Finished"}
+        {linkKey: "tasks/finished", title: "Finished", icon: "done_all"}
       ],
       Charts: [
-        {linkKey: "statistic/daily", title: "Daily"},
-        {linkKey: "statistic/weekly", title: "In-Weekly"}
+        {linkKey: "statistic/daily", title: "Daily", icon: "donut_small"},
+        {linkKey: "statistic/weekly", title: "In-Weekly", icon: "timeline"}
       ]
     };
     // contains default the "All tasks" title.
@@ -43,6 +44,7 @@ export class HeaderComponent implements OnInit {
 
     this.optionMenus = new AppMenu();
     this.optionMenus.title = 'Options';
+    this.optionMenus.icon = 'settings';
     this.optionMenus.isDisplayedLable = false;
     this.optionMenus.menuItemsWithLabel = {
       Themes: [ /** app-style-themes loading, not attaching link*/ ],

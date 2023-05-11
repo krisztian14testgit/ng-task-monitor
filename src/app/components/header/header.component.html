@@ -5,6 +5,7 @@
     <!-- options menu -->
     <mat-grid-tile colspan="1" rowspan="1">
         <app-menu-item [title]="optionMenus.title"
+                        [mainMenuIcon]="optionMenus.icon"
                         [menuItems_dict]="optionMenus.menuItemsWithLabel"
                         [isDisplayedLabels]="optionMenus.isDisplayedLable">
         </app-menu-item>
@@ -12,6 +13,7 @@
     <!-- app menu -->
     <mat-grid-tile colspan="1" rowspan="1">
         <app-menu-item [title]="appMenus.title"
+                        [mainMenuIcon]="appMenus.icon"
                         [menuItems_dict]="appMenus.menuItemsWithLabel"
                         [isDisplayedLabels]="appMenus.isDisplayedLable">
         </app-menu-item>
