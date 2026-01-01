@@ -23,12 +23,7 @@ describe('SanitizeService', () => {
     const htmlInput = '<p>Test content</p>';
     const result = service.sanitize(htmlInput);
     expect(result).toBeTruthy();
-  });
-
-  it('should sanitize HTML with sanitizeHtml method', () => {
-    const htmlInput = '<div>Test <strong>content</strong></div>';
-    const result = service.sanitizeHtml(htmlInput);
-    expect(result).toBeTruthy();
+    expect(typeof result).toBe('string');
   });
 
   it('should handle empty string', () => {

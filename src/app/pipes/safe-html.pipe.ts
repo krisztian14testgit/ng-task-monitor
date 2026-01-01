@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { SafeHtml } from '@angular/platform-browser';
 import { SanitizeService } from '../services/sanitize.service';
 
 /**
@@ -16,13 +15,13 @@ export class SafeHtmlPipe implements PipeTransform {
   constructor(private readonly sanitizeService: SanitizeService) { }
 
   /**
-   * Transforms HTML string into SafeHtml.
+   * Transforms HTML string into sanitized HTML.
    * 
    * @param value The HTML string to sanitize
-   * @returns SafeHtml object that can be safely rendered with [innerHTML]
+   * @returns Sanitized HTML string that can be safely rendered with [innerHTML]
    */
-  transform(value: string): SafeHtml {
-    return this.sanitizeService.sanitizeHtml(value);
+  transform(value: string): string {
+    return this.sanitizeService.sanitize(value);
   }
 
 }

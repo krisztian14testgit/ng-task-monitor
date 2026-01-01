@@ -15,25 +15,15 @@ export class SanitizeService {
 
   /**
    * Sanitizes HTML content to prevent XSS attacks.
+   * Uses Angular's DomSanitizer with SecurityContext.HTML to safely clean the content.
    * 
    * @param html The HTML string to sanitize
-   * @returns SafeHtml object that can be used with [innerHTML]
+   * @returns Sanitized HTML string that can be used with [innerHTML]
    * 
    * @example
    * const safeHtml = sanitizeService.sanitize('<p>Hello World</p>');
    */
-  public sanitize(html: string): SafeHtml {
-    return this.sanitizer.sanitize(SecurityContext.HTML, html) || '';
-  }
-
-  /**
-   * Sanitizes and returns HTML as SafeHtml type.
-   * This method uses sanitizeHtml internally to clean the content.
-   * 
-   * @param html The HTML string to sanitize
-   * @returns SafeHtml object that can be safely rendered
-   */
-  public sanitizeHtml(html: string): SafeHtml {
+  public sanitize(html: string): string {
     return this.sanitizer.sanitize(SecurityContext.HTML, html) || '';
   }
 }

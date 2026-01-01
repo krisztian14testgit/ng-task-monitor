@@ -23,10 +23,11 @@ describe('SafeHtmlPipe', () => {
     expect(pipe).toBeTruthy();
   });
 
-  it('should transform HTML string to SafeHtml', () => {
+  it('should transform HTML string to sanitized string', () => {
     const htmlInput = '<p>Test content</p>';
     const result = pipe.transform(htmlInput);
     expect(result).toBeTruthy();
+    expect(typeof result).toBe('string');
   });
 
   it('should handle empty string', () => {
