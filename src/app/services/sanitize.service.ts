@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { SecurityContext } from '@angular/core';
 
 /**
  * Service for sanitizing HTML content to prevent XSS attacks.
@@ -22,7 +23,7 @@ export class SanitizeService {
    * const safeHtml = sanitizeService.sanitize('<p>Hello World</p>');
    */
   public sanitize(html: string): SafeHtml {
-    return this.sanitizer.sanitize(1, html) || '';
+    return this.sanitizer.sanitize(SecurityContext.HTML, html) || '';
   }
 
   /**
@@ -33,6 +34,6 @@ export class SanitizeService {
    * @returns SafeHtml object that can be safely rendered
    */
   public sanitizeHtml(html: string): SafeHtml {
-    return this.sanitizer.sanitize(1, html) || '';
+    return this.sanitizer.sanitize(SecurityContext.HTML, html) || '';
   }
 }
