@@ -2,7 +2,12 @@
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 // chrome_bin setting: https://gist.github.com/kenvontucky/f5c4bdd2fa515f56a7ed0fe343984e95
 const process = require('process');
-process.env.CHROME_BIN = require('puppeteer').executablePath();
+try {
+  process.env.CHROME_BIN = require('puppeteer').executablePath();
+} catch (e) {
+  // Fallback to system Chrome if puppeteer is not available
+  process.env.CHROME_BIN = process.env.CHROME_BIN || '/usr/bin/google-chrome';
+}
 
 module.exports = function (config) {
   config.set({
