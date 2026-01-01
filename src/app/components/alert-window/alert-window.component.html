@@ -6,6 +6,6 @@
     <!-- alert message -->
     <div class="alert-msg">
         <strong>{{alertLabel.name}}: </strong>
-        <span>{{alertMsg}}</span>
+        <span [innerHTML]="alertMsg | safeHtml"></span>
     </div>
 </div>
