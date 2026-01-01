@@ -21,6 +21,7 @@ export class SafeHtmlPipe implements PipeTransform {
    * @returns Sanitized HTML string that can be safely rendered with [innerHTML]
    */
   transform(value: string): string {
+    if (!value) return '';
     return this.sanitizeService.sanitize(value);
   }
 
