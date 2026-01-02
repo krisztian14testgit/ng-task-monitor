@@ -28,7 +28,7 @@ jobs:
         run: npm install
 
       - name: Run unit tests
-        run: npm test -- --watch=false --browsers=ChromeHeadless
+        run: npm test -- --watch=false --browsers=MyHeadlessChromium
 
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
