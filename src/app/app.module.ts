@@ -20,6 +20,9 @@ import { StyleThemeComponent } from './components/style-theme/style-theme.compon
 
 import { AlertMessageService } from './services/alert-message/alert-message.service';
 import { StyleManagerService } from './services/style-manager/style-manager.service';
+import { SanitizeService } from './services/sanitize.service';
+
+import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 
 @NgModule({
   declarations: [
@@ -28,7 +31,8 @@ import { StyleManagerService } from './services/style-manager/style-manager.serv
     MenuItemComponent,
     PageNotFoundComponent,
     AlertWindowComponent,
-    StyleThemeComponent
+    StyleThemeComponent,
+    SafeHtmlPipe
   ],
   imports: [
     BrowserModule,
@@ -45,6 +49,7 @@ import { StyleManagerService } from './services/style-manager/style-manager.serv
   providers: [
     AlertMessageService,
     StyleManagerService,
+    SanitizeService,
     { provide: LocationStrategy, useClass: HashLocationStrategy }
   ],
   bootstrap: [AppComponent]
