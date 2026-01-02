@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { DomSanitizer } from '@angular/platform-browser';
+import { BrowserModule, DomSanitizer } from '@angular/platform-browser';
 
 import { SanitizeService } from './sanitize.service';
 
@@ -9,6 +9,7 @@ describe('SanitizeService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [BrowserModule],
       providers: [SanitizeService]
     });
     service = TestBed.inject(SanitizeService);

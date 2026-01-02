@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { BrowserModule, DomSanitizer } from '@angular/platform-browser';
 import { SafeHtmlPipe } from './safe-html.pipe';
 import { SanitizeService } from '../services/sanitize.service';
-import { DomSanitizer } from '@angular/platform-browser';
 
 describe('SafeHtmlPipe', () => {
   let pipe: SafeHtmlPipe;
@@ -9,10 +9,10 @@ describe('SafeHtmlPipe', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [BrowserModule],
       providers: [
         SafeHtmlPipe,
-        SanitizeService,
-        DomSanitizer
+        SanitizeService
       ]
     });
     sanitizeService = TestBed.inject(SanitizeService);
