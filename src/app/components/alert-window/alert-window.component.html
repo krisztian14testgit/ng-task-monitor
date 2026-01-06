@@ -6,6 +6,8 @@
     <!-- alert message -->
     <div class="alert-msg">
         <strong>{{alertLabel.name}}: </strong>
+        <!-- Using interpolation for text content (safe by default) -->
         <span>{{alertMsg}}</span>
+        <!-- Alternative: For HTML content, use: <span [innerHTML]="alertMsg | safeHtml"></span> -->
     </div>
 </div>
