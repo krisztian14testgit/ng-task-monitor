@@ -84,14 +84,14 @@ Instead of the sequential upgrade path (v14→v15→v16→v17→v18→v19→v20�
 
 **Details**:
 - Angular Material needs standalone import
-- ng2-charts may not work (needs v8+)
+- ng2-charts works with v8+ (straightforward upgrade)
 - RxJS patterns need review
 - Custom directives need rewrite
 - Web workers may need updates
 
 **Affected Dependencies**:
 - @angular/material (15+ components)
-- ng2-charts (3 chart components)
+- ng2-charts (3 chart components - update to v8)
 - Custom directives (2)
 - Web worker (1)
 
@@ -587,7 +587,7 @@ export class TaskService {
 - Convert to standalone components (one module at a time)
 - Adopt new control flow syntax (one component at a time)
 - Introduce Signals gradually (new features first)
-- Migrate charts to modern library
+- Update charts to ng2-charts v8 (minimal migration)
 - **Result**: Modern Angular v21 application
 
 **Total Timeline**: 6-9 weeks (but lower risk)

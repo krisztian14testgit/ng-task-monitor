@@ -342,79 +342,91 @@ export class ChartComponent {
 
 ## Recommendation for ng-task-monitor Project
 
-### 🎯 Primary Recommendation: **ngx-charts**
+### 🎯 Primary Recommendation: **ng2-charts v8 + Chart.js v4**
 
 **Why?**
-1. **Native Angular**: Built for Angular, works seamlessly with v21
-2. **No Breaking Changes**: Won't break with future Angular upgrades
-3. **D3-Powered**: Industry-standard visualization library
-4. **Accessibility**: Built-in ARIA support
-5. **Open Source**: Free, no licensing concerns
-6. **Active Maintenance**: Regular updates
-7. **TypeScript-First**: Better type safety
+1. **Minimal Migration**: Smallest code changes required
+2. **Familiar API**: Team already knows Chart.js
+3. **Quick Upgrade**: 1-2 days effort instead of 2-3 days
+4. **Proven Stability**: Current codebase already uses this approach
+5. **No Architecture Change**: Keep existing chart component structure
+6. **Lower Risk**: Less refactoring = fewer bugs
+7. **Clear Upgrade Path**: Well-documented migration from v3 to v4
 
 **Migration Path**:
-1. Keep ng2-charts until after Angular v21 upgrade
-2. After v21 is stable, migrate to ngx-charts
-3. Rewrite chart components one at a time
+1. Upgrade Angular to v21 first (2-3 weeks)
+2. Update to Chart.js v4 and ng2-charts v8 (1-2 days)
+3. Migrate chart configurations (straightforward API changes)
 4. Test thoroughly
+5. Done!
 
 **For Your Project**:
 - You have 3 chart components in statistic module
-- Migration effort: 2-3 days
-- Better long-term stability
-- More Angular-idiomatic code
+- Migration effort: 1-2 days (minimal)
+- Keep familiar Chart.js patterns
+- Team expertise preserved
+- Production-proven solution
 
 ---
 
-### 🥈 Alternative Recommendation: **ng-apexcharts**
+### 🥈 Alternative Options (NOT Recommended for This Project)
 
-**Why?**
-1. **Advanced Features**: If you need real-time updates or advanced interactivity
-2. **Modern Look**: Beautiful default themes
-3. **Dashboard-Ready**: Built for analytics dashboards
-4. **Active Development**: Regular updates and new features
+**These alternatives would require more effort without significant benefit for your use case:**
 
-**When to Choose**:
-- You need real-time chart updates
-- You want advanced features (zoom, pan, annotations)
-- You prefer a more modern, polished look
-- You're building a dashboard/analytics application
+#### Option A: **ngx-charts**
+- Pros: Native Angular, D3-powered, no wrapper
+- Cons: 2-3 days migration, complete component rewrite, new learning curve
+- Verdict: Overkill for your simple statistics charts
+
+#### Option B: **ng-apexcharts**
+- Pros: Advanced features, modern look, dashboard-ready
+- Cons: 2-3 days migration, heavier bundle, unnecessary complexity
+- Verdict: Too feature-rich for your needs
 
 ---
 
 ## Migration Strategy
 
-### Conservative Approach (RECOMMENDED)
+### Recommended Approach: Keep ng2-charts v8
 
-**Phase 1**: Upgrade Angular to v21 with current chart libraries
-1. Upgrade to Angular v21 first
-2. Keep chart.js v3 and ng2-charts v4 temporarily
-3. Fix chart configuration for Angular 21 compatibility
-4. Verify charts still work
+**Phase 1**: Upgrade Angular to v21 (2-3 weeks)
+1. Upgrade to Angular v21 first (follow AI_AGENT_UPGRADE_TASKS.md)
+2. Keep chart.js v3 and ng2-charts v4 temporarily during upgrade
+3. Verify Angular v21 is stable
+4. All tests pass
 
-**Phase 2**: Migrate to new chart library
-1. Install ngx-charts or ng-apexcharts
-2. Create new chart components alongside old ones
-3. Migrate one chart at a time
-4. Test thoroughly after each migration
-5. Remove ng2-charts once all charts migrated
+**Phase 2**: Update Chart Libraries (1-2 days)
+1. Update to chart.js v4 and ng2-charts v8
+2. Update provider setup in `main.ts`
+3. Migrate chart configurations (simple API changes)
+4. Test all three chart components
+5. Deploy
 
-**Timeline**: 3-4 weeks total
-- Week 1-2: Angular v21 upgrade
-- Week 3: Chart library migration
-- Week 4: Testing and refinement
+**Timeline**: 2-3 weeks + 1-2 days = **~3 weeks total**
+
+**Benefits of This Approach**:
+- Lowest risk (two separate, simple phases)
+- Minimal code changes
+- Familiar technology
+- Quick execution
+- Easy rollback at each step
 
 ---
 
-### Aggressive Approach
+### Why NOT Switch to Other Libraries?
 
-**Combined Upgrade**: Do both Angular and chart library at once
-1. Upgrade Angular to v21
-2. Switch to ngx-charts or ng-apexcharts immediately
-3. Fix all issues together
+**Switching to ngx-charts or ng-apexcharts would require**:
+1. Learning new API and patterns
+2. Rewriting all chart components from scratch
+3. Additional 1-2 days of migration work
+4. Testing new rendering behaviors
+5. Potential for new bugs
 
-**Timeline**: 1-2 weeks (higher risk)
+**For your project** (3 simple statistic charts):
+- **Current approach works well**
+- **Team knows Chart.js already**
+- **No business need for advanced features**
+- **Keep it simple = lower maintenance**
 
 ---
 
@@ -481,26 +493,60 @@ npm install ng2-charts@latest chart.js@latest
 
 **For ng-task-monitor project:**
 
-### 🥇 First Choice: **ngx-charts**
-- Best long-term solution
-- Native Angular integration
-- Will not break with future Angular versions
-- Good for your use case (task statistics)
-- Free and open source
+### 🥇 **RECOMMENDED: ng2-charts v8 + Chart.js v4**
 
-### 🥈 Second Choice: **ng-apexcharts**
-- If you want more advanced features
-- Beautiful modern look
-- Great for dashboards
-- Slightly more complex
+**Why this is the best choice:**
+1. ✅ **Minimal migration effort** - 1-2 days vs 2-3 days for alternatives
+2. ✅ **Familiar technology** - Team already knows Chart.js API
+3. ✅ **Low risk** - Smallest code changes = fewer bugs
+4. ✅ **Quick delivery** - Get to Angular v21 faster
+5. ✅ **Proven approach** - Upgrading existing solution vs learning new library
+6. ✅ **Sufficient features** - Meets all current requirements
+7. ✅ **Easy maintenance** - Continue with known patterns
 
-### 🥉 Third Choice: **ng2-charts v8 + Chart.js v4**
-- If time is critical
-- Minimal migration effort
-- Familiar API
-- But less future-proof
+**Migration steps**:
+1. Upgrade Angular v14 → v21 (2-3 weeks)
+2. Update chart.js v3 → v4 (1 day)
+3. Update ng2-charts v4 → v8 (1 day)
+4. Migrate configurations (straightforward)
+5. Test and deploy
 
-**Recommendation**: Start with Angular v21 upgrade, then migrate to **ngx-charts** as a separate phase. This approach minimizes risk and allows for thorough testing at each stage.
+**Total time**: ~3 weeks (Angular upgrade + chart update)
+
+---
+
+### 📋 Alternative Options (Only if you have specific needs)
+
+**Consider these ONLY if:**
+- You need advanced features not in Chart.js
+- You have extra 1-2 days for migration
+- You want to invest in completely different approach
+
+#### ngx-charts
+- Native Angular integration (excellent)
+- Requires complete component rewrite (2-3 days extra)
+- D3-based (different API to learn)
+- **Verdict**: Not worth the extra effort for your use case
+
+#### ng-apexcharts
+- Beautiful modern dashboards (advanced features)
+- Also requires component rewrite (2-3 days extra)
+- Heavier bundle size
+- **Verdict**: Overkill for simple statistics charts
+
+---
+
+### ✅ Final Decision
+
+**Stick with ng2-charts v8 + Chart.js v4**
+
+This is the pragmatic choice that:
+- Gets you to Angular v21 fastest
+- Minimizes risk and effort
+- Preserves team knowledge
+- Meets all business requirements
+
+**Don't over-engineer** - Your current approach with Chart.js works well. Just upgrade it to v4/v8 for Angular 21 compatibility.
 
 ---
 

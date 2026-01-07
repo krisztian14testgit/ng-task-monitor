@@ -151,11 +151,12 @@ The upgrade must go through these intermediate versions:
 
 #### 11. **ng2-charts Library**
 - **Current**: ng2-charts 4.0.1
-- **Status**: May need update to v5+ or v6+
-- **Compatibility**: Check ng2-charts compatibility with chart.js 4+
-- **Risk**: Library might be outdated or need replacement
-- **Affected Files**: `statistic.module.ts`, chart components
-- **Effort**: MEDIUM (potential library replacement)
+- **Target**: ng2-charts 8.x (for Angular 21 compatibility)
+- **Compatibility**: ng2-charts v8 fully supports chart.js v4 and Angular 21
+- **Risk**: LOW - Straightforward upgrade with configuration updates
+- **Affected Files**: `statistic.module.ts`, chart components (3 components)
+- **Effort**: LOW (1-2 days after Angular v21 upgrade)
+- **Decision**: Keep ng2-charts approach - minimal migration, familiar API
 
 ### 🟢 LOW SEVERITY - Minor Changes
 
@@ -200,8 +201,10 @@ The upgrade must go through these intermediate versions:
    - Modern ESLint flat config support in Angular 18+
 
 5. **Chart.js library**
-   - Update chart.js to v4+ (latest)
-   - Verify ng2-charts compatibility or consider ng2-charts v6 or alternative (ngx-charts)
+   - Update chart.js to v4+ (latest stable)
+   - Update ng2-charts to v8+ (for Angular 21 compatibility)
+   - Migrate chart configurations (straightforward API changes)
+   - Recommended approach: Keep ng2-charts v8 (minimal migration, 1-2 days)
 
 ### 🔄 Incremental Migrations (Can be done gradually)
 
@@ -229,7 +232,7 @@ The upgrade must go through these intermediate versions:
 | zone.js             | 0.11.8      | 0.14+        | ✅ Minor        |
 | @angular/material   | 14.2.6      | 21.0+        | ⚠️ Yes (MDC)    |
 | chart.js            | 3.9.1       | 4.4+         | ⚠️ Yes          |
-| ng2-charts          | 4.0.1       | 6.0+         | ⚠️ Yes          |
+| ng2-charts          | 4.0.1       | 8.0+         | ⚠️ Yes          |
 | @types/node         | 18.11.9     | 20.x         | ✅ Minor        |
 | jasmine-core        | 4.5.0       | 5.x          | ✅ Minor        |
 | karma               | 6.4.1       | ⚠️ Deprecated | ⚠️ Consider Jest|

@@ -67,7 +67,7 @@ For ng-task-monitor project specifically:
 | **Forms** | Reactive | 🟢 Low | Typed forms auto-migrated |
 | **Routing** | Hash strategy | 🟢 Low | Works in v21 |
 | **Testing (Karma)** | Jasmine | 🟡 Medium | Deprecated but works |
-| **Charts (ng2-charts)** | v4.0.1 | 🔴 High | May need replacement |
+| **Charts (ng2-charts)** | v4.0.1 | 🟡 Medium | Update to v8, config changes |
 | **Custom Directives** | 2 directives | 🟢 Low | Compatible |
 | **Pipes** | SafeHTML | 🟢 Low | Compatible |
 
@@ -123,8 +123,8 @@ For ng-task-monitor project specifically:
 
 | Dependency | Current | Latest | Compatibility | Risk | Action |
 |------------|---------|--------|---------------|------|--------|
-| **chart.js** | 3.9.1 | 4.4.3 | ⚠️ Breaking changes | 🔴 High | Update and test thoroughly |
-| **ng2-charts** | 4.0.1 | 6.0.0+ | ⚠️ May need replacement | 🔴 High | Consider ngx-charts or ng-apexcharts |
+| **chart.js** | 3.9.1 | 4.4.3 | ⚠️ Breaking changes | 🟡 Medium | Update to v4, config migration |
+| **ng2-charts** | 4.0.1 | 8.0.0+ | ✅ Compatible with v8 | 🟡 Medium | Update to v8 (Angular 21 compatible) |
 | **puppeteer** | 24.34.0 | Latest | ✅ Compatible | 🟢 Low | Safe to update |
 | **jasmine-core** | 4.5.0 | 5.1.0 | ✅ Compatible | 🟢 Low | Safe to update |
 | **karma** | 6.4.1 | 6.4.x | ⚠️ Deprecated | 🟡 Medium | Consider Jest migration (future) |

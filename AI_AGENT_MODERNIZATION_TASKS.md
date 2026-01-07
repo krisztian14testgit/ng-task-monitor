@@ -205,7 +205,7 @@ git checkout src/app/modules/change-location/
        MatSelectModule,
        TaskCountChartComponent, // Child components
        LineChartComponent,
-       // Chart library imports (ng2-charts or ngx-charts)
+       // Chart library imports (ng2-charts v8)
      ],
      templateUrl: './statistic.component.html',
    })

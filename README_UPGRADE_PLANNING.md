@@ -132,9 +132,10 @@ Four comprehensive documents have been created for the upgrade planning:
 
 3. **Chart.js / ng2-charts Compatibility**
    - **Current**: chart.js v3.9.1, ng2-charts v4.0.1
-   - **Target**: chart.js v4.x, ng2-charts v6.x
-   - **Risk**: Breaking changes in charting library
-   - **Mitigation**: Test thoroughly, consider alternative libraries
+   - **Target**: chart.js v4.x, ng2-charts v8.x (for Angular 21)
+   - **Risk**: Breaking changes in charting library configuration
+   - **Mitigation**: Straightforward upgrade after Angular v21, 1-2 days effort
+   - **Decision**: Keep ng2-charts v8 (minimal migration, familiar API)
 
 ### 🟡 Medium-Risk Areas
 
