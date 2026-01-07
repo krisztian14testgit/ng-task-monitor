@@ -35,12 +35,12 @@ This planning task has produced three comprehensive documents to guide the upgra
 ---
 
 ### 2. ELECTRON_UPGRADE_TASKS.md (AI Agent Task Template)
-**Purpose**: Step-by-step executable tasks for AI agents  
-**Size**: ~22,000 words  
+**Purpose**: Step-by-step executable tasks for AI agents using **direct upgrade** approach  
+**Size**: ~23,000 words  
 **Audience**: AI agents, developers performing the upgrade
 
 **Contents**:
-- 5 task groups with 15+ individual tasks
+- 6 phase groups with direct upgrade tasks
 - Complete command sequences for each step
 - Code examples with before/after comparisons
 - Validation checklists for each task
@@ -49,30 +49,31 @@ This planning task has produced three comprehensive documents to guide the upgra
 - Security enhancements
 - Documentation requirements
 
-**Task Groups**:
-1. **Environment Preparation** (2 tasks)
+**Phase Groups**:
+1. **Phase 1: Node.js 22 LTS Upgrade** (3 tasks)
    - Branch setup and baseline testing
-   - Document current dependencies
+   - Node.js 22 LTS investigation & compatibility
+   - Update Node.js type definitions
 
-2. **Incremental Electron Upgrades** (5 tasks)
-   - Stage 1: Electron 21 → 25
-   - Stage 2: Electron 25 → 28
-   - Stage 3: Electron 28 → 31 (includes Forge 6→7)
-   - Stage 4: Electron 31 → 35
-   - Stage 5: Electron 35 → 39
+2. **Phase 2: Electron 39 Direct Upgrade** (2 tasks)
+   - Direct Electron upgrade to 39.2.7
+   - Verify IPC communication with new security
 
-3. **Code Modernization** (3 tasks)
+3. **Phase 3: Electron Forge 7 Upgrade** (1 task)
+   - Upgrade Electron Forge to 7.10.2
+
+4. **Phase 4: Code Modernization** (3 tasks)
    - Update Node.js file handler for Node 22
-   - Enhance security configuration
-   - Add TypeScript compatibility
+   - Add security enhancements
+   - TypeScript compatibility (optional)
 
-4. **Testing and Validation** (4 tasks)
+5. **Phase 5: Testing & Validation** (4 tasks)
    - Comprehensive functional testing
    - Build and packaging testing
    - Performance testing
    - Security audit
 
-5. **Documentation and Finalization** (3 tasks)
+6. **Phase 6: Documentation & Finalization** (3 tasks)
    - Update documentation
    - Create git commits and tags
    - Cleanup
@@ -150,36 +151,49 @@ webPreferences: {
 
 ---
 
-## 📈 Upgrade Strategy: Incremental Approach
+## 📈 Upgrade Strategy: Direct Approach with Node.js Priority
 
-### Recommended Path (5 Stages)
+### Recommended Path (Direct Upgrade)
 
 ```
-Stage 1: 21.2.2 → 25.9.8   (1-2 days)
+Phase 1: Node.js 22.20.0 LTS (1-2 days)
    ↓
-Stage 2: 25.9.8 → 28.3.3   (1-2 days)
+Phase 2: Electron 39.2.7 Direct (1-2 days)
    ↓
-Stage 3: 28.3.3 → 31.7.5   (1 day) + Forge 6→7
+Phase 3: Electron Forge 7.10.2 (1 day)
    ↓
-Stage 4: 31.7.5 → 35.2.0   (1 day)
+Phase 4: Code Modernization (1 day)
    ↓
-Stage 5: 35.2.0 → 39.2.7   (1-2 days)
+Phase 5: Testing & Validation (2-3 days)
    ↓
-Testing & Security         (2-3 days)
-   ↓
-Documentation              (1 day)
+Phase 6: Documentation (0.5-1 day)
 ```
 
-**Total Estimated Time**: 7-12 days
+**Total Estimated Time**: 5-7 days (optimistic) to 7-9 days (with buffer)
 
-**Why Incremental?**
-- Easier to identify which change broke what
-- Lower risk of catastrophic failure
-- Can test and validate at each stage
-- Better understanding of the changes
-- Easier rollback if needed
+**Why Direct Upgrade?**
+- ✅ Well-architected codebase (contextBridge, IPC isolation) supports direct upgrade
+- ✅ Faster delivery compared to incremental approach
+- ✅ Node.js 22 is LTS (stable, supported until April 2027)
+- ✅ Lower complexity with single integration point
+- ✅ Good existing architecture reduces risk
 
-**Alternative**: Direct upgrade (21 → 39) is possible but riskier
+### Node.js 22 LTS Priority
+**Approach**: Upgrade Node.js types and verify compatibility FIRST, before Electron upgrade
+
+**Benefits**:
+- Ensures Node.js 22 API compatibility early
+- Identifies breaking changes before Electron upgrade
+- Node.js 22 LTS provides long-term stability (EOL: April 2027)
+- Active LTS status ensures production readiness
+
+**LTS Timeline**:
+- Active LTS: October 2024 - October 2025
+- Maintenance LTS: October 2025 - April 2027
+- End-of-Life: April 30, 2027
+
+### Fallback Option: Incremental Approach
+If the direct upgrade encounters critical blocking issues, a fallback to incremental upgrade through intermediate versions (21→25→28→31→35→39) is documented but not the primary recommendation.
 
 ---
 
@@ -227,14 +241,13 @@ Detailed test cases provided in ELECTRON_UPGRADE_TASKS.md (Task 4.1)
 
 | Risk | Severity | Probability | Mitigation |
 |------|----------|-------------|------------|
-| Node.js API breaking changes | 🔴 High | 🟡 Medium | Incremental upgrade + testing |
+| Node.js API breaking changes | 🔴 High | 🟡 Medium | Test thoroughly, Node 22 LTS is stable |
 | IPC communication failures | 🔴 High | 🟢 Low | Already using modern patterns |
 | Build pipeline issues | 🟡 Medium | 🟡 Medium | Test Forge early in process |
 | TypeScript compatibility | 🟡 Medium | 🟡 Medium | May need TypeScript 5.x |
-| Native module issues | 🟢 Low | 🟢 Low | Only one dependency |
 | Performance regression | 🟢 Low | 🟢 Low | Benchmark before/after |
 
-**Overall Risk**: Medium (manageable with proper planning)
+**Overall Risk**: Low-Medium (well-architected codebase supports direct upgrade)
 
 ---
 
@@ -242,7 +255,7 @@ Detailed test cases provided in ELECTRON_UPGRADE_TASKS.md (Task 4.1)
 
 ### Must Change
 1. **electronJs/app.js** - Security configuration
-2. **package.json** - Dependencies (5 updates across stages)
+2. **package.json** - Dependencies (3 major updates: Node types, Electron, Forge)
 
 ### May Need Changes
 3. **electronJs/file-handler/nodejs-file-handler.js** - Node 22 compatibility

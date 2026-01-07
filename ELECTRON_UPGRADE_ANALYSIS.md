@@ -66,12 +66,22 @@ webPreferences: {
 - **Release Date**: January 2025
 - **V8 JavaScript Engine**: Latest version with ES2024+ features
 
+### Node.js 22 LTS Information
+- **LTS Status**: Active LTS (as of October 2024, codename "Jod")
+- **Active LTS Period**: October 29, 2024 → October 21, 2025
+- **Maintenance LTS**: October 21, 2025 → April 30, 2027
+- **End-of-Life**: April 30, 2027
+- **Compatibility**: Fully compatible with Electron 39.2.7
+- **Production Ready**: Yes, LTS versions are designed for production use
+- **Recommendation**: Node.js 22 LTS is stable and well-supported for production applications
+
 ### Key Benefits of Upgrading
-1. **Security**: Critical security patches and hardening (18 major releases worth)
-2. **Performance**: V8 engine improvements, memory optimizations
-3. **Modern APIs**: Access to latest Web APIs and Node.js features
-4. **Platform Support**: Better support for modern OS versions (Windows 11, macOS Sonoma, etc.)
-5. **Bug Fixes**: Hundreds of bug fixes across all components
+1. **Node.js 22 LTS**: Long-term support until April 2027 with security patches and critical fixes
+2. **Security**: Critical security patches and hardening (18 major releases worth)
+3. **Performance**: V8 engine improvements, memory optimizations
+4. **Modern APIs**: Access to latest Web APIs and Node.js features
+5. **Platform Support**: Better support for modern OS versions (Windows 11, macOS Sonoma, etc.)
+6. **Bug Fixes**: Hundreds of bug fixes across all components
 
 ---
 
@@ -245,34 +255,39 @@ sandbox: true
 
 ## Upgrade Strategy
 
-### Recommended Approach: **Incremental Upgrade**
+### Recommended Approach: **Direct Upgrade with Node.js Priority**
 
-Instead of jumping directly from Electron 21 → 39, perform staged upgrades:
+Jump directly from Electron 21.2.2 to 39.2.7 with Node.js upgrade as the first priority:
 
+**Upgrade Sequence**:
 ```
-21.2.2 → 25.x → 28.x → 31.x → 35.x → 39.2.7
+Step 1: Upgrade Node.js to v22.20.0 (LTS)
+   ↓
+Step 2: Upgrade Electron to 39.2.7 (includes Node 22.20.0)
+   ↓
+Step 3: Upgrade Electron Forge to 7.10.2
+   ↓
+Step 4: Update dependencies and configurations
+   ↓
+Step 5: Comprehensive testing and validation
 ```
 
 **Rationale**:
-- Catch breaking changes incrementally
-- Test at each stage
-- Easier to identify root cause of issues
-- Lower risk of complete failure
+- **Node.js First**: Ensures compatibility with Node.js 22 APIs before Electron upgrade
+- **Faster Delivery**: Single major upgrade cycle (5-7 days vs 7-12 days)
+- **Well-Architected Codebase**: Your existing architecture (contextBridge, IPC isolation) supports direct upgrade
+- **LTS Support**: Node.js 22 is in LTS (until April 2027), providing long-term stability
+- **Lower Complexity**: Single integration point instead of multiple intermediate versions
 
-### Alternative Approach: **Direct Upgrade with Extensive Testing**
+**Risk Mitigation**:
+- Comprehensive testing at each step
+- Rollback plan documented
+- Good existing architecture reduces risk
+- Node.js LTS provides stability
 
-Jump directly to Electron 39, but with comprehensive testing:
+### Alternative Approach: **Incremental Upgrade** (If Direct Fails)
 
-**Pros**:
-- Faster if successful
-- Less intermediate work
-
-**Cons**:
-- Higher risk
-- Harder to debug issues
-- May need to rollback and do incremental anyway
-
-**Recommendation**: Use incremental approach for production code
+If the direct upgrade encounters critical issues, fallback to staged upgrades through intermediate versions. This is documented but not the primary recommendation given your architecture quality.
 
 ---
 
@@ -426,20 +441,18 @@ Add rate limiting to IPC handlers to prevent abuse
 
 ## Timeline Estimate
 
-### Incremental Approach (Recommended)
-- **Phase 1**: Electron 21 → 25 (1-2 days)
-- **Phase 2**: Electron 25 → 28 (1-2 days)
-- **Phase 3**: Electron 28 → 31 (1 day)
-- **Phase 4**: Electron 31 → 35 (1 day)
-- **Phase 5**: Electron 35 → 39 (1-2 days)
-- **Testing & Validation**: 2-3 days
-- **Total**: 7-12 days
+### Direct Upgrade Approach (Recommended)
+- **Phase 1**: Node.js 22 Upgrade & Compatibility (1-2 days)
+- **Phase 2**: Electron 39 & Forge 7 Upgrade (1-2 days)
+- **Phase 3**: Code Updates & Security (1 day)
+- **Phase 4**: Testing & Validation (2-3 days)
+- **Documentation**: Update README, notes (0.5 day)
+- **Total**: 5-7 days (optimistic) to 7-9 days (with buffer)
 
-### Direct Approach
-- **Upgrade**: 1-2 days
-- **Debugging**: 2-4 days
-- **Testing**: 2-3 days
-- **Total**: 5-9 days (if no major issues)
+### Fallback: Incremental Approach (If Direct Fails)
+If critical issues are discovered during direct upgrade:
+- **Total**: 7-12 days (with testing at each stage)
+- Use only if direct approach encounters blocking issues
 
 ---
 

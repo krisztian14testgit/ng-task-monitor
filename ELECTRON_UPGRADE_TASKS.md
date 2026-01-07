@@ -1,7 +1,28 @@
-# ElectronJS Upgrade Task Template for AI Agents
+# ElectronJS Direct Upgrade Task Template for AI Agents
 
 ## Purpose
-This document provides step-by-step instructions for AI agents to upgrade the ng-task-monitor project from Electron 21.2.2 to Electron 39.2.7. Each task is atomic, testable, and includes validation steps.
+This document provides step-by-step instructions for AI agents to upgrade the ng-task-monitor project from Electron 21.2.2 to Electron 39.2.7 using a **direct upgrade approach** with Node.js 22 LTS as the first priority.
+
+---
+
+## Upgrade Strategy
+
+**Approach**: Direct upgrade with Node.js priority
+**Rationale**: Well-architected codebase supports direct upgrade, faster delivery
+**Timeline**: 5-7 days (optimistic) to 7-9 days (with buffer)
+
+### Upgrade Sequence
+```
+Phase 1: Node.js 22.20.0 LTS Upgrade
+   ↓
+Phase 2: Electron 39.2.7 Direct Upgrade
+   ↓
+Phase 3: Electron Forge 7.10.2 Upgrade
+   ↓
+Phase 4: Code Modernization & Security
+   ↓
+Phase 5: Comprehensive Testing & Validation
+```
 
 ---
 
@@ -10,7 +31,8 @@ This document provides step-by-step instructions for AI agents to upgrade the ng
 ### Required Information
 - **Source Branch**: `inElectronJs`
 - **Target Electron Version**: 39.2.7
-- **Target Node.js Version**: 22.20.0 (bundled with Electron 39)
+- **Target Node.js Version**: 22.20.0 (LTS, bundled with Electron 39)
+- **Node.js 22 LTS Status**: Active LTS until October 2025, Maintenance until April 2027
 - **Current Working Directory**: `/home/runner/work/ng-task-monitor/ng-task-monitor`
 
 ### Pre-Upgrade Checklist
@@ -22,11 +44,11 @@ This document provides step-by-step instructions for AI agents to upgrade the ng
 
 ---
 
-## Task Group 1: Environment Preparation
+## Phase 1: Node.js 22 LTS Upgrade & Compatibility Check
 
 ### Task 1.1: Branch Setup and Baseline Testing
 
-**Objective**: Create a new upgrade branch and verify current functionality
+**Objective**: Create upgrade branch and establish baseline
 
 **Steps**:
 ```bash
@@ -34,10 +56,10 @@ This document provides step-by-step instructions for AI agents to upgrade the ng
 git checkout inElectronJs
 
 # 2. Create a new upgrade branch
-git checkout -b upgrade/electron-39-incremental
+git checkout -b upgrade/electron-39-direct
 
-# 3. Verify Node.js and npm versions
-node --version  # Should show system Node version
+# 3. Verify current Node.js and npm versions
+node --version  # System Node version
 npm --version
 
 # 4. Install current dependencies
@@ -68,97 +90,149 @@ npm run start.electron
 
 ---
 
-### Task 1.2: Document Current Dependencies
+### Task 1.2: Node.js 22 LTS Investigation & Compatibility Analysis
 
-**Objective**: Create a snapshot of current dependencies for comparison
+**Objective**: Verify Node.js 22 LTS compatibility and features
 
-**Steps**:
+**Investigation Steps**:
 ```bash
-# 1. List current versions
-npm list electron @electron-forge/cli --depth=0 > current-versions.txt
+# 1. Check Node.js 22 LTS information
+npm view node@22 version
+npm view node@22 dist-tags
 
-# 2. Save full dependency tree
-npm list > current-dependency-tree.txt
+# 2. Review Node.js 22 release notes
+# Visit: https://nodejs.org/en/blog/release/v22.11.0
 
-# 3. Check for outdated packages
-npm outdated > outdated-packages.txt
+# 3. Document Node.js 22 features relevant to project
+# - fs module changes
+# - crypto updates
+# - stream improvements
+# - performance enhancements
 
-# 4. Add to git (for tracking, not committing)
-git add current-*.txt outdated-packages.txt
+# 4. Check current Node.js API usage in project
+grep -r "require('fs')" electronJs/
+grep -r "require('os')" electronJs/
+grep -r "require('path')" electronJs/
 ```
 
-**Validation**:
-- [ ] current-versions.txt created with Electron 21.2.2
-- [ ] Dependency tree captured
-- [ ] Outdated packages identified
+**Key Findings to Document**:
+- [ ] Node.js 22 LTS end-of-life date: April 30, 2027
+- [ ] Current LTS phase: Active LTS (production-ready)
+- [ ] Breaking changes from Node 16 to 22
+- [ ] File system API compatibility
+- [ ] Crypto API compatibility
+- [ ] No blocking issues identified
 
-**Output Files**:
-- `current-versions.txt`
-- `current-dependency-tree.txt`
-- `outdated-packages.txt`
+**Output**: Create `NODE_22_COMPATIBILITY.md` with findings
 
 ---
 
-## Task Group 2: Incremental Electron Upgrades
+### Task 1.3: Update Node.js Type Definitions
 
-### Task 2.1: Upgrade to Electron 25.x
-
-**Objective**: First incremental upgrade from 21 to 25
+**Objective**: Prepare for Node.js 22 by updating type definitions
 
 **Steps**:
 ```bash
-# 1. Update Electron to version 25.x
-npm install --save-dev electron@^25.9.8
+# 1. Update @types/node to Node 22 types
+npm install --save-dev @types/node@^22.10.0
 
-# 2. Update Electron Forge packages
-npm install --save-dev @electron-forge/cli@^6.4.2
-npm install --save-dev @electron-forge/maker-deb@^6.4.2
-npm install --save-dev @electron-forge/maker-rpm@^6.4.2
-npm install --save-dev @electron-forge/maker-squirrel@^6.4.2
-npm install --save-dev @electron-forge/maker-zip@^6.4.2
+# 2. Check for type errors
+npx tsc --noEmit
 
-# 3. Clear npm cache
+# 3. Review any TypeScript errors related to Node.js types
+```
+
+**Files to Review**:
+- `electronJs/file-handler/nodejs-file-handler.js`
+- `electronJs/ipc/ipc-location.js`
+- `electronJs/ipc/ipc-task-list.js`
+- Any TypeScript files using Node.js APIs
+
+**Validation**:
+- [ ] @types/node@22.x installed
+- [ ] No new TypeScript errors
+- [ ] Type definitions compatible
+
+**Rollback**:
+```bash
+git checkout package.json package-lock.json
+npm install
+```
+
+---
+
+## Phase 2: Electron 39.2.7 Direct Upgrade
+
+### Task 2.1: Direct Electron Upgrade to 39.2.7
+
+**Objective**: Upgrade Electron from 21.2.2 to 39.2.7 in one step
+
+**Steps**:
+```bash
+# 1. Update Electron to version 39.2.7
+npm install --save-dev electron@^39.2.7
+
+# 2. Clear npm cache
 npm cache clean --force
 
-# 4. Remove node_modules and reinstall
+# 3. Remove node_modules and reinstall
 rm -rf node_modules package-lock.json
 npm install
 
-# 5. Test the application
-npm run build.prod
-npm run start.electron
+# 4. Verify Electron and Node versions
+npm list electron
+node -p "process.versions"  # Should show Node 22 when run in Electron
 ```
 
-**Code Changes Required**:
+**Critical Code Change Required**:
 
 File: `electronJs/app.js`
 ```javascript
-// Update webPreferences for better security
+// BEFORE (INSECURE)
+webPreferences: {
+    nodeIntegration: true,
+    sandbox: true,
+    preload: path.join(__dirname, 'preload.js'),
+}
+
+// AFTER (SECURE)
 webPreferences: {
     nodeIntegration: false,        // CHANGED from true
     contextIsolation: true,        // EXPLICITLY added
     sandbox: true,
     preload: path.join(__dirname, 'preload.js'),
+    webSecurity: true,             // ADDED
+    allowRunningInsecureContent: false,  // ADDED
 }
 ```
 
 **Validation**:
-- [ ] Electron 25.x installed successfully
+- [ ] Electron 39.2.7 installed successfully
+- [ ] Node.js 22.20.0 bundled (check with Electron DevTools)
 - [ ] No dependency conflicts
+- [ ] Security configuration updated
 - [ ] Application builds without errors
-- [ ] Application launches successfully
-- [ ] All IPC communications work (test location save/load, task operations)
-- [ ] File operations work correctly
-- [ ] No console errors or warnings
+
+**Testing**:
+```bash
+# 1. Build the application
+npm run build.prod
+
+# 2. Launch Electron
+npm run start.electron
+
+# 3. Check DevTools console for errors
+# Press F12 to open DevTools
+
+# 4. Verify Node.js version in Electron
+# In DevTools Console: console.log(process.versions)
+```
 
 **Testing Checklist**:
-- [ ] Launch application
-- [ ] Create a new task
-- [ ] Save task list
-- [ ] Load task list
-- [ ] Change location settings
-- [ ] Test all UI interactions
-- [ ] Close and reopen application
+- [ ] Application launches successfully
+- [ ] No console errors or warnings
+- [ ] Window displays correctly
+- [ ] DevTools accessible via F12
 
 **Rollback**:
 ```bash
@@ -168,81 +242,83 @@ npm install
 
 ---
 
-### Task 2.2: Upgrade to Electron 28.x
+### Task 2.2: Verify IPC Communication Still Works
 
-**Objective**: Second incremental upgrade from 25 to 28
+**Objective**: Ensure contextBridge and IPC work with new security settings
+
+**Testing Steps**:
+```bash
+# 1. Launch application
+npm run start.electron
+
+# 2. Test IPC communications manually
+```
+
+**Manual Testing**:
+1. **Location Management**:
+   - [ ] Open location settings
+   - [ ] Change app settings path
+   - [ ] Change task path
+   - [ ] Verify paths save correctly
+   - [ ] Restart app and verify paths persist
+
+2. **Task Management**:
+   - [ ] Create a new task
+   - [ ] Edit existing task
+   - [ ] Delete a task
+   - [ ] Verify task list persists
+
+3. **File Operations**:
+   - [ ] Tasks save to file
+   - [ ] Tasks load from file
+   - [ ] Settings save to file
+   - [ ] Settings load from file
+
+**Check Files**:
+- `electronJs/preload.js` - Verify contextBridge exposeInMainWorld
+- `electronJs/ipc/ipc-location.js` - Verify IPC handlers
+- `electronJs/ipc/ipc-task-list.js` - Verify IPC handlers
+
+**Validation**:
+- [ ] All IPC communications work
+- [ ] No errors in DevTools console
+- [ ] File operations succeed
+- [ ] contextBridge properly isolates APIs
+
+**If Issues Found**:
+- Check that preload.js is loaded correctly
+- Verify contextBridge.exposeInMainWorld is called
+- Check that Angular services use window.electronAPI
+- Review console for security policy violations
+
+---
+
+## Phase 3: Electron Forge 7.10.2 Upgrade
+
+### Task 3.1: Upgrade Electron Forge to 7.x
+
+**Objective**: Update Electron Forge from 6.0.0 to 7.10.2
 
 **Steps**:
 ```bash
-# 1. Update Electron to version 28.x
-npm install --save-dev electron@^28.3.3
+# 1. Update all Electron Forge packages
+npm install --save-dev @electron-forge/cli@^7.10.2
+npm install --save-dev @electron-forge/maker-deb@^7.10.2
+npm install --save-dev @electron-forge/maker-rpm@^7.10.2
+npm install --save-dev @electron-forge/maker-squirrel@^7.10.2
+npm install --save-dev @electron-forge/maker-zip@^7.10.2
 
-# 2. Update @types/node for Node.js 18 (bundled with Electron 28)
-npm install --save-dev @types/node@^18.19.0
+# 2. Update electron-squirrel-startup if needed
+npm install --save electron-squirrel-startup@latest
 
 # 3. Reinstall dependencies
 rm -rf node_modules package-lock.json
 npm install
-
-# 4. Test the application
-npm run build.prod
-npm run start.electron
 ```
 
-**Code Review Required**:
-- Review all IPC handlers for security best practices
-- Ensure input validation in all handlers
+**Configuration Check**:
 
-**Validation**:
-- [ ] Electron 28.x installed successfully
-- [ ] Application builds without errors
-- [ ] All functionality works as expected
-- [ ] No new security warnings
-- [ ] IPC communications work correctly
-
-**Testing**: Same as Task 2.1
-
-**Rollback**:
-```bash
-git checkout package.json package-lock.json
-npm install
-```
-
----
-
-### Task 2.3: Upgrade to Electron 31.x
-
-**Objective**: Third incremental upgrade from 28 to 31
-
-**Steps**:
-```bash
-# 1. Update Electron to version 31.x
-npm install --save-dev electron@^31.7.5
-
-# 2. Update @types/node for Node.js 20
-npm install --save-dev @types/node@^20.16.0
-
-# 3. Update Electron Forge to v7.x (major upgrade)
-npm install --save-dev @electron-forge/cli@^7.5.0
-npm install --save-dev @electron-forge/maker-deb@^7.5.0
-npm install --save-dev @electron-forge/maker-rpm@^7.5.0
-npm install --save-dev @electron-forge/maker-squirrel@^7.5.0
-npm install --save-dev @electron-forge/maker-zip@^7.5.0
-
-# 4. Reinstall dependencies
-rm -rf node_modules package-lock.json
-npm install
-
-# 5. Test the application
-npm run build.prod
-npm run start.electron
-```
-
-**Electron Forge Configuration Update**:
-
-The Electron Forge v7 may require configuration updates. Check if `config.forge` in package.json needs migration.
-
-Current structure should work, but verify:
+The Electron Forge v7 configuration in package.json should still work. Verify:
 ```json
 "config": {
   "forge": {
@@ -252,14 +328,32 @@ Current structure should work, but verify:
 }
 ```
 
-**Validation**:
-- [ ] Electron 31.x installed successfully
-- [ ] Electron Forge 7.x working
-- [ ] Application builds without errors
-- [ ] Packaging works: `npm run package`
-- [ ] All functionality works as expected
+**If configuration migration needed**, consult:
+- https://www.electronforge.io/configuration
 
-**Testing**: Same as Task 2.1 + packaging test
+**Validation**:
+- [ ] Electron Forge 7.10.2 installed
+- [ ] All maker packages updated
+- [ ] Configuration compatible
+- [ ] No dependency conflicts
+
+**Testing**:
+```bash
+# 1. Test Electron Forge start
+npm run start.forge
+
+# 2. Test packaging
+npm run package
+
+# 3. Verify output
+ls -la out/
+```
+
+**Validation**:
+- [ ] Forge start works
+- [ ] Package command succeeds
+- [ ] Output directory created
+- [ ] Packaged app launches correctly
 
 **Rollback**:
 ```bash
@@ -269,101 +363,9 @@ npm install
 
 ---
 
-### Task 2.4: Upgrade to Electron 35.x
+## Phase 4: Code Modernization & Security Enhancements
 
-**Objective**: Fourth incremental upgrade from 31 to 35
-
-**Steps**:
-```bash
-# 1. Update Electron to version 35.x
-npm install --save-dev electron@^35.2.0
-
-# 2. Update @types/node for Node.js 20
-npm install --save-dev @types/node@^20.17.0
-
-# 3. Update Electron Forge
-npm install --save-dev @electron-forge/cli@^7.6.0
-npm install --save-dev @electron-forge/maker-deb@^7.6.0
-npm install --save-dev @electron-forge/maker-rpm@^7.6.0
-npm install --save-dev @electron-forge/maker-squirrel@^7.6.0
-npm install --save-dev @electron-forge/maker-zip@^7.6.0
-
-# 4. Reinstall dependencies
-rm -rf node_modules package-lock.json
-npm install
-
-# 5. Test the application
-npm run build.prod
-npm run start.electron
-```
-
-**Validation**:
-- [ ] Electron 35.x installed successfully
-- [ ] Application builds without errors
-- [ ] All functionality works as expected
-- [ ] No deprecated API warnings
-
-**Testing**: Same as Task 2.1
-
-**Rollback**:
-```bash
-git checkout package.json package-lock.json
-npm install
-```
-
----
-
-### Task 2.5: Final Upgrade to Electron 39.x
-
-**Objective**: Final upgrade to target version Electron 39.2.7
-
-**Steps**:
-```bash
-# 1. Update Electron to version 39.x
-npm install --save-dev electron@^39.2.7
-
-# 2. Update @types/node for Node.js 22
-npm install --save-dev @types/node@^22.10.0
-
-# 3. Update Electron Forge to latest
-npm install --save-dev @electron-forge/cli@^7.10.2
-npm install --save-dev @electron-forge/maker-deb@^7.10.2
-npm install --save-dev @electron-forge/maker-rpm@^7.10.2
-npm install --save-dev @electron-forge/maker-squirrel@^7.10.2
-npm install --save-dev @electron-forge/maker-zip@^7.10.2
-
-# 4. Update electron-squirrel-startup if needed
-npm install --save electron-squirrel-startup@latest
-
-# 5. Reinstall dependencies
-rm -rf node_modules package-lock.json
-npm install
-
-# 6. Test the application
-npm run build.prod
-npm run start.electron
-```
-
-**Validation**:
-- [ ] Electron 39.2.7 installed successfully
-- [ ] Node.js 22.20.0 types available
-- [ ] Application builds without errors
-- [ ] All functionality works as expected
-- [ ] No deprecated API warnings
-
-**Testing**: Same as Task 2.1
-
-**Rollback**:
-```bash
-git checkout package.json package-lock.json
-npm install
-```
-
----
-
-## Task Group 3: Code Modernization
-
-### Task 3.1: Update Node.js File Handler for Node 22
+### Task 4.1: Update Node.js File Handler for Node 22
 
 **Objective**: Ensure file handler is compatible with Node.js 22 APIs
 
@@ -400,15 +402,13 @@ npm install
 
 ---
 
-### Task 3.2: Enhance Security Configuration
+### Task 4.2: Add Security Enhancements
 
 **Objective**: Implement security best practices for Electron 39
 
-**File**: `electronJs/app.js`
+**1. Add Content Security Policy**:
 
-**Required Changes**:
-
-1. **Add Content Security Policy**:
+File: `electronJs/app.js`
 ```javascript
 function createBrowserWindow() {
     const mainWindow = new BrowserWindow({
@@ -419,7 +419,6 @@ function createBrowserWindow() {
             contextIsolation: true,
             sandbox: true,
             preload: path.join(__dirname, 'preload.js'),
-            // ADD: Content Security Policy
             webSecurity: true,
             allowRunningInsecureContent: false,
         }
@@ -439,7 +438,7 @@ function createBrowserWindow() {
 }
 ```
 
-2. **Add IPC Input Validation** (example):
+**2. Add IPC Input Validation**:
 
 File: `electronJs/ipc/ipc-location.js`
 ```javascript
@@ -471,16 +470,17 @@ static subscribeOnSaving() {
 }
 ```
 
+Apply similar validation to `electronJs/ipc/ipc-task-list.js`
+
 **Validation**:
 - [ ] CSP header set correctly
-- [ ] No inline scripts allowed (if any exist, refactor them)
 - [ ] Input validation added to all IPC handlers
 - [ ] Path sanitization prevents directory traversal
 - [ ] Application still works correctly
 
 ---
 
-### Task 3.3: Add TypeScript Compatibility (Optional)
+### Task 4.3: TypeScript Compatibility (Optional)
 
 **Objective**: Upgrade TypeScript if needed for Node 22 types
 
@@ -498,10 +498,6 @@ npx tsc --noEmit
 # 4. Fix any type errors that arise
 ```
 
-**Files to Check**:
-- All `.ts` files in `src/` directory
-- Look for Node.js type usage
-
 **Validation**:
 - [ ] TypeScript compiles without errors
 - [ ] No type errors related to Node.js APIs
@@ -509,9 +505,9 @@ npx tsc --noEmit
 
 ---
 
-## Task Group 4: Testing and Validation
+## Phase 5: Comprehensive Testing & Validation
 
-### Task 4.1: Comprehensive Functional Testing
+### Task 5.1: Functional Testing
 
 **Objective**: Verify all application features work correctly
 
@@ -554,22 +550,22 @@ npx tsc --noEmit
    - [ ] No errors in DevTools console
 
 7. **Window Management**
-   - [ ] Single instance lock works (can't open multiple)
+   - [ ] Single instance lock works
    - [ ] Window close/minimize/maximize works
    - [ ] Application quits correctly
 
-8. **Platform-Specific (if applicable)**
+8. **Platform-Specific** (if applicable)
    - [ ] Mac: App stays in dock when closed
    - [ ] Windows/Linux: App quits when closed
 
-**Test on Multiple Platforms**:
+**Test on Multiple Platforms** (if available):
 - [ ] Windows 10/11
 - [ ] macOS (if available)
 - [ ] Linux (Ubuntu/Debian)
 
 ---
 
-### Task 4.2: Build and Packaging Testing
+### Task 5.2: Build and Packaging Testing
 
 **Objective**: Verify build and packaging works correctly
 
@@ -606,7 +602,7 @@ ls -la out/
 
 ---
 
-### Task 4.3: Performance Testing
+### Task 5.3: Performance Testing
 
 **Objective**: Ensure no performance regression
 
@@ -621,21 +617,15 @@ ls -la out/
 # 1. Measure startup time
 time npm run start.electron
 
-# 2. Monitor memory usage (manual - use Task Manager/Activity Monitor)
-# Check memory usage after 5 minutes of idle
+# 2. Monitor memory usage
+# Use Task Manager (Windows) / Activity Monitor (Mac) / top (Linux)
 
 # 3. Test task operations performance
 # Create 100 tasks, measure save time
 # Load 100 tasks, measure load time
-
-# 4. Profile with DevTools
-# Open DevTools -> Performance tab -> Record
 ```
 
-**Baseline** (Electron 21):
-- Document current metrics before upgrade
-
-**Target** (Electron 39):
+**Target** (Electron 39 vs Electron 21):
 - Startup time: Within 10% of baseline
 - Memory usage: Within 15% of baseline
 - Task operations: Within 10% of baseline
@@ -648,7 +638,7 @@ time npm run start.electron
 
 ---
 
-### Task 4.4: Security Audit
+### Task 5.4: Security Audit
 
 **Objective**: Verify security best practices are implemented
 
@@ -659,11 +649,10 @@ time npm run start.electron
 - [ ] No direct IPC exposure (all through contextBridge)
 - [ ] All IPC inputs validated
 - [ ] No directory traversal vulnerabilities
-- [ ] No arbitrary code execution vulnerabilities
 - [ ] CSP header set correctly
-- [ ] No inline scripts in HTML (check Angular output)
+- [ ] No inline scripts in HTML
 - [ ] No eval() or similar dangerous functions
-- [ ] Secure file operations (no arbitrary file access)
+- [ ] Secure file operations
 
 **Tools**:
 ```bash
@@ -684,9 +673,9 @@ npm outdated electron
 
 ---
 
-## Task Group 5: Documentation and Finalization
+## Phase 6: Documentation and Finalization
 
-### Task 5.1: Update Documentation
+### Task 6.1: Update Documentation
 
 **Objective**: Update all documentation to reflect Electron 39
 
@@ -696,40 +685,37 @@ npm outdated electron
    - Update Electron version references
    - Update Node.js version requirements
    - Update installation instructions if changed
-   - Update build instructions if changed
 
 2. **package.json**:
-   - Update description
-   - Update version number (bump to 3.0.0 for major upgrade?)
+   - Update version number (bump to 3.0.0 for major upgrade)
    - Verify all scripts still work
 
 3. **Create UPGRADE_NOTES.md**:
-   - Document what changed
-   - Document breaking changes
-   - Document migration steps
-   - Known issues
-
-**Template for UPGRADE_NOTES.md**:
 ```markdown
-# Electron 39 Upgrade Notes
+# Electron 39 Direct Upgrade Notes
 
 ## Version Changes
 - Electron: 21.2.2 → 39.2.7
-- Node.js: ~16.x → 22.20.0
+- Node.js: ~16.x → 22.20.0 (LTS until April 2027)
 - Electron Forge: 6.0.0 → 7.10.2
+
+## Upgrade Approach
+Direct upgrade with Node.js priority
 
 ## Breaking Changes
 - nodeIntegration now explicitly set to false
 - contextIsolation now explicitly set to true
-- [Add any other breaking changes encountered]
-
-## Migration Steps
-- [Document steps taken]
+- Security enhancements: CSP, input validation
 
 ## Testing Results
-- All tests passed: ✓/✗
-- Performance: [within/outside] acceptable range
-- Security audit: ✓/✗
+- All tests passed: ✓
+- Performance: within acceptable range
+- Security audit: ✓
+
+## Node.js 22 LTS Status
+- Active LTS until October 2025
+- Maintenance LTS until April 2027
+- Production-ready and stable
 
 ## Known Issues
 - [List any known issues]
@@ -740,25 +726,30 @@ npm outdated electron
 
 **Validation**:
 - [ ] All documentation updated
-- [ ] Version numbers correct everywhere
+- [ ] Version numbers correct
 - [ ] Instructions tested and verified
 - [ ] UPGRADE_NOTES.md created
 
 ---
 
-### Task 5.2: Create Git Commit and Tags
+### Task 6.2: Create Git Commit
 
 **Objective**: Properly version and commit the upgrade
 
 **Steps**:
 ```bash
-# 1. Stage all changes
+# 1. Review all changes
+git status
+git diff
+
+# 2. Stage all changes
 git add .
 
-# 2. Commit with descriptive message
-git commit -m "Upgrade Electron from 21.2.2 to 39.2.7
+# 3. Commit with descriptive message
+git commit -m "Direct upgrade: Electron 21.2.2 → 39.2.7 with Node.js 22 LTS
 
-- Updated Electron to 39.2.7 (Node.js 22.20.0)
+- Upgraded Node.js to 22.20.0 (LTS, EOL: April 2027)
+- Upgraded Electron to 39.2.7 in direct upgrade
 - Updated Electron Forge to 7.10.2
 - Set nodeIntegration: false for security
 - Added explicit contextIsolation: true
@@ -768,17 +759,21 @@ git commit -m "Upgrade Electron from 21.2.2 to 39.2.7
 - All tests passing
 - All functionality verified
 
+Upgrade approach: Direct (Node.js first)
+Timeline: 5-7 days
+Risk: Low (well-architected codebase)
+
 Breaking changes:
 - nodeIntegration now false (was true)
 - Explicit security configuration required
 
 Refs: #[issue-number]"
 
-# 3. Create a tag for this version
-git tag -a v3.0.0 -m "Electron 39 upgrade - v3.0.0"
+# 4. Create a tag for this version
+git tag -a v3.0.0 -m "Electron 39 direct upgrade - v3.0.0"
 
-# 4. Push branch and tags
-git push origin upgrade/electron-39-incremental
+# 5. Push branch and tags
+git push origin upgrade/electron-39-direct
 git push origin v3.0.0
 ```
 
@@ -790,14 +785,15 @@ git push origin v3.0.0
 
 ---
 
-### Task 5.3: Cleanup
+### Task 6.3: Cleanup
 
-**Objective**: Remove temporary files and clean up
+**Objective**: Remove temporary files
 
 **Steps**:
 ```bash
-# 1. Remove temporary files created during analysis
+# 1. Remove temporary files
 rm -f current-versions.txt current-dependency-tree.txt outdated-packages.txt
+rm -f NODE_22_COMPATIBILITY.md  # If you want to keep this, don't delete
 
 # 2. Clean build artifacts
 rm -rf dist out
@@ -805,23 +801,18 @@ rm -rf dist out
 # 3. Clean npm cache
 npm cache clean --force
 
-# 4. Commit cleanup
+# 4. Final commit
 git add .
-git commit -m "Clean up temporary files from upgrade process"
+git commit -m "Clean up temporary files from direct upgrade"
 git push
 ```
-
-**Validation**:
-- [ ] Temporary files removed
-- [ ] Build artifacts cleaned
-- [ ] Repository clean
 
 ---
 
 ## Success Criteria
 
 ### All Tasks Completed
-- [ ] All Task Groups 1-5 completed
+- [ ] Phase 1-6 completed
 - [ ] All validation checks passed
 - [ ] All tests passed
 - [ ] Documentation updated
@@ -856,7 +847,7 @@ If critical issues are encountered:
 git checkout inElectronJs
 
 # 2. Delete upgrade branch (optional)
-git branch -D upgrade/electron-39-incremental
+git branch -D upgrade/electron-39-direct
 
 # 3. Remove any tags created
 git tag -d v3.0.0
@@ -873,13 +864,33 @@ npm run start.electron
 
 ---
 
+## Fallback to Incremental Upgrade
+
+If the direct upgrade encounters blocking issues that cannot be resolved quickly:
+
+**Option**: Switch to incremental upgrade approach
+**Documentation**: See original ELECTRON_UPGRADE_ANALYSIS.md for incremental stages
+**Timeline**: Add 2-5 additional days for incremental approach
+
+**Incremental Path**:
+```
+21.2.2 → 25.x → 28.x → 31.x → 35.x → 39.2.7
+```
+
+This should only be used if direct upgrade fails due to:
+- Critical breaking changes not caught in analysis
+- Incompatible native modules
+- Unresolvable build issues
+
+---
+
 ## Support and Resources
 
 ### Getting Help
 - Review ELECTRON_UPGRADE_ANALYSIS.md for detailed analysis
 - Check Electron documentation: https://www.electronjs.org/docs
 - Check breaking changes: https://github.com/electron/electron/blob/main/docs/breaking-changes.md
-- Search Electron issues: https://github.com/electron/electron/issues
+- Check Node.js 22 release notes: https://nodejs.org/en/blog/release/v22.11.0
 
 ### Common Issues and Solutions
 
@@ -913,10 +924,15 @@ npm install
 
 ## Conclusion
 
-This task template provides a comprehensive, step-by-step approach to upgrading Electron from 21.2.2 to 39.2.7. By following these tasks incrementally and validating at each step, the upgrade can be completed safely and effectively.
+This direct upgrade approach with Node.js 22 LTS priority provides:
+- ✅ Faster delivery (5-7 days)
+- ✅ Modern, stable foundation (LTS until 2027)
+- ✅ Security improvements
+- ✅ Performance enhancements
+- ✅ Simplified upgrade path
 
-**Estimated Total Time**: 7-12 days
-**Risk Level**: Medium (mitigated by incremental approach)
+**Estimated Total Time**: 5-7 days (optimistic) to 7-9 days (with buffer)
+**Risk Level**: Low-Medium (well-architected codebase supports direct upgrade)
 **Success Rate**: High (with proper testing)
 
-Good luck with the upgrade! 🚀
+Good luck with the direct upgrade! 🚀

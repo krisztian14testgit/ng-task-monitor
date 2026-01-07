@@ -32,9 +32,10 @@ This directory contains comprehensive planning documentation for upgrading the n
 **Target Audience**: Technical leads, architects, project managers
 
 ### 3. For Implementation 🛠️
-**[ELECTRON_UPGRADE_TASKS.md](ELECTRON_UPGRADE_TASKS.md)** (22 KB)
+**[ELECTRON_UPGRADE_TASKS.md](ELECTRON_UPGRADE_TASKS.md)** (23 KB)
 - Step-by-step task template for AI agents
-- 5 task groups with 15+ atomic tasks
+- **Direct upgrade approach** with Node.js 22 LTS priority
+- 6 phase groups with direct upgrade tasks
 - Complete command sequences
 - Code examples (before/after)
 - Validation checklists
@@ -84,13 +85,13 @@ This directory contains comprehensive planning documentation for upgrading the n
 
 ### Before You Begin
 1. ✅ Read [DELIVERY_SUMMARY.md](DELIVERY_SUMMARY.md) for overview
-2. ✅ Review [ELECTRON_UPGRADE_ANALYSIS.md](ELECTRON_UPGRADE_ANALYSIS.md) - Understand risks
-3. ✅ Get team approval and schedule time (7-12 days)
+2. ✅ Review [ELECTRON_UPGRADE_ANALYSIS.md](ELECTRON_UPGRADE_ANALYSIS.md) - Understand approach
+3. ✅ Get team approval and schedule time (5-7 days optimistic, 7-9 with buffer)
 4. ✅ Set up test environment
 5. ✅ Backup current working code
 
 ### Ready to Start Upgrade?
-👉 Go to: [ELECTRON_UPGRADE_TASKS.md](ELECTRON_UPGRADE_TASKS.md) - **Task 1.1: Branch Setup**
+👉 Go to: [ELECTRON_UPGRADE_TASKS.md](ELECTRON_UPGRADE_TASKS.md) - **Phase 1, Task 1.1: Branch Setup**
 
 ---
 
@@ -98,14 +99,15 @@ This directory contains comprehensive planning documentation for upgrading the n
 
 | Metric | Value |
 |--------|-------|
-| Total Documentation | 59 KB / ~58,000 words |
+| Total Documentation | 60 KB / ~60,000 words |
 | Number of Documents | 4 comprehensive guides |
-| Upgrade Stages | 5 incremental stages |
-| Total Tasks | 15+ atomic tasks |
-| Estimated Time | 7-12 days |
-| Risk Level | Medium (manageable) |
+| Upgrade Approach | Direct (Node.js first) |
+| Total Phases | 6 phases |
+| Estimated Time | 5-7 days (optimistic), 7-9 (with buffer) |
+| Risk Level | Low-Medium (well-architected codebase) |
 | Files to Modify | 2-6 core files |
 | Security Changes | Critical (nodeIntegration: false) |
+| Node.js 22 LTS EOL | April 30, 2027 |
 
 ---
 
@@ -119,13 +121,20 @@ This directory contains comprehensive planning documentation for upgrading the n
 
 ### Target State
 - **Electron**: 39.2.7 (Latest - January 2026)
-- **Node.js**: 22.20.0 (bundled)
+- **Node.js**: 22.20.0 (LTS, bundled with Electron 39)
+- **Node.js LTS EOL**: April 30, 2027
 - **Forge**: 7.10.2
 - **Security**: nodeIntegration: false ✅
 
-### Upgrade Path
+### Upgrade Path (Direct)
 ```
-21.2.2 → 25.9.8 → 28.3.3 → 31.7.5 → 35.2.0 → 39.2.7
+Phase 1: Node.js 22.20.0 LTS Types & Compatibility
+   ↓
+Phase 2: Electron 39.2.7 Direct Upgrade
+   ↓
+Phase 3: Electron Forge 7.10.2
+   ↓
+Phase 4-6: Modernization, Testing, Documentation
 ```
 
 ---
