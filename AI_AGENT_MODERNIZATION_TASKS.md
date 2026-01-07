@@ -4,9 +4,9 @@
 
 This document provides detailed tasks for an AI agent to modernize the ng-task-monitor codebase after upgrading to Angular v21, applying features from Angular v17-21:
 - TypeScript 5.6 integration
-- Declarative control flow (@if, @for, @switch)
-- Deferrable loading (@defer)
-- Signals for reactive state
+- Declarative control flow (@if, @for) - **@switch is excluded per user request**
+- **Deferrable loading (@defer) is excluded per user request**
+- Signals for reactive state (restricted usage - see guidelines)
 - Standalone components
 - View Transition API (experimental)
 - Improved SSR support
@@ -25,10 +25,50 @@ Before starting these tasks, ensure:
 
 ---
 
+## Important Constraints
+
+### RxJS Preservation
+- **Keep all RxJS functions and solutions**
+- Do NOT convert RxJS patterns to Signals
+- Only update obsolete RxJS operators to their recommended replacements
+- HTTP requests remain with RxJS Observables
+- Event streams and complex async operations stay with RxJS
+
+### Signal Usage Restrictions
+**Use Signals ONLY for**:
+- Primitive types: `string`, `number`, `boolean`
+- Simple values, not complex objects or unknown types
+- Replacing `ngOnChanges` lifecycle hooks with input signals
+
+**DO NOT use Signals for**:
+- Complex references like `this.ref.properties.value`
+- Objects with nested properties
+- Arrays of complex objects
+- Unknown or any types
+
+**Example of allowed Signal usage**:
+```typescript
+// ✅ ALLOWED - Primitive types
+selectedTab = signal<string>('tasks');
+count = signal<number>(0);
+isLoading = signal<boolean>(false);
+
+// ✅ ALLOWED - Replacing ngOnChanges with input signals
+@Input() timerInMinutes = input<number>(0);
+
+// ❌ NOT ALLOWED - Complex objects
+task = signal<Task>({ id: 1, name: 'test', status: 'pending' });
+
+// ❌ NOT ALLOWED - Complex nested references
+this.mySignal().property.value
+```
+
+---
+
 ## Modernization Strategy
 
 **Approach**: Incremental, module-by-module migration  
-**Duration**: 4-6 weeks  
+**Duration**: 3-4 weeks (reduced without @defer tasks)  
 **Risk**: Low (can rollback at any step)
 
 ---
@@ -532,11 +572,13 @@ git checkout src/app/app.module.ts src/app/app-routing.module.ts src/app/app.com
 
 ## Phase 2: Adopt Declarative Control Flow
 
-### Task MOD-005: Migrate Templates to @if/@for/@switch
+### Task MOD-005: Migrate Templates to @if/@for (NOT @switch)
 
 **Dependencies**: MOD-004  
-**Objective**: Replace *ngIf/*ngFor/*ngSwitch with modern syntax  
-**Estimated Time**: 8-10 hours
+**Objective**: Replace *ngIf/*ngFor with modern syntax (**@switch excluded per user request**)  
+**Estimated Time**: 6-8 hours
+
+**Important**: Do NOT migrate *ngSwitch to @switch. Keep *ngSwitch as is.
 
 **Instructions**:
 
@@ -546,12 +588,14 @@ git checkout src/app/app.module.ts src/app/app-routing.module.ts src/app/app.com
    ```
    
    If this doesn't work or isn't available, do manual migration.
+   
+   **Note**: If CLI migration converts @switch, revert those changes and keep *ngSwitch.
 
 2. **Find all templates with old syntax**:
    ```bash
    grep -r "\*ngIf" src/app/ --include="*.html" | wc -l
    grep -r "\*ngFor" src/app/ --include="*.html" | wc -l
-   grep -r "\*ngSwitch" src/app/ --include="*.html" | wc -l
+   # Note: *ngSwitch will remain unchanged
    ```
 
 3. **Migrate *ngIf to @if**:
@@ -625,9 +669,9 @@ git checkout src/app/app.module.ts src/app/app-routing.module.ts src/app/app.com
    }
    ```
 
-5. **Migrate *ngSwitch to @switch**:
+5. **DO NOT migrate *ngSwitch**:
    ```html
-   <!-- BEFORE -->
+   <!-- KEEP AS IS - Do not change *ngSwitch -->
    <div [ngSwitch]="taskStatus">
      <p *ngSwitchCase="'pending'">Pending</p>
      <p *ngSwitchCase="'active'">Active</p>
@@ -635,20 +679,15 @@ git checkout src/app/app.module.ts src/app/app-routing.module.ts src/app/app.com
      <p *ngSwitchDefault>Unknown</p>
    </div>
    
-   <!-- AFTER -->
-   @switch (taskStatus) {
-     @case ('pending') {
-       <p>Pending</p>
-     }
-     @case ('active') {
-       <p>Active</p>
-     }
-     @case ('completed') {
-       <p>Completed</p>
-     }
-     @default {
-       <p>Unknown</p>
-     }
+   <!-- Alternative: Use @if / @else if instead if preferred -->
+   @if (taskStatus === 'pending') {
+     <p>Pending</p>
+   } @else if (taskStatus === 'active') {
+     <p>Active</p>
+   } @else if (taskStatus === 'completed') {
+     <p>Completed</p>
+   } @else {
+     <p>Unknown</p>
    }
    ```
 
@@ -660,7 +699,7 @@ git checkout src/app/app.module.ts src/app/app-routing.module.ts src/app/app.com
    - Remove trackBy functions that are no longer needed (since @for has inline track)
    - Or keep them if you want reusable track functions
 
-8. **Test each component after migration**:
+7. **Test each component after migration**:
    ```bash
    npm run build.prod
    npm start
@@ -676,7 +715,7 @@ git checkout src/app/app.module.ts src/app/app-routing.module.ts src/app/app.com
 **Verification**:
 - [ ] No *ngIf in codebase
 - [ ] No *ngFor in codebase
-- [ ] No *ngSwitch in codebase
+- [ ] *ngSwitch remains unchanged (or converted to @if/@else if)
 - [ ] All conditional rendering works
 - [ ] All loops work
 - [ ] Build succeeds
@@ -689,156 +728,196 @@ git checkout src/app/**/*.html
 
 ---
 
-## Phase 3: Implement Deferrable Views
+## Phase 3: Introduce Signals (Restricted Usage)
 
-### Task MOD-006: Add @defer for Chart Components
+### Task MOD-006: Replace ngOnChanges with Input Signals
 
 **Dependencies**: MOD-005  
-**Objective**: Lazy load charts for better initial page load  
-**Estimated Time**: 3-4 hours
+**Objective**: Convert components using ngOnChanges to input signals (primitive types only)  
+**Estimated Time**: 4-6 hours
+
+**Important Restrictions**:
+- Only use signals for **primitive types** (string, number, boolean)
+- Do NOT use signals for objects, arrays of objects, or complex types
+- Do NOT create complex signal references like `this.signal().property.value`
+- Primary use case: Replace `ngOnChanges` lifecycle hooks
 
 **Instructions**:
 
-1. **Identify defer candidates**:
-   - Chart components in statistic module
-   - Heavy components below the fold
-   - Components not immediately visible
-
-2. **Add @defer to chart components**:
-   ```html
-   <!-- statistic.component.html -->
-   
-   <!-- BEFORE -->
-   <app-task-count-chart [data]="chartData"></app-task-count-chart>
-   
-   <!-- AFTER -->
-   @defer (on viewport) {
-     <app-task-count-chart [data]="chartData"></app-task-count-chart>
-   } @placeholder {
-     <div class="chart-skeleton">
-       <p>Loading chart...</p>
-     </div>
-   } @loading (minimum 500ms) {
-     <div class="chart-loading">
-       <mat-spinner></mat-spinner>
-     </div>
-   }
-   ```
-
-3. **Defer triggers available**:
-   - `on viewport` - When element enters viewport
-   - `on idle` - When browser is idle
-   - `on immediate` - Defer but load immediately
-   - `on timer(2s)` - After 2 seconds
-   - `on interaction` - On user interaction
-   - `on hover` - On hover
-   
-   For charts, use `on viewport` or `on idle`.
-
-4. **Add placeholder styling**:
-   ```css
-   /* statistic.component.css */
-   .chart-skeleton {
-     height: 300px;
-     background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-     background-size: 200% 100%;
-     animation: loading 1.5s ease-in-out infinite;
-   }
-   
-   @keyframes loading {
-     0% { background-position: 200% 0; }
-     100% { background-position: -200% 0; }
-   }
-   ```
-
-5. **Test defer behavior**:
+1. **Identify components with ngOnChanges**:
    ```bash
-   npm run build.prod
-   npm start
-   # Navigate to /statistic
-   # Open DevTools Network tab
-   # Verify chart chunks load lazily
-   # Scroll to test viewport trigger
+   grep -r "ngOnChanges" src/app/ --include="*.ts"
    ```
+   
+   Focus on components that:
+   - Use ngOnChanges to react to @Input changes
+   - Have @Input properties with primitive types
+   - Example: task-timer.component.ts
 
-**Verification**:
-- [ ] Charts load lazily
-- [ ] Placeholder shows
-- [ ] Loading state shows
-- [ ] Charts render after defer trigger
-- [ ] Network shows separate chunk loads
-- [ ] Initial page load faster
-
-**Rollback**:
-```bash
-git checkout src/app/modules/statistic/
-```
-
----
-
-### Task MOD-007: Add @defer for Other Heavy Components
-
-**Dependencies**: MOD-006  
-**Objective**: Optimize other deferred loading opportunities  
-**Estimated Time**: 2-3 hours
-
-**Instructions**:
-
-1. **Identify other defer candidates**:
-   - Task card components (if many tasks)
-   - Alert window (not immediately visible)
-   - Style theme selector (settings)
-
-2. **Add conditional defer for task lists**:
-   ```html
-   <!-- task.component.html -->
-   @for (task of tasks; track task.id) {
-     @defer (on viewport; prefetch on idle) {
-       <app-task-card [task]="task"></app-task-card>
-     } @placeholder {
-       <div class="task-card-placeholder">...</div>
+2. **Convert task-timer.component.ts as example**:
+   
+   **BEFORE (with ngOnChanges)**:
+   ```typescript
+   import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+   
+   export class TaskTimerComponent implements OnChanges {
+     @Input() public timerInMinutes = 0;
+     @Input() public statusLabel = '';
+     
+     public timerInMillisec = 0;
+     private _preTimerInMillisec = 0;
+     
+     ngOnChanges(changes: SimpleChanges): void {
+       if (changes.timerInMinutes?.currentValue === this.timerInMinutes && this.timerInMinutes > 0) {
+         this.timerInMillisec = TaskTimer.convertsToMilliSec(this.timerInMinutes);
+         this._preTimerInMillisec = this.timerInMillisec;
+         
+         // If timer is interrupted, it was inprogress, start timer again.
+         if (this.statusLabel == TaskStatus[TaskStatus.Inprogress]) {
+           this.startTimer();
+         }
+       }
+     }
+   }
+   ```
+   
+   **AFTER (with input signals)**:
+   ```typescript
+   import { Component, input, effect } from '@angular/core';
+   
+   export class TaskTimerComponent {
+     // Convert @Input to input signals (primitive types only)
+     public timerInMinutes = input<number>(0);
+     public statusLabel = input<string>('');
+     
+     public timerInMillisec = 0;
+     private _preTimerInMillisec = 0;
+     
+     constructor() {
+       // Use effect() to react to signal changes (replaces ngOnChanges)
+       effect(() => {
+         const minutes = this.timerInMinutes();
+         const status = this.statusLabel();
+         
+         if (minutes > 0) {
+           this.timerInMillisec = TaskTimer.convertsToMilliSec(minutes);
+           this._preTimerInMillisec = this.timerInMillisec;
+           
+           // If timer is interrupted, it was inprogress, start timer again.
+           if (status === TaskStatus[TaskStatus.Inprogress]) {
+             this.startTimer();
+           }
+         }
+       });
      }
    }
    ```
 
-3. **Add defer for modals/dialogs**:
-   ```html
-   <!-- app.component.html -->
-   @defer (on interaction) {
-     <app-alert-window></app-alert-window>
+3. **Key changes explained**:
+   - Replace `@Input()` with `input<type>(defaultValue)` for primitive types
+   - Remove `implements OnChanges` from class
+   - Remove `ngOnChanges` method
+   - Add `effect()` in constructor to react to signal changes
+   - Read signal values with `this.signalName()` (parentheses)
+   - Keep complex logic as-is, just wrap input access
+
+4. **Pattern for other components**:
+   
+   **For simple inputs (string, number, boolean)**:
+   ```typescript
+   // BEFORE
+   @Input() count: number = 0;
+   @Input() isActive: boolean = false;
+   @Input() label: string = '';
+   
+   // AFTER
+   count = input<number>(0);
+   isActive = input<boolean>(false);
+   label = input<string>('');
+   ```
+   
+   **For inputs that need reaction**:
+   ```typescript
+   constructor() {
+     effect(() => {
+       const value = this.inputSignal();
+       // React to changes
+       this.doSomething(value);
+     });
    }
    ```
 
-4. **Measure impact**:
-   - Before: Initial bundle size
-   - After: Initial bundle size
-   - Expected: 10-20% reduction
+5. **What NOT to convert to signals**:
+   ```typescript
+   // ❌ DO NOT convert - complex object
+   @Input() task: Task = {...};
+   
+   // ❌ DO NOT convert - array of objects  
+   @Input() tasks: Task[] = [];
+   
+   // ❌ DO NOT convert - EventEmitters stay as is
+   @Output() taskChanged = new EventEmitter<Task>();
+   
+   // ✅ KEEP RxJS - HTTP and complex async
+   taskService.getTasks().subscribe(...);
+   ```
+
+6. **Components to update** (if they use primitive @Input with ngOnChanges):
+   - task-timer.component.ts (primary example)
+   - Any component with ngOnChanges on primitive inputs
+   - Skip components with complex object inputs
+
+7. **Test after each conversion**:
+   ```bash
+   npm run build.prod
+   npm start
+   # Test the specific component functionality
+   # Verify input changes still trigger correct behavior
+   ```
 
 **Verification**:
-- [ ] Initial bundle smaller
-- [ ] Components load on demand
-- [ ] No user-visible delays
-- [ ] Prefetch works correctly
+- [ ] ngOnChanges removed from components with primitive inputs
+- [ ] input() signals replace @Input() for primitives
+- [ ] effect() handles input change reactions
+- [ ] Component functionality unchanged
+- [ ] Build succeeds
+- [ ] Tests pass
+
+**Rollback**:
+```bash
+git checkout src/app/modules/task/task-timer/
+```
 
 ---
 
-## Phase 4: Introduce Signals
+## Phase 4: Convert Simple UI State to Signals (Optional)
 
-### Task MOD-008: Convert Simple State to Signals
+### Task MOD-007: Convert Primitive UI State to Signals
 
-**Dependencies**: MOD-007  
-**Objective**: Replace simple RxJS state with Signals  
-**Estimated Time**: 6-8 hours
+**Dependencies**: MOD-006  
+**Objective**: Convert simple boolean/string/number state to signals  
+**Estimated Time**: 3-4 hours
+
+**Important**: This is OPTIONAL. Only do if beneficial. Keep RxJS for everything else.
+
+**Restrictions (same as before)**:
+- Only primitive types (boolean, number, string)
+- No complex objects
+- No arrays of objects  
+- Keep all RxJS patterns intact
 
 **Instructions**:
 
-1. **Identify Signal candidates**:
-   - Simple component state (isLoading, selectedFilter, etc.)
-   - Form state
-   - UI state (theme, visibility flags)
-   - NOT: HTTP responses, complex async operations
+1. **Identify simple UI state** (optional candidates):
+   ```typescript
+   // ✅ Good candidates for signals (primitive types)
+   isLoading: boolean = false;
+   selectedTab: string = 'all';
+   count: number = 0;
+   isVisible: boolean = true;
+   ```
 
-2. **Convert isLoading pattern**:
+2. **Convert simple boolean flags**:
    ```typescript
    // BEFORE
    export class TaskComponent {
@@ -846,143 +925,106 @@ git checkout src/app/modules/statistic/
      
      loadTasks() {
        this.isLoading = true;
-       this.taskService.getTasks().subscribe(tasks => {
-         this.tasks = tasks;
-         this.isLoading = false;
-       });
+       // ... async operation
+       this.isLoading = false;
      }
    }
    
-   // AFTER
+   // AFTER (Optional)
    export class TaskComponent {
      isLoading = signal(false);
      
      loadTasks() {
        this.isLoading.set(true);
-       this.taskService.getTasks().subscribe(tasks => {
-         this.tasks.set(tasks);
-         this.isLoading.set(false);
-       });
+       // ... async operation
+       this.isLoading.set(false);
      }
    }
    
-   // Template
+   // Template - add ()
    @if (isLoading()) {
      <p>Loading...</p>
    }
    ```
 
-3. **Convert filter/selection state**:
+3. **Convert simple selection state**:
    ```typescript
    // BEFORE
-   export class StatisticComponent {
-     selectedChart: string = 'bar';
+   selectedFilter: string = 'all';
+   
+   setFilter(filter: string) {
+     this.selectedFilter = filter;
+   }
+   
+   // AFTER (Optional)
+   selectedFilter = signal<string>('all');
+   
+   setFilter(filter: string) {
+     this.selectedFilter.set(filter);
+   }
+   ```
+
+4. **What to KEEP with RxJS** (do NOT convert):
+   ```typescript
+   // ❌ DO NOT convert - keep RxJS for HTTP
+   tasks$: Observable<Task[]>;
+   
+   // ❌ DO NOT convert - keep RxJS for complex async
+   taskService.getTasks().subscribe(...);
+   
+   // ❌ DO NOT convert - complex objects stay as properties
+   currentTask: Task = {...};
+   
+   // ❌ DO NOT convert - arrays of objects
+   tasks: Task[] = [];
+   
+   // ❌ DO NOT convert - event streams
+   clicks$: Subject<void> = new Subject();
+   ```
+
+5. **StyleManager service example** (optional):
+   ```typescript
+   // This is OPTIONAL - only if it provides clear benefit
+   
+   // BEFORE
+   export class StyleManagerService {
+     private currentTheme = 'light';
      
-     selectChart(type: string) {
-       this.selectedChart = type;
+     setTheme(theme: string) {
+       this.currentTheme = theme;
+       this.applyTheme(theme);
+     }
+     
+     getTheme(): string {
+       return this.currentTheme;
      }
    }
    
-   // AFTER
-   export class StatisticComponent {
-     selectedChart = signal<string>('bar');
+   // AFTER (Optional - only primitive string)
+   export class StyleManagerService {
+     currentTheme = signal<string>('light');
      
-     selectChart(type: string) {
-       this.selectedChart.set(type);
-     }
-   }
-   
-   // Template
-   @if (selectedChart() === 'bar') {
-     <app-bar-chart />
-   }
-   ```
-
-4. **Create computed values**:
-   ```typescript
-   export class TaskComponent {
-     tasks = signal<Task[]>([]);
-     
-     // Derived state with computed
-     completedTasks = computed(() => 
-       this.tasks().filter(t => t.completed)
-     );
-     
-     pendingTasks = computed(() =>
-       this.tasks().filter(t => !t.completed)
-     );
-     
-     taskCount = computed(() => this.tasks().length);
-     completedCount = computed(() => this.completedTasks().length);
-     completionRate = computed(() => 
-       this.taskCount() > 0 
-         ? (this.completedCount() / this.taskCount()) * 100 
-         : 0
-     );
-   }
-   
-   // Template
-   <p>Completed: {{ completedCount() }} / {{ taskCount() }}</p>
-   <p>Rate: {{ completionRate() }}%</p>
-   ```
-
-5. **Use effect() for side effects**:
-   ```typescript
-   export class TaskComponent {
-     tasks = signal<Task[]>([]);
-     
-     constructor() {
-       effect(() => {
-         // Runs whenever tasks changes
-         const tasks = this.tasks();
-         console.log('Tasks updated:', tasks.length);
-         this.saveToLocalStorage(tasks);
-       });
+     setTheme(theme: string) {
+       this.currentTheme.set(theme);
+       this.applyTheme(theme);
      }
    }
    ```
 
-6. **Keep RxJS for HTTP**:
-   ```typescript
-   // Good hybrid approach
-   export class TaskService {
-     private http = inject(HttpClient);
-     private tasksSignal = signal<Task[]>([]);
-     
-     // Public readonly signal
-     tasks = this.tasksSignal.asReadonly();
-     
-     // RxJS for HTTP
-     loadTasks() {
-       return this.http.get<Task[]>('/api/tasks').pipe(
-         tap(tasks => this.tasksSignal.set(tasks))
-       );
-     }
-     
-     // Computed derived state
-     completedTasks = computed(() =>
-       this.tasks().filter(t => t.completed)
-     );
-   }
+6. **Test if converting**:
+   ```bash
+   npm run build.prod
+   npm start
+   # Test affected components
    ```
-
-7. **Update templates**:
-   - Add `()` to signal reads
-   - Remove `.subscribe()` from components
-   - Use signals directly in templates
-
-8. **Test thoroughly**:
-   - State updates correctly
-   - Computed values recalculate
-   - No memory leaks
-   - Performance is good
 
 **Verification**:
-- [ ] Simple state converted to signals
-- [ ] Computed values work
-- [ ] Templates updated
-- [ ] No subscription leaks
-- [ ] Performance improved
+- [ ] Only primitive types converted (if any)
+- [ ] All RxJS patterns preserved
+- [ ] HTTP requests still use RxJS
+- [ ] Complex objects not converted
+- [ ] Build succeeds
+- [ ] No functionality broken
 
 **Rollback**:
 ```bash
@@ -991,91 +1033,17 @@ git checkout src/app/
 
 ---
 
-### Task MOD-009: Convert StyleManager Service to Signals
-
-**Dependencies**: MOD-008  
-**Objective**: Modernize theme management with Signals  
-**Estimated Time**: 3-4 hours
-
-**Instructions**:
-
-1. **Current StyleManagerService** likely uses:
-   - BehaviorSubject for current theme
-   - Observables for theme changes
-
-2. **Convert to Signals**:
-   ```typescript
-   // BEFORE
-   export class StyleManagerService {
-     private currentThemeSubject = new BehaviorSubject<string>('light');
-     currentTheme$ = this.currentThemeSubject.asObservable();
-     
-     setTheme(theme: string) {
-       this.currentThemeSubject.next(theme);
-       // Apply theme logic
-     }
-   }
-   
-   // AFTER
-   export class StyleManagerService {
-     currentTheme = signal<string>('light');
-     
-     setTheme(theme: string) {
-       this.currentTheme.set(theme);
-       // Apply theme logic
-     }
-     
-     // Computed helper
-     isDark = computed(() => this.currentTheme() === 'dark');
-     isLight = computed(() => this.currentTheme() === 'light');
-   }
-   ```
-
-3. **Update components using StyleManager**:
-   ```typescript
-   // Component
-   export class HeaderComponent {
-     styleManager = inject(StyleManagerService);
-     currentTheme = this.styleManager.currentTheme;
-     
-     // Template can directly use signal
-   }
-   
-   // Template
-   <div class="theme-{{ currentTheme() }}">
-     ...
-   </div>
-   ```
-
-4. **Use effect() for DOM updates**:
-   ```typescript
-   export class StyleManagerService {
-     currentTheme = signal<string>('light');
-     
-     constructor() {
-       effect(() => {
-         const theme = this.currentTheme();
-         this.applyThemeToDOM(theme);
-       });
-     }
-     
-     private applyThemeToDOM(theme: string) {
-       document.body.className = `theme-${theme}`;
-     }
-   }
-   ```
-
-**Verification**:
-- [ ] Theme switching works
-- [ ] No subscriptions in components
-- [ ] Effect applies theme
-- [ ] Performance good
+## Phase 5: TypeScript 5.6 Enhancements
 
 ---
 
 ## Phase 5: TypeScript 5.6 Enhancements
 
-### Task MOD-010: Update TypeScript Configuration
+### Task MOD-008: Update TypeScript Configuration
+
+**Dependencies**: MOD-007  
+**Objective**: Enable TypeScript 5.6 features  
+**Estimated Time**: 2-3 hours
 
 **Dependencies**: MOD-009  
 **Objective**: Enable TypeScript 5.6 features  
@@ -1139,9 +1107,9 @@ git checkout src/app/
 
 ## Phase 6: Optional Enhancements
 
-### Task MOD-011: Add View Transition API (Experimental)
+### Task MOD-009: Add View Transition API (Experimental)
 
-**Dependencies**: MOD-010  
+**Dependencies**: MOD-008  
 **Objective**: Add smooth route transitions  
 **Estimated Time**: 2-4 hours
 
@@ -1205,7 +1173,7 @@ git checkout src/app/
 
 ---
 
-### Task MOD-012: Setup for SSR (Optional)
+### Task MOD-010: Setup for SSR (Optional)
 
 **Dependencies**: MOD-011  
 **Objective**: Prepare for Server-Side Rendering  
@@ -1256,7 +1224,7 @@ git checkout src/app/
 
 ## Testing & Validation
 
-### Task MOD-013: Final Modernization Testing
+### Task MOD-011: Final Modernization Testing
 
 **Dependencies**: All MOD tasks  
 **Objective**: Comprehensive testing of modernized app  
@@ -1329,32 +1297,76 @@ git checkout src/app/
 
 ✅ **Phase 5**: TypeScript 5.6 (1 task, ~2-3 hours)
 - Latest TS features
+## Summary
+
+### Modernization Phases Completed
+
+✅ **Phase 1**: Standalone Components (4 tasks, ~24-30 hours)
+- All modules converted
+- No NgModules remain
+- Cleaner architecture
+
+✅ **Phase 2**: Control Flow (1 task, ~6-8 hours)
+- All *ngIf → @if
+- All *ngFor → @for
+- **@switch excluded per user request** - keep *ngSwitch or use @if/@else if
+
+✅ **Phase 3**: Signals - Restricted Usage (2 tasks, ~7-10 hours)
+- Replace ngOnChanges with input signals (MOD-006)
+- Optional primitive UI state conversion (MOD-007)
+- **RxJS preserved** - no conversion to Signals
+- **Only primitive types** - no complex objects
+
+✅ **Phase 4**: TypeScript 5.6 (1 task, ~2-3 hours)
+- Latest TS features
 - Better type safety
 
-✅ **Phase 6**: Optional Enhancements (2 tasks, ~6-10 hours)
+✅ **Phase 5**: Optional Enhancements (2 tasks, ~6-10 hours)
 - View transitions
 - SSR ready
 
-**Total Time**: 54-72 hours over 4-6 weeks
+**Total Time**: 45-61 hours over 3-4 weeks (reduced from 54-72 hours)
+
+### Key Constraints Applied
+
+**RxJS Preservation**:
+- ✅ All RxJS patterns kept intact
+- ✅ HTTP requests remain with RxJS
+- ✅ Event streams stay with RxJS
+- ✅ Only obsolete operators updated
+
+**Signal Restrictions**:
+- ✅ Only primitive types (string, number, boolean)
+- ✅ No complex objects or nested references
+- ✅ Primary use: Replace ngOnChanges
+- ❌ No `this.signal().property.value` patterns
+
+**Control Flow**:
+- ✅ *ngIf → @if (allowed)
+- ✅ *ngFor → @for (allowed)
+- ❌ *ngSwitch stays or converts to @if/@else if (NOT @switch)
+
+**Deferrable Views**:
+- ❌ @defer excluded completely per user request
 
 ### Expected Results
 
 **Performance**:
-- 85-90% faster builds
-- 30% smaller bundles
-- 30-50% faster change detection
-- Better initial load time
+- 85-90% faster builds (same as before)
+- 15-20% smaller bundles (slightly less without @defer)
+- Improved change detection with input signals
+- Better initial load (standalone + lazy routes)
 
 **Code Quality**:
 - Modern, maintainable code
-- Less boilerplate (40% reduction)
+- Less boilerplate (30% reduction)
 - Better TypeScript support
-- Future-proof architecture
+- RxJS patterns preserved (no learning curve for existing patterns)
 
 **Developer Experience**:
-- Cleaner code
-- Easier testing
-- Better debugging
+- Cleaner code with @if/@for
+- Easier component input handling (signals instead of ngOnChanges)
+- Familiar RxJS patterns maintained
 - More intuitive APIs
 
 ---
@@ -1373,20 +1385,20 @@ Or rollback individual modules/components.
 ## Next Steps After Modernization
 
 1. **Monitor performance** in production
-2. **Train team** on new patterns
+2. **Train team** on input signals and effect()
 3. **Update documentation**
 4. **Consider Jest migration** (replace Karma)
 5. **Consider chart library migration** (to ngx-charts or ng-apexcharts)
 6. **Implement SSR** if needed
-7. **Add more Signal-based features**
+7. **Keep RxJS knowledge** - it's still the primary async pattern
 
 ---
 
 ## Resources
 
 - [Angular Standalone Components](https://angular.io/guide/standalone-components)
-- [Angular Signals](https://angular.io/guide/signals)
-- [Control Flow Syntax](https://angular.io/guide/control-flow)
-- [Deferrable Views](https://angular.io/guide/defer)
+- [Angular Signals](https://angular.io/guide/signals) - **Use with restrictions noted above**
+- [Control Flow Syntax](https://angular.io/guide/control-flow) - **@if and @for only**
 - [View Transitions](https://developer.chrome.com/docs/web-platform/view-transitions/)
 - [TypeScript 5.6](https://devblogs.microsoft.com/typescript/announcing-typescript-5-6/)
+- [RxJS Documentation](https://rxjs.dev/) - **Primary async pattern**
