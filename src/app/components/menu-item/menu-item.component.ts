@@ -1,5 +1,11 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
 import { MenuItem } from 'src/app/services/models/app-menu.model';
+import { StyleThemeComponent } from '../style-theme/style-theme.component';
 
 /**
  * Displays the menu with nested menus with labels.
@@ -8,7 +14,8 @@ import { MenuItem } from 'src/app/services/models/app-menu.model';
     selector: 'app-menu-item',
     templateUrl: './menu-item.component.html',
     styleUrls: ['./menu-item.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, RouterModule, MatButtonModule, MatMenuModule, MatIconModule, StyleThemeComponent]
 })
 export class MenuItemComponent implements OnChanges {
   /** The title of the menu. */

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { MatRadioChange } from '@angular/material/radio';
+import { MatRadioChange, MatRadioModule } from '@angular/material/radio';
 import { StyleThemes } from 'src/app/services/models/app-style.model';
+import { CommonModule } from '@angular/common';
 
 import { StyleManagerService } from '../../services/style-manager/style-manager.service';
 
@@ -11,7 +12,8 @@ import { StyleManagerService } from '../../services/style-manager/style-manager.
     selector: 'app-style-theme',
     templateUrl: './style-theme.component.html',
     styleUrls: ['./style-theme.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, MatRadioModule]
 })
 export class StyleThemeComponent {
   /** Contains the key names of the StyleThemes enum. */

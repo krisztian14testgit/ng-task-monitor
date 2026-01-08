@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
 
 import { Task, TaskStatus } from '../../task/services/task.model';
 import { ChartBackGroundColor } from '../services/chart.model';
@@ -13,7 +14,8 @@ import { IBaseChart } from '../../../interfaces/base-chart.interface';
     selector: 'app-task-count-chart',
     templateUrl: './task-count-chart.component.html',
     styleUrls: ['./task-count-chart.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [BaseChartDirective]
 })
 export class TaskCountChartComponent implements OnChanges, IBaseChart {
   /** The tasks elements. */

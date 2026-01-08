@@ -9,7 +9,7 @@ import { SanitizeService } from '../services/sanitize.service';
  */
 @Pipe({
     name: 'safeHtml',
-    standalone: false
+    standalone: true
 })
 export class SafeHtmlPipe implements PipeTransform {
 

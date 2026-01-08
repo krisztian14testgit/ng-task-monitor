@@ -1,7 +1,12 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { MatSelectChange } from '@angular/material/select';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { TaskService } from './services/task.service';
 import { Task, TaskStatus, TaskTime } from './services/task.model';
@@ -10,12 +15,14 @@ import { AlertType } from 'src/app/components/alert-window/alert.model';
 import { CountdownTimerService } from 'src/app/services/countdown-timer/countdown-timer.service';
 import { TaskTimerService } from './services/task-timer/task-timer.service';
 import { TimerState } from './services/task-timer/task-timer.model';
+import { TaskCardComponent } from './task-card/task-card.component';
 
 @Component({
     selector: 'app-task',
     templateUrl: './task.component.html',
     styleUrls: ['./task.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, FormsModule, MatButtonModule, MatSelectModule, MatCardModule, MatFormFieldModule, TaskCardComponent]
 })
 export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Stores task items. */

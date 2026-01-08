@@ -6,7 +6,7 @@ import { Directive, HostListener, Input, OnChanges } from '@angular/core';
  */
 @Directive({
     selector: '[dirInputBorder]',
-    standalone: false
+    standalone: true
 })
 export class InputBorderDirective implements OnChanges {
   /** The switch of the validation. */

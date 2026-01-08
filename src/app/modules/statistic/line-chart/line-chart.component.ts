@@ -1,6 +1,7 @@
 import { WeekDay } from '@angular/common';
 import { Component, Input, OnChanges } from '@angular/core';
 import { ChartType, ChartConfiguration, ChartData } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
 
 import { IBaseChart } from '../../../interfaces/base-chart.interface';
 import { TaskDate } from '../../task/services/task-timer/task-timer.model';
@@ -16,7 +17,8 @@ import { LineChartReport } from '../services/chart.model';
     selector: 'app-line-chart',
     templateUrl: './line-chart.component.html',
     styleUrls: ['./line-chart.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [BaseChartDirective]
 })
 export class LineChartComponent implements OnChanges, IBaseChart {
   /** The tasks elements. */

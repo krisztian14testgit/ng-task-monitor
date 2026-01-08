@@ -1,4 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { TaskTimer, TimerState } from '../services/task-timer/task-timer.model';
 import { TaskTimerService } from '../services/task-timer/task-timer.service';
@@ -14,7 +17,8 @@ import { TaskStatus } from '../services/task.model';
     selector: 'app-task-timer',
     templateUrl: './task-timer.component.html',
     styleUrls: ['./task-timer.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, MatButtonModule, MatProgressBarModule]
 })
 export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() public taskId = '';

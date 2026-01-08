@@ -6,7 +6,7 @@ import { Directive, ElementRef, HostListener } from '@angular/core';
  */
 @Directive({
     selector: '[dirCardHighlight]',
-    standalone: false
+    standalone: true
 })
 export class CardHighlightDirective {
   /** Normal border of the class. The Definition in task-card.comp.css */

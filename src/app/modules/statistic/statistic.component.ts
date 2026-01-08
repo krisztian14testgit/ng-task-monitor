@@ -1,16 +1,24 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { TaskService } from '../task/services/task.service';
 import { Task } from '../task/services/task.model';
+import { TaskCountChartComponent } from './task-count-chart/task-count-chart.component';
+import { LineChartComponent } from './line-chart/line-chart.component';
 
 @Component({
     selector: 'app-statistic',
     templateUrl: './statistic.component.html',
     styleUrls: ['./statistic.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, FormsModule, MatCardModule, MatSelectModule, MatFormFieldModule, TaskCountChartComponent, LineChartComponent]
 })
 export class StatisticComponent implements OnInit, OnDestroy {
   /** Contains the task instance from the task Service. */

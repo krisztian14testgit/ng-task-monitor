@@ -1,4 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { AlertLabel, AlertOptions, AlertType } from './alert.model';
@@ -7,7 +8,8 @@ import { AlertLabel, AlertOptions, AlertType } from './alert.model';
     selector: 'app-alert-window',
     templateUrl: './alert-window.component.html',
     styleUrls: ['./alert-window.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule]
 })
 export class AlertWindowComponent implements OnInit, OnChanges {
   /** Contains the given/adjusted alert message. */

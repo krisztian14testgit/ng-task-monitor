@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, NavigationStart, Router, Event } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { AppMenu, MenuItem } from 'src/app/services/models/app-menu.model';
+import { MenuItemComponent } from '../menu-item/menu-item.component';
 
 @Component({
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, MatGridListModule, MenuItemComponent]
 })
 export class HeaderComponent implements OnInit {
   /** Stores the title of the side by url navigation. */
