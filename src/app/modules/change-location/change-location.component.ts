@@ -10,10 +10,11 @@ import { AlertMessageService } from 'src/app/services/alert-message/alert-messag
 import { AlertType } from 'src/app/components/alert-window/alert.model';
 
 @Component({
-  selector: 'app-change-location',
-  templateUrl: './change-location.component.html',
-  styleUrls: ['./change-location.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-change-location',
+    templateUrl: './change-location.component.html',
+    styleUrls: ['./change-location.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ChangeLocationComponent implements OnInit, OnDestroy {
   /** Stores the error message for the input is invalid. */
@@ -64,7 +65,7 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
    * Saving the task and application app path. Depends on which one is modified.
    * @event onEnter
    */
-  @HostListener('window:keydown.enter', ['$event'])
+  @HostListener('window:keydown.enter')
   public onEnterSaving(): void {
     if (!this._isSavingDone) {
       

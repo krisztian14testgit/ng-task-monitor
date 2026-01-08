@@ -5,9 +5,10 @@ import { MenuItem } from 'src/app/services/models/app-menu.model';
  * Displays the menu with nested menus with labels.
  */
 @Component({
-  selector: 'app-menu-item',
-  templateUrl: './menu-item.component.html',
-  styleUrls: ['./menu-item.component.css']
+    selector: 'app-menu-item',
+    templateUrl: './menu-item.component.html',
+    styleUrls: ['./menu-item.component.css'],
+    standalone: false
 })
 export class MenuItemComponent implements OnChanges {
   /** The title of the menu. */

@@ -8,9 +8,10 @@ import { StyleManagerService } from '../../services/style-manager/style-manager.
  * Changes the style themes of the app with the radio button items.
  */
 @Component({
-  selector: 'app-style-theme',
-  templateUrl: './style-theme.component.html',
-  styleUrls: ['./style-theme.component.css']
+    selector: 'app-style-theme',
+    templateUrl: './style-theme.component.html',
+    styleUrls: ['./style-theme.component.css'],
+    standalone: false
 })
 export class StyleThemeComponent {
   /** Contains the key names of the StyleThemes enum. */

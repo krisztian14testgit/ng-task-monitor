@@ -11,9 +11,10 @@ import { TaskStatus } from '../services/task.model';
  * Emits/handles status of the timer if it is over or interrupted.
  */
 @Component({
-  selector: 'app-task-timer',
-  templateUrl: './task-timer.component.html',
-  styleUrls: ['./task-timer.component.css']
+    selector: 'app-task-timer',
+    templateUrl: './task-timer.component.html',
+    styleUrls: ['./task-timer.component.css'],
+    standalone: false
 })
 export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() public taskId = '';

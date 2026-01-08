@@ -6,10 +6,11 @@ import { TaskService } from '../task/services/task.service';
 import { Task } from '../task/services/task.model';
 
 @Component({
-  selector: 'app-statistic',
-  templateUrl: './statistic.component.html',
-  styleUrls: ['./statistic.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-statistic',
+    templateUrl: './statistic.component.html',
+    styleUrls: ['./statistic.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class StatisticComponent implements OnInit, OnDestroy {
   /** Contains the task instance from the task Service. */

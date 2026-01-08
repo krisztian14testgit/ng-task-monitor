@@ -10,9 +10,10 @@ import { Task, TaskStatus } from '../services/task.model';
 import { TaskService } from '../services/task.service';
 
 @Component({
-  selector: 'app-task-card',
-  templateUrl: './task-card.component.html',
-  styleUrls: ['./task-card.component.css']
+    selector: 'app-task-card',
+    templateUrl: './task-card.component.html',
+    styleUrls: ['./task-card.component.css'],
+    standalone: false
 })
 export class TaskCardComponent implements OnChanges, AfterViewInit {
   /** The current task reference which is given. */

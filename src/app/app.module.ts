@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
@@ -46,6 +47,7 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
         StyleManagerService,
         SanitizeService,
         { provide: LocationStrategy, useClass: HashLocationStrategy },
-        provideHttpClient(withInterceptorsFromDi())
+        provideHttpClient(withInterceptorsFromDi()),
+        provideCharts(withDefaultRegisterables())
     ] })
 export class AppModule { }

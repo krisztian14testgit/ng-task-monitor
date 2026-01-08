@@ -4,9 +4,10 @@ import { AlertMessageService } from 'src/app/services/alert-message/alert-messag
 import { AlertLabel, AlertOptions, AlertType } from './alert.model';
 
 @Component({
-  selector: 'app-alert-window',
-  templateUrl: './alert-window.component.html',
-  styleUrls: ['./alert-window.component.css']
+    selector: 'app-alert-window',
+    templateUrl: './alert-window.component.html',
+    styleUrls: ['./alert-window.component.css'],
+    standalone: false
 })
 export class AlertWindowComponent implements OnInit, OnChanges {
   /** Contains the given/adjusted alert message. */

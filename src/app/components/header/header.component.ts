@@ -3,9 +3,10 @@ import { NavigationEnd, NavigationStart, Router, Event } from '@angular/router';
 import { AppMenu, MenuItem } from 'src/app/services/models/app-menu.model';
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+    selector: 'app-header',
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.css'],
+    standalone: false
 })
 export class HeaderComponent implements OnInit {
   /** Stores the title of the side by url navigation. */

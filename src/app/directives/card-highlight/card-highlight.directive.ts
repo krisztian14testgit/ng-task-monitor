@@ -5,7 +5,8 @@ import { Directive, ElementRef, HostListener } from '@angular/core';
  * Only one card is selected by the onclick event.
  */
 @Directive({
-  selector: '[dirCardHighlight]'
+    selector: '[dirCardHighlight]',
+    standalone: false
 })
 export class CardHighlightDirective {
   /** Normal border of the class. The Definition in task-card.comp.css */

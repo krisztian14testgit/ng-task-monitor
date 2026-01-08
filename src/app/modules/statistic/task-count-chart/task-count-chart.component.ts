@@ -10,9 +10,10 @@ import { IBaseChart } from '../../../interfaces/base-chart.interface';
  * of the counted tasks number by the task statuses.
  */
 @Component({
-  selector: 'app-task-count-chart',
-  templateUrl: './task-count-chart.component.html',
-  styleUrls: ['./task-count-chart.component.css']
+    selector: 'app-task-count-chart',
+    templateUrl: './task-count-chart.component.html',
+    styleUrls: ['./task-count-chart.component.css'],
+    standalone: false
 })
 export class TaskCountChartComponent implements OnChanges, IBaseChart {
   /** The tasks elements. */

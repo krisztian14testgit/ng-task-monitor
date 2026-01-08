@@ -12,9 +12,10 @@ import { TaskTimerService } from './services/task-timer/task-timer.service';
 import { TimerState } from './services/task-timer/task-timer.model';
 
 @Component({
-  selector: 'app-task',
-  templateUrl: './task.component.html',
-  styleUrls: ['./task.component.css']
+    selector: 'app-task',
+    templateUrl: './task.component.html',
+    styleUrls: ['./task.component.css'],
+    standalone: false
 })
 export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Stores task items. */

@@ -5,7 +5,8 @@ import { Directive, HostListener, Input, OnChanges } from '@angular/core';
  * If isValid is true then border is green, otherwise border is red.
  */
 @Directive({
-  selector: '[dirInputBorder]'
+    selector: '[dirInputBorder]',
+    standalone: false
 })
 export class InputBorderDirective implements OnChanges {
   /** The switch of the validation. */

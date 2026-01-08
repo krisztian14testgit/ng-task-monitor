@@ -13,9 +13,10 @@ import { LineChartReport } from '../services/chart.model';
  * * 2. Amount of spent times on the completed tasks by creation date.
  */
 @Component({
-  selector: 'app-line-chart',
-  templateUrl: './line-chart.component.html',
-  styleUrls: ['./line-chart.component.css']
+    selector: 'app-line-chart',
+    templateUrl: './line-chart.component.html',
+    styleUrls: ['./line-chart.component.css'],
+    standalone: false
 })
 export class LineChartComponent implements OnChanges, IBaseChart {
   /** The tasks elements. */
