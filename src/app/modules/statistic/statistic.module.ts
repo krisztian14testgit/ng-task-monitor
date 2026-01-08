@@ -6,7 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 
 import { StatisticRoutingModule } from './statistic-routing.module';
-import { NgChartsModule } from 'ng2-charts';
+import { BaseChartDirective } from 'ng2-charts';
 
 import { StatisticComponent } from './statistic.component';
 import { TaskCountChartComponent } from './task-count-chart/task-count-chart.component';
@@ -23,7 +23,7 @@ import { LineChartComponent } from './line-chart/line-chart.component';
     CommonModule,
     StatisticRoutingModule,
     FormsModule,
-    NgChartsModule,
+    BaseChartDirective,
     /** Angular material */
     MatCardModule,
     MatSelectModule,
