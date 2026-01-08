@@ -1,4 +1,4 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, inject, TestBed } from '@angular/core/testing';
 
 import { environment } from 'src/environments/environment';
@@ -6,6 +6,7 @@ import { FakedTask } from '../../../tests/models/faked-task.model';
 import { Task } from './task.model';
 
 import { TaskService } from './task.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('TaskService', () => {
   let service: TaskService;
@@ -14,9 +15,9 @@ describe('TaskService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [TaskService]
-    });
+    imports: [],
+    providers: [TaskService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
 
     service = TestBed.inject(TaskService);
     mockHttp = TestBed.inject(HttpTestingController);

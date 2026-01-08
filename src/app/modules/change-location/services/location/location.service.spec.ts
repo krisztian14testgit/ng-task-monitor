@@ -1,7 +1,8 @@
 import { fakeAsync, inject, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { LocationService } from './location.service';
 import { LocationPath, LocationSetting } from './location-setting.model';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 /**
  * Help writing http test
@@ -15,9 +16,9 @@ describe('LocationService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [LocationService]
-    });
+    imports: [],
+    providers: [LocationService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
 
     service = TestBed.inject(LocationService);
     mockHttp = TestBed.inject(HttpTestingController);
