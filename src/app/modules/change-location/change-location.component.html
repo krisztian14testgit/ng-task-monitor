@@ -29,7 +29,7 @@
       <mat-card-content>
         <mat-form-field class="fields-max-width" appearance="fill"
           [ngClass]="{'input-valid': appSettingControl.valid}">
-          <mat-label>Defalult app folder</mat-label>
+          <mat-label>Default app folder</mat-label>
           <input type="text" matInput [formControl]="appSettingControl"
             placeholder="C:/users/userName/Document/"
             (keyup)="onChangePath('AppSettingPath', appSettingControl)">

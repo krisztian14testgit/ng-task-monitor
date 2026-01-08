@@ -3,17 +3,18 @@
 ## Purpose
 This is a little demo project which represents a part of my knowledge what I worked at the previous workplace.
 
-It has been written with Angular 14v framework.
+It has been written with Angular 21 framework.
 
-Angular CLI version: 14.2.7
+Angular CLI version: 21.0.5
 
-## Feautres
-* Thema changing: ligth, dark, blueDragon
+## Features
+* Theme changing: light, dark, blueDragon
 * Responsive site: Angular material
-* Task statistic with chart.js
+* Task statistic with Chart.js v4
 * Measuring task time: Countdown clock
-* Reactive programming: RxJs
+* Reactive programming: RxJS
 * Rest time calculation: Web-worker, sub-threading
+* Modern Angular v21 features: Block control flow (@if, @for)
 
 ## Platform types
 * Web version 
