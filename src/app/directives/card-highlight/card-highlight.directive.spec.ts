@@ -16,7 +16,6 @@ import { CardHighlightDirective } from './card-highlight.directive';
   `,
     standalone: false
 })
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class HighLightTestComponent {}
 
 describe('CardHighlightDirective', () => {

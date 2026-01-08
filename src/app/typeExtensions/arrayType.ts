@@ -22,7 +22,6 @@ const deepCopyComplexType_rec = function<T>(property: T): T {
     return copiedObj;
 };*/
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface Array<T> {
     /**
      * Deep copies the object/instance elements of the array.

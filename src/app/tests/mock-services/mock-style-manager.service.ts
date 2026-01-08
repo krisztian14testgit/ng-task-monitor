@@ -27,7 +27,6 @@ export class MockStyleManagerService {
      * That proecess is faked, not removing or inserting theme into the classList.
      * @param theme The value of StyleThemes
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public turnOnTheme(theme: StyleThemes): void {
         return ;
     }

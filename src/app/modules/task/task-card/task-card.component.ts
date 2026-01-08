@@ -268,7 +268,6 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     const propName = `timer${timerStateName}Date`;
     if (this.task.isHasOwnPoperty(propName)) {
       // Adjusts the timerStartedDate or timerFinishedDate with the system clock by the timer's state.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (this.task as any)[propName] = timerDate;
     }
   }
