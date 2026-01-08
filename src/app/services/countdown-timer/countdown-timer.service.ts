@@ -71,6 +71,6 @@ export class CountdownTimerService {
   }
 
   private createWorkerInstance(): void {
-    this._timerWorker = new Worker(new URL('src/app/web-workers/countdown-timer.worker', import.meta.url));
+    this._timerWorker = new Worker(new URL('../../web-workers/countdown-timer.worker', import.meta.url));
   }
 }
