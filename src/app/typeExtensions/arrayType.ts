@@ -3,7 +3,6 @@
  * https://codepunk.io/extending-strings-and-other-data-types-in-typescript/
  */
 
-// eslint-disable-next-line require-jsdoc
 /** Tested and works, deep copy object, its own sub-objects. */
 /*
 const deepCopyComplexType_rec = function<T>(property: T): T {
