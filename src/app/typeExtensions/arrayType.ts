@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Helping the extend primitve types with your functions:
  * https://codepunk.io/extending-strings-and-other-data-types-in-typescript/

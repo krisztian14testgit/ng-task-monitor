@@ -187,7 +187,7 @@ export class Task {
      * @param obj 
      * @returns Task
      */
-    public static convertObjectToTask(obj: {[prop: string]: any}): Task {
+    public static convertObjectToTask(obj: {[prop: string]: string | number | Date}): Task {
         const propNames = Object.getOwnPropertyNames(obj);
         const tempTask = new Task();
 
