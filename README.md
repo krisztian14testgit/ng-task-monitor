@@ -1,5 +1,12 @@
 # NgTaskMonitor
 
+## Updated frameworks with copilot and AI agent
+### Angular framework from v14 => v21
+* Created upgrading plans with AI and my knowledge, the sources are in 'angular-upgrade-plan' folder.
+* Branch name: 'copilot/upgrade-angular-to-v21'
+* Applying the latest feautres of angular such as standalone, control flow syntax, adapting signals
+
+
 ## Purpose
 This is a little demo project which represents a part of my knowledge what I worked at the previous workplace.
 
