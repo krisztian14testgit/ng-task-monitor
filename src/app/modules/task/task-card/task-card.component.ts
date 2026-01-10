@@ -1,18 +1,29 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, signal } from '@angular/core';
+import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { exhaustMap } from 'rxjs/operators';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { FormValidator } from 'src/app/validators/my-validator';
 
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { TimerState } from '../services/task-timer/task-timer.model';
 import { Task, TaskStatus } from '../services/task.model';
 import { TaskService } from '../services/task.service';
+import { CardHighlightDirective } from 'src/app/directives/card-highlight/card-highlight.directive';
+import { InputBorderDirective } from 'src/app/directives/input-border/input-border.directive';
+import { TaskTimerComponent } from '../task-timer/task-timer.component';
 
 @Component({
-  selector: 'app-task-card',
-  templateUrl: './task-card.component.html',
-  styleUrls: ['./task-card.component.css']
+    selector: 'app-task-card',
+    templateUrl: './task-card.component.html',
+    styleUrls: ['./task-card.component.css'],
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatButtonModule, MatDividerModule, MatFormFieldModule, MatInputModule, CardHighlightDirective, InputBorderDirective, TaskTimerComponent]
 })
 export class TaskCardComponent implements OnChanges, AfterViewInit {
   /** The current task reference which is given. */
@@ -27,12 +38,12 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   @Output() public readonly newTaskCreationFailed: EventEmitter<string> = new EventEmitter();
   
   /** The switcher of the card is editable or not. */
-  public isEditable = false;
+  public isEditable = signal(false);
   /** The name of TaskStatus. */
-  public statusLabel = '';
-  public selectedTaskId = '';
+  public statusLabel = signal('');
+  public selectedTaskId = signal('');
   /** True: The card is selected, 'edit' button will appear. */
-  public isSelected = false;
+  public isSelected = signal(false);
   /** 
    * Readonly prop: in minutes: 1439 => 24h * 60min -minValue(1)  => 23:59:00 
    * @readonly
@@ -72,12 +83,12 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   ngOnChanges(): void {
     if (this.task.isNewTask()) {
       // new taks with empty form
-      this.isEditable = true;
+      this.isEditable.set(true);
     }
     
     if (this.task.id.length > 0) {
       // Task is defined, get TaskStatus key as string
-      this.statusLabel = TaskStatus[this.task.status];
+      this.statusLabel.set(TaskStatus[this.task.status]);
       this.taskForm = this.generateReactiveForm(this.task);
     }
   }
@@ -100,8 +111,8 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * @event Click
    */
   public onClickMatCard(): void {
-    this.selectedTaskId = this.task.id;
-    this.isSelected = true;
+    this.selectedTaskId.set(this.task.id);
+    this.isSelected.set(true);
   }
 
   /**
@@ -142,16 +153,16 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * @event Click
    */
   public onEdit_colseCard(): void {
-    this.isEditable = !this.isEditable;
+    this.isEditable.update(val => !val);
 
     // new empty task card is closed without SAVING
-    if (!this.isEditable && this.task.isNewTask()) {
+    if (!this.isEditable() && this.task.isNewTask()) {
       // notice the taskContainer component to remove the empty card.
       this.newTaskCreationFailed.next(this.task.id);
     }
     
     // it is closed, reset task values to initial.
-    if (!this.isEditable) {
+    if (!this.isEditable()) {
       this.taskForm.reset(this._defaultFormValues);
     }
   }
@@ -186,7 +197,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
         },
         () => {
           // finally branch, Close the edit mode
-          this.isEditable = false;
+          this.isEditable.set(false);
         });
     }
   }
@@ -208,7 +219,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    */
   private updateTaskStatus(taskStatus: TaskStatus): void {
     this.task.setStatus(taskStatus);
-    this.statusLabel = TaskStatus[taskStatus];
+    this.statusLabel.set(TaskStatus[taskStatus]);
 
     if (taskStatus === TaskStatus.Completed) {
       const timeMinutesControl = this.taskForm.get('timeMinutes');

@@ -1,13 +1,15 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import 'zone.js';  // Included with Angular CLI.
+import { bootstrapApplication } from '@angular/platform-browser';
 
-import { AppModule } from './app/app.module';
+import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
+import { appConfig } from './app/app.config';
 import './app/typeExtensions/stringType';
 import './app/typeExtensions/arrayType';
+
 if (environment.production) {
-  enableProdMode();
+  // enableProdMode is no longer needed in standalone applications
 }
 
-platformBrowserDynamic().bootstrapModule(AppModule)
+bootstrapApplication(AppComponent, appConfig)
   .catch(err => console.error(err));

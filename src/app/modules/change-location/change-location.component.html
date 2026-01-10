@@ -1,39 +1,43 @@
 <!-- Task data storage card -->
 <mat-card>
-    <mat-card-title>
-        <label for="storedData">Where would you like to store data?</label>
-    </mat-card-title>
-    <hr>
+  <mat-card-title>
+    <label for="storedData">Where would you like to store data?</label>
+  </mat-card-title>
+  <hr>
     <mat-card-content>
-        <mat-form-field class="fields-max-width" appearance="fill"
-                        [ngClass]="{'input-valid': taskDataControl.valid}">
-            <mat-label>Task folder path</mat-label>
-            <input type="text" matInput [formControl]="taskDataControl"
-                    placeholder="C:/users/userName/Document/"
-                    (keyup)="onChangePath('TaskPath', taskDataControl)">
-            <mat-error *ngIf="taskDataControl.invalid && (taskDataControl.dirty || taskDataControl.touched)">
-                <strong>{{inputInvalidText}}</strong>
-            </mat-error>
-        </mat-form-field>
+      <mat-form-field class="fields-max-width" appearance="fill"
+        [ngClass]="{'input-valid': taskDataControl.valid}">
+        <mat-label>Task folder path</mat-label>
+        <input type="text" matInput [formControl]="taskDataControl"
+          placeholder="C:/users/userName/Document/"
+          (keyup)="onChangePath('TaskPath', taskDataControl)">
+        @if (taskDataControl.invalid && (taskDataControl.dirty || taskDataControl.touched)) {
+          <mat-error>
+            <strong>{{inputInvalidText}}</strong>
+          </mat-error>
+        }
+      </mat-form-field>
     </mat-card-content>
-</mat-card>
+  </mat-card>
 
-<!-- App settings card -->
-<mat-card>
+  <!-- App settings card -->
+  <mat-card>
     <mat-card-title>
-        <label for="storedData">Where would you like to store App settings?</label>
+      <label for="storedData">Where would you like to store App settings?</label>
     </mat-card-title>
     <hr>
-    <mat-card-content>
+      <mat-card-content>
         <mat-form-field class="fields-max-width" appearance="fill"
-                        [ngClass]="{'input-valid': appSettingControl.valid}">
-            <mat-label>Defalult app folder</mat-label>
-            <input type="text" matInput [formControl]="appSettingControl"
-                    placeholder="C:/users/userName/Document/"
-                    (keyup)="onChangePath('AppSettingPath', appSettingControl)">
-            <mat-error *ngIf="appSettingControl.invalid && (appSettingControl.dirty || appSettingControl.touched)">
-                <strong>{{inputInvalidText}}</strong>
+          [ngClass]="{'input-valid': appSettingControl.valid}">
+          <mat-label>Default app folder</mat-label>
+          <input type="text" matInput [formControl]="appSettingControl"
+            placeholder="C:/users/userName/Document/"
+            (keyup)="onChangePath('AppSettingPath', appSettingControl)">
+          @if (appSettingControl.invalid && (appSettingControl.dirty || appSettingControl.touched)) {
+            <mat-error>
+              <strong>{{inputInvalidText}}</strong>
             </mat-error>
+          }
         </mat-form-field>
-    </mat-card-content>
-</mat-card>
+      </mat-card-content>
+    </mat-card>

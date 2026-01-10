@@ -1,6 +1,7 @@
 import { WeekDay } from '@angular/common';
 import { Component, Input, OnChanges } from '@angular/core';
 import { ChartType, ChartConfiguration, ChartData } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
 
 import { IBaseChart } from '../../../interfaces/base-chart.interface';
 import { TaskDate } from '../../task/services/task-timer/task-timer.model';
@@ -13,9 +14,11 @@ import { LineChartReport } from '../services/chart.model';
  * * 2. Amount of spent times on the completed tasks by creation date.
  */
 @Component({
-  selector: 'app-line-chart',
-  templateUrl: './line-chart.component.html',
-  styleUrls: ['./line-chart.component.css']
+    selector: 'app-line-chart',
+    templateUrl: './line-chart.component.html',
+    styleUrls: ['./line-chart.component.css'],
+    standalone: true,
+    imports: [BaseChartDirective]
 })
 export class LineChartComponent implements OnChanges, IBaseChart {
   /** The tasks elements. */

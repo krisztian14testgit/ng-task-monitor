@@ -8,7 +8,8 @@ import { SanitizeService } from '../services/sanitize.service';
  * <div [innerHTML]="htmlContent | safeHtml"></div>
  */
 @Pipe({
-  name: 'safeHtml'
+    name: 'safeHtml',
+    standalone: true
 })
 export class SafeHtmlPipe implements PipeTransform {
 

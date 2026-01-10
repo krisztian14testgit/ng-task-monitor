@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { Task } from '../modules/task/services/task.model';
 

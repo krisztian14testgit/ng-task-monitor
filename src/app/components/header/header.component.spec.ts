@@ -6,7 +6,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { HeaderComponent } from './header.component';
 
-@Component({})
+@Component({
+    standalone: false
+})
 class FakedRouteComponent {}
 
 describe('HeaderComponent', () => {

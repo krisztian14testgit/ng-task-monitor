@@ -8,6 +8,9 @@ import { StyleThemes } from 'src/app/services/models/app-style.model';
 @Injectable()
 export class MockStyleManagerService {
 
+    /** The currently selected theme. */
+    public selectedTheme: StyleThemes = StyleThemes.Light;
+
     /**
      * Returns true if the given themeKey is belong StyleThemes enum,
      * otherwise returns false in any values.
@@ -27,8 +30,7 @@ export class MockStyleManagerService {
      * That proecess is faked, not removing or inserting theme into the classList.
      * @param theme The value of StyleThemes
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public turnOnTheme(theme: StyleThemes): void {
-        return ;
+        this.selectedTheme = theme;
     }
 }

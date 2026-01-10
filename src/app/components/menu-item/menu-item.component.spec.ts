@@ -63,7 +63,7 @@ describe('MenuItemComponent', () => {
     // menuItems dict has values to get labels
     component.menuItems_dict = menuItemWithLabel;
     const expectedLabels = ['label1', 'label2'];
-    component.ngOnChanges({ menuItems_dict: new SimpleChange('', menuItemWithLabel, true) });
+    component.ngOnChanges({ menuItems_dict: new SimpleChange(undefined, menuItemWithLabel, true) });
     expect(component.menuLabelKeys).toEqual(expectedLabels);
   });
 

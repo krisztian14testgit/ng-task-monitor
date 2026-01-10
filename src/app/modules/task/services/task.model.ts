@@ -187,7 +187,7 @@ export class Task {
      * @param obj 
      * @returns Task
      */
-    public static convertObjectToTask(obj: {[prop: string]: any}): Task {
+    public static convertObjectToTask(obj: {[prop: string]: string | number | Date}): Task {
         const propNames = Object.getOwnPropertyNames(obj);
         const tempTask = new Task();
 
@@ -200,11 +200,14 @@ export class Task {
         }
 
         // Converting process
-        const retTask = new Task(obj._id, obj.title, obj.description,
-            obj.timeMinutes, obj._status, obj._createdDate,
-            obj.timerStartedDate, obj.timerFinishedDate);
+        const taskID = obj._id ? String(obj._id) : '';
+        const taskTitle = obj.description ? String(obj.description) : 'Unknown';
+        const taskInitialTime = obj._initialTime ? Number(obj._initialTime) : 0;
+        const retTask = new Task(taskID, taskTitle, obj.description as string,
+            obj.timeMinutes as number, obj._status as number, obj._createdDate as string,
+            obj.timerStartedDate as string, obj.timerFinishedDate as string);
         // for the line-chart: spentTime on chart
-        retTask['_initialTime'] = obj._initialTime;
+        retTask['_initialTime'] = taskInitialTime;
         
         return retTask;
     }
