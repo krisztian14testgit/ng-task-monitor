@@ -1,23 +1,23 @@
 <div class="task-timer">
   <!-- start -->
-  @if (!isTimerStarted && !isTimerFinished) {
+  @if (!isTimerStarted() && !isTimerFinished()) {
     <button
-      mat-button [disabled]="!isTimePeriodToday || timerInMinutes === 0"
-    (click)="startTimer()">{{statusLabel}}</button>
+      mat-button [disabled]="!isTimePeriodToday() || timerInMinutes() === 0"
+    (click)="startTimer()">{{statusLabel()}}</button>
   }
   <!-- inProgress or completed -->
-  @if (isTimerStarted || isTimerFinished) {
-    <span>{{statusLabel}}</span>
+  @if (isTimerStarted() || isTimerFinished()) {
+    <span>{{statusLabel()}}</span>
   }
   <!-- counterClock -->
-  @if (isTimerStarted && !isTimerFinished) {
+  @if (isTimerStarted() && !isTimerFinished()) {
     <div>
-      <span>{{timerInMillisec | date:'HH:mm:ss':'UTC'}}</span>
+      <span>{{timerInMillisec() | date:'HH:mm:ss':'UTC'}}</span>
     </div>
   }
 </div>
-@if (isTimerStarted && !isTimerFinished) {
+@if (isTimerStarted() && !isTimerFinished()) {
   <mat-progress-bar
-  mode="determinate" [value]="progessBarPercent"></mat-progress-bar>
+  mode="determinate" [value]="progessBarPercent()"></mat-progress-bar>
 }
 

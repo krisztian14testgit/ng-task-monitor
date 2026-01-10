@@ -1,4 +1,4 @@
-import { Directive, HostListener, Input, OnChanges } from '@angular/core';
+import { Directive, effect, HostListener, input } from '@angular/core';
 
 /**
  * Sets the border of the input tag by isValid input property.
@@ -8,14 +8,24 @@ import { Directive, HostListener, Input, OnChanges } from '@angular/core';
     selector: '[dirInputBorder]',
     standalone: true
 })
-export class InputBorderDirective implements OnChanges {
+export class InputBorderDirective {
   /** The switch of the validation. */
-  @Input() public isValid = false;
+  public isValid = input(false);
 
   /** Stores the pre-define keyword of the 'input'-valid, 'input'-invalid class. */
   private readonly _preClassKey = 'input';
   /** The needle of the input element. */
   private _refInput!: HTMLInputElement;
+
+  constructor() {
+    // Effect to react to isValid input signal changes
+    effect(() => {
+      const valid = this.isValid();
+      if (this._refInput) {
+        this.changeBorderBy(valid);
+      }
+    });
+  }
 
   /**
    * It triggers when the user click on the input field.
@@ -26,14 +36,7 @@ export class InputBorderDirective implements OnChanges {
     if (target.currentTarget) {
       this._refInput = target.currentTarget as HTMLInputElement;
       // it runs fist to change border of the input field
-      this.changeBorderBy(this.isValid);
-    }
-  }
-
-  /** It is triggered when the isValid input changes. */
-  ngOnChanges(): void {
-    if (this._refInput) {
-      this.changeBorderBy(this.isValid);
+      this.changeBorderBy(this.isValid());
     }
   }
 

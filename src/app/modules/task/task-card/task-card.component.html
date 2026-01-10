@@ -1,4 +1,4 @@
-@if (!isEditable && task) {
+@if (!isEditable() && task) {
   <mat-card
     dirCardHighlight
     class="task-card task-card-default-border"
@@ -7,7 +7,7 @@
     <mat-card-title>
       <div>{{task.title}}</div>
       <div class="card-title-button-box">
-        @if (!isReadonly && isSelected) {
+        @if (!isReadonly && isSelected()) {
           <div class="card-title-button"
           (click)="onEdit_colseCard()">edit</div>
         }
@@ -24,7 +24,7 @@
       <div>
         <app-task-timer [taskId]="task.id"
           [timerInMinutes]="task.timeMinutes"
-          [statusLabel]="statusLabel"
+          [statusLabel]="statusLabel()"
           [isTimePeriodToday]="isTimePeriodToday"
         (timerStatusEmitter)="onTimerStatus($event)"></app-task-timer>
       </div>
@@ -36,7 +36,7 @@
 }
 
 <!-- editable card -->
-@if (isEditable) {
+@if (isEditable()) {
   <mat-card
     dirCardHighlight
     class="task-card task-card-default-border"
@@ -79,7 +79,7 @@
     </mat-card-content>
     <mat-divider inset></mat-divider>
     <mat-card-actions class="edit-card-timer-progress">
-      <div mat-button>Status: {{statusLabel}}</div>
+      <div mat-button>Status: {{statusLabel()}}</div>
       <div>
         <button mat-raised-button color="green"
           [disabled]="taskForm !== undefined && taskForm.invalid"

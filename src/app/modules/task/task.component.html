@@ -1,12 +1,12 @@
 <div class="mat-card">
   <div class="task-new">
     <div>
-      Task numbers: <span>{{filteredTaskCount}}</span>
-      @if (!isLockedTasks) {
+      Task numbers: <span>{{filteredTaskCount()}}</span>
+      @if (!isLockedTasks()) {
         <span>/{{MAX_LIMIT_TASKS}}</span>
       }
     </div>
-    @if (selectedTaskTime!== TASK_TIME_YESTERDAY) {
+    @if (selectedTaskTime()!== TASK_TIME_YESTERDAY) {
       <button
       mat-raised-button (click)="addNewTask()">+ New task</button>
     }
@@ -29,7 +29,7 @@
     <!-- time period filter -->
     <mat-form-field appearance="fill">
       <mat-label>Time period:</mat-label>
-      <mat-select [value]="selectedTaskTime"
+      <mat-select [value]="selectedTaskTime()"
         (selectionChange)="onChangedTimePeriod($event)">
         <mat-option value="0">Today</mat-option>
         <mat-option value="1">Yesterday</mat-option>
@@ -45,8 +45,8 @@
   @for (task of taskList; track trackByTaskID($index, task)) {
     <app-task-card
       [task]="task"
-      [isReadonly]="isLockedTasks"
-      [isTimePeriodToday]="!isLockedTasks"
+      [isReadonly]="isLockedTasks()"
+      [isTimePeriodToday]="!isLockedTasks()"
     (newTaskCreationFailed)="onRemoveFailedNewTask($event)"></app-task-card>
   }
 </div>

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
@@ -30,7 +30,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Statuses of the Task. */
   public readonly taksStatusList: string[] = [];
   /** Two-way bindign. Contains the selected status from the combobox. */
-  public selectedStatus = '';
+  public selectedStatus = signal('');
   /** 
    * Two-way bindig
    * TaskTime enum filer: when task was created.
@@ -38,16 +38,16 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * * Yesterday = 1
    * * Week = 2
    */
-  public selectedTaskTime: string;
+  public selectedTaskTime = signal(TaskTime.Today.toString());
   /** Contains the count of tasks which are filtered by date. */
-  public filteredTaskCount = 0;
+  public filteredTaskCount = signal(0);
   /** 
    * Locker of the Task cards, if it is true then the card is not editable.
    * @description
    * It will be true, when task creation date is yesterday or week,
    * otherwise it's false when task creation date is today.
    */
-  public isLockedTasks = false;
+  public isLockedTasks = signal(false);
   public readonly MAX_LIMIT_TASKS = 10;
   public readonly TASK_TIME_YESTERDAY = String(TaskTime.Yesterday);
   /** Stores the reference of task stream. */
@@ -65,7 +65,6 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
               private readonly alertMessageService: AlertMessageService,
               private readonly timerWorkerService: CountdownTimerService,
               private readonly router: Router) {
-    this.selectedTaskTime = TaskTime.Today.toString();
   }
 
   /** Gets tasks form the service. */
@@ -110,8 +109,9 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // convert string to enum type
     let statusValue = -1;
-    if (this.selectedStatus) {
-      const statusKey = this.selectedStatus.toUpperCaseFirstChar();
+    const status = this.selectedStatus();
+    if (status) {
+      const statusKey = status.toUpperCaseFirstChar();
       statusValue = TaskStatus[statusKey as keyof typeof TaskStatus];
     }
 
@@ -148,11 +148,11 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       const timeFilter = Number(matSelectionEvent.value);
       this.taskList = this.filterTasksByDate(timeFilter);
       // status filtering on the taskList
-      this.selectedTaskTime = matSelectionEvent.value;
+      this.selectedTaskTime.set(matSelectionEvent.value);
       this.onFilterStatus();
       
       // Yesterday, week tasks cannot be editable.
-      this.isLockedTasks = timeFilter !== TaskTime.Today;
+      this.isLockedTasks.set(timeFilter !== TaskTime.Today);
     }
   }
 
@@ -165,7 +165,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       // add new task with new-$count id
       this.taskList.unshift(new Task(`new-${this.taskList.length}`));
       this._preservedTaskList = [...this.taskList];
-      this.filteredTaskCount = this.taskList.length;
+      this.filteredTaskCount.set(this.taskList.length);
     } else {
       this.alertMessageService.sendMessage(`You cannot add news task, max: ${this.MAX_LIMIT_TASKS}!`, 
                                             AlertType.Warning);
@@ -182,7 +182,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       const removedIndex = this.taskList.findIndex((task: Task) => task.id === $removedTaskId);
       if (removedIndex > -1) {
         this.taskList.splice(removedIndex, 1);
-        this.filteredTaskCount = this.taskList.length;
+        this.filteredTaskCount.set(this.taskList.length);
       }
     }
   }
@@ -216,7 +216,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
 
-    this.filteredTaskCount = this._filteredTaskListByDate.length;
+    this.filteredTaskCount.set(this._filteredTaskListByDate.length);
     return this._filteredTaskListByDate;
   }
 
@@ -236,7 +236,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
       setTimeout(() => {
         this.taskList = this.filterTasksByDate(TaskTime.Today);
         // filters tasks by the selected status
-        this.selectedStatus = this.getStatusFromUrl();
+        this.selectedStatus.set(this.getStatusFromUrl());
         this.onFilterStatus();
 
         // If there is inProgress task, re-saved all changes, 

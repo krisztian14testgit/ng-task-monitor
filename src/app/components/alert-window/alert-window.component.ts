@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, effect, input, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
@@ -11,9 +11,9 @@ import { AlertLabel, AlertOptions, AlertType } from './alert.model';
     standalone: true,
     imports: [CommonModule]
 })
-export class AlertWindowComponent implements OnInit, OnChanges {
+export class AlertWindowComponent implements OnInit {
   /** Contains the given/adjusted alert message. */
-  @Input() public alertMsg = '';
+  public alertMsg = input('');
   /** 
    * Not closing automatically the alert window after 3 sec.
    * Default value is false. If it is true, alert window won't close itself.
@@ -22,11 +22,11 @@ export class AlertWindowComponent implements OnInit, OnChanges {
    * * Success
    * * Info
    */
-  @Input() public notCloseAutomatically = false;
+  public notCloseAutomatically = input(false);
   /** It has name, color, type properties. */
   public alertLabel: AlertLabel;
   /** Alert message appears when it is true. */
-  public isDisplayed: boolean;
+  public isDisplayed = signal(false);
 
   private readonly _options: AlertOptions;
   /** Stores the needle of the setTimeout. */
@@ -50,36 +50,32 @@ export class AlertWindowComponent implements OnInit, OnChanges {
 
     this.alertLabel = new AlertLabel();
     this.setLabelBy(this._options.defaultAlertType);
-    this.isDisplayed = false;
     this._alertType = AlertType.Info;
+
+    // Effect to react to alertMsg input signal changes
+    effect(() => {
+      const msg = this.alertMsg();
+      if (msg && msg.length > 0) {
+        this._alertType = this.getAlertTypeFromMessage(msg);
+        this.show();
+        this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
+      }
+    });
   }
 
   /** Subscription on the alertMessage service to get multicasted message from other component. */
   ngOnInit(): void {
     this.alertMessageService.getMessage()
     .subscribe(([message, alertType]) => {
-      this.alertMsg = message;
       if (alertType) {
         this._alertType = alertType;
       } else {
-        this._alertType = this.getAlertTypeFromMessage(this.alertMsg);
+        this._alertType = this.getAlertTypeFromMessage(message);
       }
       
       this.show();
       this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
     });
-  }
-
-  /**
-   * It runs when the alertMsg has been changed via @Input, alertWindow appears.
-   * @param changes SimpleChanges
-   */
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['alertMsg'].previousValue !== this.alertMsg) {
-      this._alertType = this.getAlertTypeFromMessage(this.alertMsg);
-      this.show();
-      this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
-    }
   }
 
   /**
@@ -89,7 +85,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
    */
   public show(): void {
     this.setLabelBy(this._alertType);
-    this.isDisplayed = true;
+    this.isDisplayed.set(true);
   }
 
   /**
@@ -99,7 +95,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
    * Alert window disappers/closed.
    */
   public onClose(): void {
-    this.isDisplayed = false;
+    this.isDisplayed.set(false);
   }
   
   /** Sets the color, name, type of the label by the given alertType. */
@@ -122,7 +118,7 @@ export class AlertWindowComponent implements OnInit, OnChanges {
   private closeAutomatically(closeSec: number, closeTypes: AlertType[]): void {
     // clear previous timeout process.
     clearTimeout(this._timeoutRef);
-    if (!this.notCloseAutomatically && closeTypes.includes(this.alertLabel.type)) {
+    if (!this.notCloseAutomatically() && closeTypes.includes(this.alertLabel.type)) {
       this._timeoutRef = setTimeout(() => { this.onClose(); }, closeSec);
     }
     

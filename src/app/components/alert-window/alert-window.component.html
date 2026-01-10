@@ -1,4 +1,4 @@
-@if (isDisplayed) {
+@if (isDisplayed()) {
   <div
     class="alert-window" [ngClass]="alertLabel.color">
     <!-- alert cross-x -->
@@ -8,8 +8,8 @@
     <div class="alert-msg">
       <strong>{{alertLabel.name}}: </strong>
       <!-- Using interpolation for text content (safe by default) -->
-      <span>{{alertMsg}}</span>
-      <!-- Alternative: For HTML content, use: <span [innerHTML]="alertMsg | safeHtml"></span> -->
+      <span>{{alertMsg()}}</span>
+      <!-- Alternative: For HTML content, use: <span [innerHTML]="alertMsg() | safeHtml"></span> -->
     </div>
   </div>
 }
