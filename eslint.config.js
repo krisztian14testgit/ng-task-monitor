@@ -10,7 +10,7 @@ const globals = require('globals');
 module.exports = [
   {
     // Global ignores
-    ignores: ['projects/**/*', 'dist/**/*', 'node_modules/**/*', 'coverage/**/*', '**/*.js'],
+    ignores: ['projects/**/*', 'dist/**/*', 'node_modules/**/*', 'coverage/**/*', '**/*.js', '**/*.spec.ts'],
   },
   {
     // TypeScript files configuration (non-test)
@@ -99,7 +99,7 @@ module.exports = [
       // Base ESLint recommended rules
       ...eslint.configs.recommended.rules,
       
-      // TypeScript rules for test files
+      // TypeScript rules for test filesap
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': ['warn', {
         argsIgnorePattern: '^_',
