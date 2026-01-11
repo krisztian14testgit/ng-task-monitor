@@ -1,7 +1,10 @@
 import { ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatInputModule } from '@angular/material/input';
 
 import { FormValidator } from 'src/app/validators/my-validator';
 import { LocationSetting, LocationPath } from './services/location/location-setting.model';
@@ -10,10 +13,12 @@ import { AlertMessageService } from 'src/app/services/alert-message/alert-messag
 import { AlertType } from 'src/app/components/alert-window/alert.model';
 
 @Component({
-  selector: 'app-change-location',
-  templateUrl: './change-location.component.html',
-  styleUrls: ['./change-location.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-change-location',
+    templateUrl: './change-location.component.html',
+    styleUrls: ['./change-location.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatInputModule]
 })
 export class ChangeLocationComponent implements OnInit, OnDestroy {
   /** Stores the error message for the input is invalid. */
@@ -64,7 +69,7 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
    * Saving the task and application app path. Depends on which one is modified.
    * @event onEnter
    */
-  @HostListener('window:keydown.enter', ['$event'])
+  @HostListener('window:keydown.enter')
   public onEnterSaving(): void {
     if (!this._isSavingDone) {
       

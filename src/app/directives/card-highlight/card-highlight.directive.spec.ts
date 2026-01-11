@@ -6,16 +6,16 @@ import { By } from '@angular/platform-browser';
 import { CardHighlightDirective } from './card-highlight.directive';
 
 @Component({
-  template: `
+    template: `
     <mat-card dirCardHighlight>
       <mat-card-title>Title of the card</mat-card-title>
       <mat-card-content>
         The content of the card. It has more text here.
       </mat-card-content>
     </mat-card>
-  `
+  `,
+    standalone: false
 })
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class HighLightTestComponent {}
 
 describe('CardHighlightDirective', () => {

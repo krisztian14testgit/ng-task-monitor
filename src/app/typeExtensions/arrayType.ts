@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Helping the extend primitve types with your functions:
  * https://codepunk.io/extending-strings-and-other-data-types-in-typescript/
  */
 
-// eslint-disable-next-line require-jsdoc
 /** Tested and works, deep copy object, its own sub-objects. */
 /*
 const deepCopyComplexType_rec = function<T>(property: T): T {
@@ -22,7 +22,6 @@ const deepCopyComplexType_rec = function<T>(property: T): T {
     return copiedObj;
 };*/
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface Array<T> {
     /**
      * Deep copies the object/instance elements of the array.

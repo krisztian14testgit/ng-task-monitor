@@ -4,10 +4,11 @@ import { By } from '@angular/platform-browser';
 import { InputBorderDirective } from './input-border.directive';
 
 @Component({
-  template: `
+    template: `
     <input dirInputBorder [isValid]="false"
       id="test-input" type="text" class="input-control"/>
-  `
+  `,
+    standalone: false
 })
 class HostTestComponent {}
 

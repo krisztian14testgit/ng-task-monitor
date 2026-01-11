@@ -1,18 +1,29 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { exhaustMap } from 'rxjs/operators';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { FormValidator } from 'src/app/validators/my-validator';
 
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { TimerState } from '../services/task-timer/task-timer.model';
 import { Task, TaskStatus } from '../services/task.model';
 import { TaskService } from '../services/task.service';
+import { CardHighlightDirective } from 'src/app/directives/card-highlight/card-highlight.directive';
+import { InputBorderDirective } from 'src/app/directives/input-border/input-border.directive';
+import { TaskTimerComponent } from '../task-timer/task-timer.component';
 
 @Component({
-  selector: 'app-task-card',
-  templateUrl: './task-card.component.html',
-  styleUrls: ['./task-card.component.css']
+    selector: 'app-task-card',
+    templateUrl: './task-card.component.html',
+    styleUrls: ['./task-card.component.css'],
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatButtonModule, MatDividerModule, MatFormFieldModule, MatInputModule, CardHighlightDirective, InputBorderDirective, TaskTimerComponent]
 })
 export class TaskCardComponent implements OnChanges, AfterViewInit {
   /** The current task reference which is given. */

@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+
 /**
  * This module includes the validation features under the 'FormValidator' namespsace.
  * It can comprise class, variables, functions, enum, interfaces.
- * @namespace
+ * @namespace FormValidator
+ * The namespace is used to wrap the validation related features.
  */
 export namespace FormValidator {
     /** 

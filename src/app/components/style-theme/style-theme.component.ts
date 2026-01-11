@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { MatRadioChange } from '@angular/material/radio';
+import { MatRadioChange, MatRadioModule } from '@angular/material/radio';
 import { StyleThemes } from 'src/app/services/models/app-style.model';
+import { CommonModule } from '@angular/common';
 
 import { StyleManagerService } from '../../services/style-manager/style-manager.service';
 
@@ -8,9 +9,11 @@ import { StyleManagerService } from '../../services/style-manager/style-manager.
  * Changes the style themes of the app with the radio button items.
  */
 @Component({
-  selector: 'app-style-theme',
-  templateUrl: './style-theme.component.html',
-  styleUrls: ['./style-theme.component.css']
+    selector: 'app-style-theme',
+    templateUrl: './style-theme.component.html',
+    styleUrls: ['./style-theme.component.css'],
+    standalone: true,
+    imports: [CommonModule, MatRadioModule]
 })
 export class StyleThemeComponent {
   /** Contains the key names of the StyleThemes enum. */

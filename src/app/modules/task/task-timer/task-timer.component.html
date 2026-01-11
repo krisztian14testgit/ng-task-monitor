@@ -1,15 +1,23 @@
 <div class="task-timer">
-    <!-- start -->
-    <button *ngIf="!isTimerStarted && !isTimerFinished"
-        mat-button [disabled]="!isTimePeriodToday || timerInMinutes === 0"
-            (click)="startTimer()">{{statusLabel}}</button>
-    <!-- inProgress or completed -->
-    <span *ngIf="isTimerStarted || isTimerFinished">{{statusLabel}}</span>
-    <!-- counterClock -->
-    <div *ngIf="isTimerStarted && !isTimerFinished">
-        <span>{{timerInMillisec | date:'HH:mm:ss':'UTC'}}</span>
+  <!-- start -->
+  @if (!isTimerStarted() && !isTimerFinished()) {
+    <button
+      mat-button [disabled]="!isTimePeriodToday() || timerInMinutes() === 0"
+    (click)="startTimer()">{{statusLabel()}}</button>
+  }
+  <!-- inProgress or completed -->
+  @if (isTimerStarted() || isTimerFinished()) {
+    <span>{{statusLabel()}}</span>
+  }
+  <!-- counterClock -->
+  @if (isTimerStarted() && !isTimerFinished()) {
+    <div>
+      <span>{{timerInMillisec() | date:'HH:mm:ss':'UTC'}}</span>
     </div>
+  }
 </div>
-<mat-progress-bar *ngIf="isTimerStarted && !isTimerFinished" 
-                    mode="determinate" [value]="progessBarPercent"></mat-progress-bar>
+@if (isTimerStarted() && !isTimerFinished()) {
+  <mat-progress-bar
+  mode="determinate" [value]="progessBarPercent()"></mat-progress-bar>
+}
 

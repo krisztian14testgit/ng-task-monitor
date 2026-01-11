@@ -1,13 +1,15 @@
-<div *ngIf="isDisplayed"
+@if (isDisplayed()) {
+  <div
     class="alert-window" [ngClass]="alertLabel.color">
     <!-- alert cross-x -->
     <div class="alert-close"
-        (click)="onClose()">X</div>
+    (click)="onClose()">X</div>
     <!-- alert message -->
     <div class="alert-msg">
-        <strong>{{alertLabel.name}}: </strong>
-        <!-- Using interpolation for text content (safe by default) -->
-        <span>{{alertMsg}}</span>
-        <!-- Alternative: For HTML content, use: <span [innerHTML]="alertMsg | safeHtml"></span> -->
+      <strong>{{alertLabel.name}}: </strong>
+      <!-- Using interpolation for text content (safe by default) -->
+      <span>{{alertMsg()}}</span>
+      <!-- Alternative: For HTML content, use: <span [innerHTML]="alertMsg() | safeHtml"></span> -->
     </div>
-</div>
+  </div>
+}
