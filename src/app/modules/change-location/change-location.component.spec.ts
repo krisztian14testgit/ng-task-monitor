@@ -17,8 +17,7 @@ describe('ChangeLocationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [ ChangeLocationComponent ],
+      imports: [ChangeLocationComponent, ReactiveFormsModule],
       providers: [
         {provide: LocationService, useClass: MockLocationService},
         {provide: AlertMessageService}

@@ -35,9 +35,9 @@ describe('HeaderComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
+        HeaderComponent,
         RouterTestingModule.withRoutes(routeTable)
       ],
-      declarations: [ HeaderComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();

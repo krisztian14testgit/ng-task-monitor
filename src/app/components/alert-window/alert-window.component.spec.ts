@@ -12,7 +12,7 @@ describe('AlertWindowComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AlertWindowComponent ],
+      imports: [ AlertWindowComponent ],
       providers: [
         {provide: AlertMessageService}
       ]

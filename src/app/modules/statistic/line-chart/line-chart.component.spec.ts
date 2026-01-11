@@ -11,7 +11,7 @@ describe('LineChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LineChartComponent ],
+      imports: [ LineChartComponent ],
       schemas: [NO_ERRORS_SCHEMA]
     })
     .compileComponents();

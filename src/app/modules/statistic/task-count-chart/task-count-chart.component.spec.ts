@@ -10,7 +10,7 @@ describe('TaskCountChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TaskCountChartComponent ],
+      imports: [ TaskCountChartComponent ],
       schemas: [NO_ERRORS_SCHEMA]
     })
     .compileComponents();

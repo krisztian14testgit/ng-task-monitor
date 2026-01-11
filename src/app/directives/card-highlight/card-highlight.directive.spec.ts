@@ -24,8 +24,8 @@ describe('CardHighlightDirective', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [HighLightTestComponent, CardHighlightDirective],
-      imports: [MatCardModule]
+      imports: [CardHighlightDirective, MatCardModule],
+      declarations: [HighLightTestComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HighLightTestComponent);
