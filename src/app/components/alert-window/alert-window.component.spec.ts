@@ -35,7 +35,7 @@ describe('AlertWindowComponent', () => {
     expect(component.alertLabel.color).toBe('alert-info');
     expect(component.alertLabel.name).toBe('Info');
     expect(component.alertLabel.type).toBe(AlertType.Info);
-    expect(component.isDisplayed).toBeFalse();
+    expect(component.isDisplayed()).toBeFalse();
   });
 
   it('should show the alert window with different alert types, texts', () => {
@@ -58,7 +58,7 @@ describe('AlertWindowComponent', () => {
       alertWin = fixture.debugElement.query(By.css('.alert-window'));
       strongTag = fixture.debugElement.nativeElement.querySelector('strong');
 
-      expect(component.isDisplayed).toBeTrue();
+      expect(component.isDisplayed()).toBeTrue();
       expect(alertWin.classes[colorAlerTypes[i]]).toBeTrue();
       expect(strongTag.innerText).toBe(`${strongTagValues[i]}:`);
     }
@@ -70,14 +70,14 @@ describe('AlertWindowComponent', () => {
     fixture.detectChanges();
     let alertWin = fixture.debugElement.query(By.css('.alert-window'));
     expect(alertWin.name).toBeDefined();
-    expect(component.isDisplayed).toBeTrue();
+    expect(component.isDisplayed()).toBeTrue();
 
     // hide alert win
     component.onClose();
     fixture.detectChanges();
     alertWin = fixture.debugElement.query(By.css('.alert-window'));
     expect(alertWin).toBeNull();
-    expect(component.isDisplayed).toBeFalse();
+    expect(component.isDisplayed()).toBeFalse();
   });
 
   // fakeAsync used the timer faking for setTimemout
@@ -91,7 +91,7 @@ describe('AlertWindowComponent', () => {
     // get window from DOM
     let alertWin = fixture.debugElement.query(By.css('.alert-window'));
     expect(alertWin).not.toBeNull();
-    expect(component.isDisplayed).toBeTrue();
+    expect(component.isDisplayed()).toBeTrue();
     expect(component['closeAutomatically']).toHaveBeenCalled();
     tick(3000);
 
@@ -100,7 +100,7 @@ describe('AlertWindowComponent', () => {
     alertWin = fixture.debugElement.query(By.css('.alert-window'));
     expect(alertWin).toBeNull();
     expect(component.onClose).toHaveBeenCalled();
-    expect(component.isDisplayed).toBeFalse();
+    expect(component.isDisplayed()).toBeFalse();
     flush();
   }));
 
