@@ -119,7 +119,7 @@ describe('AlertWindowComponent', () => {
     }
   });
 
-  it('should test to get message from the service, alertMsgService', () => {
+  it('should test to get message from the service, alertMsgService', fakeAsync(() => {
     spyOn(component, 'show').and.callThrough();
 
     // initial values
@@ -130,16 +130,23 @@ describe('AlertWindowComponent', () => {
 
     // emits error text
     let text = 'Error text';
+    fixture.componentRef.setInput('alertMsg', text);
     alertMsgService.sendMessage(text);
     // Note: alertMsg is an input signal, not updated by service
+    fixture.detectChanges();
+    expect(component.alertMsg()).toBe(text);
     expect(component['_alertType']).toBe(AlertType.Error);
     expect(component.show).toHaveBeenCalled();
+    tick(100);
 
     // emits warning text
-    text = 'just an origin text with yellow';
+    text = 'Warning:just an origin text with yellow';
+    fixture.componentRef.setInput('alertMsg', text);
     alertMsgService.sendMessage(text, AlertType.Warning);
-    // Note: alertMsg is an input signal, not updated by service
+    fixture.detectChanges();
+    expect(component.alertMsg()).toBe(text);
     expect(component['_alertType']).toBe(AlertType.Warning);
     expect(component.show).toHaveBeenCalled();
-  });
+    flush();
+  }));
 });
