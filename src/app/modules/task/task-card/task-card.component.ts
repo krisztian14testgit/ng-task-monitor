@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, signal } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { exhaustMap } from 'rxjs/operators';
@@ -38,12 +38,12 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   @Output() public readonly newTaskCreationFailed: EventEmitter<string> = new EventEmitter();
   
   /** The switcher of the card is editable or not. */
-  public isEditable = signal(false);
+  public isEditable = false;
   /** The name of TaskStatus. */
-  public statusLabel = signal('');
-  public selectedTaskId = signal('');
+  public statusLabel = '';
+  public selectedTaskId = '';
   /** True: The card is selected, 'edit' button will appear. */
-  public isSelected = signal(false);
+  public isSelected = false;
   /** 
    * Readonly prop: in minutes: 1439 => 24h * 60min -minValue(1)  => 23:59:00 
    * @readonly
@@ -83,12 +83,12 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   ngOnChanges(): void {
     if (this.task.isNewTask()) {
       // new taks with empty form
-      this.isEditable.set(true);
+      this.isEditable = true;
     }
     
     if (this.task.id.length > 0) {
       // Task is defined, get TaskStatus key as string
-      this.statusLabel.set(TaskStatus[this.task.status]);
+      this.statusLabel = TaskStatus[this.task.status];
       this.taskForm = this.generateReactiveForm(this.task);
     }
   }
@@ -111,8 +111,8 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * @event Click
    */
   public onClickMatCard(): void {
-    this.selectedTaskId.set(this.task.id);
-    this.isSelected.set(true);
+    this.selectedTaskId = this.task.id;
+    this.isSelected = true;
   }
 
   /**
@@ -153,16 +153,16 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * @event Click
    */
   public onEdit_colseCard(): void {
-    this.isEditable.update(val => !val);
+    this.isEditable = !this.isEditable;
 
     // new empty task card is closed without SAVING
-    if (!this.isEditable() && this.task.isNewTask()) {
+    if (!this.isEditable && this.task.isNewTask()) {
       // notice the taskContainer component to remove the empty card.
       this.newTaskCreationFailed.next(this.task.id);
     }
     
     // it is closed, reset task values to initial.
-    if (!this.isEditable()) {
+    if (!this.isEditable) {
       this.taskForm.reset(this._defaultFormValues);
     }
   }
@@ -197,7 +197,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
         },
         () => {
           // finally branch, Close the edit mode
-          this.isEditable.set(false);
+          this.isEditable = false;
         });
     }
   }
@@ -219,7 +219,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    */
   private updateTaskStatus(taskStatus: TaskStatus): void {
     this.task.setStatus(taskStatus);
-    this.statusLabel.set(TaskStatus[taskStatus]);
+    this.statusLabel = TaskStatus[taskStatus];
 
     if (taskStatus === TaskStatus.Completed) {
       const timeMinutesControl = this.taskForm.get('timeMinutes');

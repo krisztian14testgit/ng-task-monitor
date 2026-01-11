@@ -1,7 +1,7 @@
 <div class="style-themes">
   <mat-radio-group aria-label="Select an theme"
     class="style-radio-group"
-    [value]="selectedTheme()"
+    [value]="selectedTheme"
     (change)="onChangeTheme($event)">
     @for (theme of styleThemes; track theme) {
       <mat-radio-button

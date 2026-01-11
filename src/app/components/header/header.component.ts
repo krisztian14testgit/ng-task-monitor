@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, NavigationStart, Router, Event } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -14,7 +14,7 @@ import { MenuItemComponent } from '../menu-item/menu-item.component';
 })
 export class HeaderComponent implements OnInit {
   /** Stores the title of the side by url navigation. */
-  public titleOfRoute = signal('All tasks');
+  public titleOfRoute: string;
   /** Contains the structure of the menu with labels. */
   public appMenus: AppMenu;
   /** Contains the structure of the option menu with labels. */
@@ -44,6 +44,8 @@ export class HeaderComponent implements OnInit {
         {linkKey: "statistic/weekly", title: "In-Weekly", icon: "timeline"}
       ]
     };
+    // contains default the "All tasks" title.
+    this.titleOfRoute = this.appMenus.menuItemsWithLabel['Tasks'][0].title;
 
     this.optionMenus = new AppMenu();
     this.optionMenus.title = 'Options';
@@ -75,7 +77,7 @@ export class HeaderComponent implements OnInit {
         // remove slash sign
         const urlKey = event.url.substring(1);
         if (urlKey) {
-          this.titleOfRoute.set(this._routerDict[urlKey]);
+          this.titleOfRoute = this._routerDict[urlKey];
         }
       }
     });

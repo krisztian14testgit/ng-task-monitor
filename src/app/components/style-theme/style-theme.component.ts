@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatRadioChange, MatRadioModule } from '@angular/material/radio';
 import { StyleThemes } from 'src/app/services/models/app-style.model';
 import { CommonModule } from '@angular/common';
@@ -19,7 +19,7 @@ export class StyleThemeComponent {
   /** Contains the key names of the StyleThemes enum. */
   public styleThemes: string[];
   /** Stores the selected theme's key name. */
-  public selectedTheme = signal('Light');
+  public selectedTheme: string;
   private readonly STORAGE_KEY = 'savedTheme';
   /** Default theme is StyleThemes.Light, stored name: 'Light'. */
   private readonly _defaultTheme: string;
@@ -27,11 +27,10 @@ export class StyleThemeComponent {
   constructor(private readonly styleManagerService: StyleManagerService) {
     this.styleThemes = Object.keys(StyleThemes);
     this._defaultTheme = this.styleThemes[0];
-    const storedTheme = this.getStoredThemeFromLocalStorage();
-    this.selectedTheme.set(storedTheme);
+    this.selectedTheme = this.getStoredThemeFromLocalStorage();
     
-    if (storedTheme) {
-      this.changeTheme(storedTheme);
+    if (this.selectedTheme) {
+      this.changeTheme(this.selectedTheme);
     }
   }
 
@@ -44,10 +43,9 @@ export class StyleThemeComponent {
    * @param event MatRadio event.
    */
   public onChangeTheme($event: MatRadioChange): void {
-    const theme = $event.value;
-    this.selectedTheme.set(theme);
-    if (theme) {
-      this.changeTheme(theme);
+    this.selectedTheme = $event.value;
+    if (this.selectedTheme) {
+      this.changeTheme(this.selectedTheme);
     }
   }
 
