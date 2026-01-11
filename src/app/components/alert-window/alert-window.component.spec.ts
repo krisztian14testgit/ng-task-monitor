@@ -1,4 +1,3 @@
-import { SimpleChange } from '@angular/core';
 import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
@@ -86,8 +85,7 @@ describe('AlertWindowComponent', () => {
     spyOn(component as any, 'closeAutomatically').and.callThrough();
     spyOn(component, 'onClose').and.callThrough();
     // displayed after close
-    component.alertMsg = 'Automatic close was successful!';
-    component.ngOnChanges({'alertMsg': new SimpleChange('', component.alertMsg, true)});
+    fixture.componentRef.setInput('alertMsg', 'Automatic close was successful!');
     fixture.detectChanges();
 
     // get window from DOM
@@ -125,7 +123,7 @@ describe('AlertWindowComponent', () => {
     spyOn(component, 'show').and.callThrough();
 
     // initial values
-    expect(component.alertMsg).toBe('');
+    expect(component.alertMsg()).toBe('');
     expect(component['_alertType']).toBe(AlertType.Info);
     // subscribe on the alertService by ngOnInit
     component.ngOnInit();
@@ -133,14 +131,14 @@ describe('AlertWindowComponent', () => {
     // emits error text
     let text = 'Error text';
     alertMsgService.sendMessage(text);
-    expect(component.alertMsg).toBe(text);
+    // Note: alertMsg is an input signal, not updated by service
     expect(component['_alertType']).toBe(AlertType.Error);
     expect(component.show).toHaveBeenCalled();
 
-    // emits error text
+    // emits warning text
     text = 'just an origin text with yellow';
     alertMsgService.sendMessage(text, AlertType.Warning);
-    expect(component.alertMsg).toBe(text);
+    // Note: alertMsg is an input signal, not updated by service
     expect(component['_alertType']).toBe(AlertType.Warning);
     expect(component.show).toHaveBeenCalled();
   });

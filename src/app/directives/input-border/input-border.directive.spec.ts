@@ -111,15 +111,13 @@ describe('InputBorderDirective', () => {
   it('should apply input classes(valid, invalid) base on isValid', () => {
     directive['_refInput'] = inputTag.nativeElement;
     // apply the input-valid
-    directive.isValid = true;
-    // calls changeBorderBy method
-    directive.ngOnChanges();
+    fixture.componentRef.setInput('isValid', true);
+    fixture.detectChanges();
     expect(directive['_refInput'].className.includes('input-valid')).toBeTrue();
 
     // apply the input-invalid
-    directive.isValid = false;
-    // calls changeBorderBy method
-    directive.ngOnChanges();
+    fixture.componentRef.setInput('isValid', false);
+    fixture.detectChanges();
     expect(directive['_refInput'].className.includes('input-invalid')).toBeTrue();
   });
 });
