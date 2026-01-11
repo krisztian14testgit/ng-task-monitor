@@ -1,5 +1,5 @@
 import { Component, DebugElement } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { InputBorderDirective } from './input-border.directive';
 
@@ -111,16 +111,18 @@ describe('InputBorderDirective', () => {
     expect(directive['findCurrentClassBy']).not.toHaveBeenCalled();
   });
 
-  it('should apply input classes(valid, invalid) base on isValid', () => {
+  it('should apply input classes(valid, invalid) base on isValid', fakeAsync(() => {
     directive['_refInput'] = inputTag.nativeElement;
     // apply the input-valid
     fixture.componentInstance.isValid = true;
     fixture.detectChanges();
+    tick();
     expect(directive['_refInput'].className.includes('input-valid')).toBeTrue();
 
     // apply the input-invalid
     fixture.componentInstance.isValid = false;
     fixture.detectChanges();
+    tick();
     expect(directive['_refInput'].className.includes('input-invalid')).toBeTrue();
-  });
+  }));
 });
