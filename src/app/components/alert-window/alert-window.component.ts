@@ -66,13 +66,13 @@ export class AlertWindowComponent implements OnInit {
   /** Subscription on the alertMessage service to get multicasted message from other component. */
   ngOnInit(): void {
     this.alertMessageService.getMessage()
-    .subscribe(([message, alertType]) => {
+    .subscribe(([message, alertType]: [string, AlertType | undefined]) => {
       if (alertType) {
         this._alertType = alertType;
       } else {
         this._alertType = this.getAlertTypeFromMessage(message);
       }
-      
+
       this.show();
       this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
     });
