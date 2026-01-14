@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { AlertLabel, AlertOptions, AlertType } from './alert.model';
+import { tap } from 'rxjs';
 
 @Component({
     selector: 'app-alert-window',
@@ -66,6 +67,10 @@ export class AlertWindowComponent implements OnInit {
   /** Subscription on the alertMessage service to get multicasted message from other component. */
   ngOnInit(): void {
     this.alertMessageService.getMessage()
+    .pipe(tap(() => {
+      // clear the previous timeout process.
+      this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
+    }))
     .subscribe(([message, alertType]: [string, AlertType | undefined]) => {
       if (alertType) {
         this._alertType = alertType;
