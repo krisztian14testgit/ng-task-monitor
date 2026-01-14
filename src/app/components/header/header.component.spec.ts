@@ -5,6 +5,8 @@ import { Location } from "@angular/common";
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { HeaderComponent } from './header.component';
+import { StyleManagerService } from 'src/app/services/style-manager/style-manager.service';
+import { MockStyleManagerService } from 'src/app/tests/mock-services/mock-style-manager.service';
 
 @Component({
     standalone: false
@@ -38,7 +40,10 @@ describe('HeaderComponent', () => {
         HeaderComponent,
         RouterTestingModule.withRoutes(routeTable)
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [
+        { provide: StyleManagerService, useClass: MockStyleManagerService }
+      ]
     })
     .compileComponents();
   });
