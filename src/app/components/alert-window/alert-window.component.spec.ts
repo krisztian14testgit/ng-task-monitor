@@ -38,7 +38,7 @@ describe('AlertWindowComponent', () => {
     expect(component.isDisplayed()).toBeFalse();
   });
 
-  it('should show the alert window with different alert types, texts', () => {
+  it('should show the alert window with different alert types, texts', fakeAsync(() => {
     const colorAlerTypes = component['_options'].alertTypeColors;
     const textArray = [
       'The basic text without keywords.', // info - blue
@@ -61,16 +61,23 @@ describe('AlertWindowComponent', () => {
       expect(component.isDisplayed()).toBeTrue();
       expect(alertWin.classes[colorAlerTypes[i]]).toBeTrue();
       expect(strongTag.innerText).toBe(`${strongTagValues[i]}:`);
-    }
-  });
+      tick(100);
 
-  it('should disappear the alert window', () => {
+      // close the alert window before next loop
+      component.onClose();
+      fixture.detectChanges();
+      tick(100);
+    }
+  }));
+
+  it('should disappear the alert window', fakeAsync(() => {
     // displayed 
     component.show();
     fixture.detectChanges();
     let alertWin = fixture.debugElement.query(By.css('.alert-window'));
     expect(alertWin.name).toBeDefined();
     expect(component.isDisplayed()).toBeTrue();
+    tick(100);
 
     // hide alert win
     component.onClose();
@@ -78,7 +85,7 @@ describe('AlertWindowComponent', () => {
     alertWin = fixture.debugElement.query(By.css('.alert-window'));
     expect(alertWin).toBeNull();
     expect(component.isDisplayed()).toBeFalse();
-  });
+  }));
 
   // fakeAsync used the timer faking for setTimemout
   it('should close window automatically, setTimeout test', fakeAsync(() => {

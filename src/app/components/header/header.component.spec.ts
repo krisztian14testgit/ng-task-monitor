@@ -17,10 +17,10 @@ describe('HeaderComponent', () => {
   let router: Router;
   let location: Location;
   const routeTable: any[] =  [
-    {path: 'home', component: FakedRouteComponent },
+    {path: 'tasks/all', component: FakedRouteComponent },
     {path: 'tasks/inprogress', component: FakedRouteComponent },
     {path: 'weekly', component: FakedRouteComponent },
-    {path: '', redirectTo: '/home', pathMatch: 'full'}
+    {path: '', redirectTo: '/tasks/all', pathMatch: 'full'}
   ];
 
   /** merged menu items from appMenu & optionMenu */
@@ -69,28 +69,51 @@ describe('HeaderComponent', () => {
     router.navigate(['']);
     fixture.autoDetectChanges();
     tick(1);
-    expect(location.path()).toBe('/home');
+    expect(location.path()).toBe('/tasks/all');
   }));
 
-  it('should get titleOfRoute from the router event', fakeAsync(() => {
+  it('should get titleOfRoute for /tasks/all route', fakeAsync(() => {
     spyOn(router, 'navigate').and.callThrough();
-    // default rediretion '/tasks/all' in app-routing.module.ts
-    const defaultRedirectionTitle = 'All tasks';
-    expect(component.titleOfRoute).toBe(defaultRedirectionTitle);
-    // subscribe on the chaging router event by ngOnInit
     component.ngOnInit();
+    
+    const navUrl = 'tasks/all';
+    router.navigate([ navUrl ]);
+    fixture.detectChanges();
+    tick(100);
+    expect(location.path()).toBe(`/${navUrl}`);
+    // routerDict contains the title of each router path.
+    expect(component.titleOfRoute).toBe(component['_routerDict'][navUrl]);
+    
+    flush();
+  }));
 
-    // tasks/inprogress and weekly are defined in a routerTable
-    const navigationPaths = ['tasks/inprogress', 'weekly'];
-    for (const navUrl of navigationPaths) {
-      router.navigate([ navUrl ]);
-      fixture.autoDetectChanges();
-      tick(1);
-      expect(location.path()).toBe(`/${navUrl}`);
-      // routerDict contains the title of each router path.
-      expect(component.titleOfRoute).toBe(component['_routerDict'][navUrl]);
-    }
+  it('should get titleOfRoute for /tasks/inprogress route', fakeAsync(() => {
+    spyOn(router, 'navigate').and.callThrough();
+    component.ngOnInit();
+    
+    const navUrl = 'tasks/inprogress';
+    router.navigate([ navUrl ]);
+    fixture.detectChanges();
+    tick(100);
+    expect(location.path()).toBe(`/${navUrl}`);
+    // routerDict contains the title of each router path.
+    expect(component.titleOfRoute).toBe(component['_routerDict'][navUrl]);
+    
+    flush();
+  }));
 
+  it('should get titleOfRoute for /weekly route', fakeAsync(() => {
+    spyOn(router, 'navigate').and.callThrough();
+    component.ngOnInit();
+    
+    const navUrl = 'weekly';
+    router.navigate([ navUrl ]);
+    fixture.detectChanges();
+    tick(100);
+    expect(location.path()).toBe(`/${navUrl}`);
+    // routerDict contains the title of each router path.
+    expect(component.titleOfRoute).toBe(component['_routerDict'][navUrl]);
+    
     flush();
   }));
 });
