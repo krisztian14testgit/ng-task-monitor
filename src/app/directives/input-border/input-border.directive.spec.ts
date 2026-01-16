@@ -5,10 +5,11 @@ import { InputBorderDirective } from './input-border.directive';
 
 @Component({
     template: `
-    <input dirInputBorder [isValid]="isValid"
+    <input dirInputBorder [isValid]="isValid()"
       id="test-input" type="text" class="input-control"/>
   `,
-    standalone: false
+    standalone: true,
+    imports: [InputBorderDirective]
 })
 class HostTestComponent {
   // signal input to test directive easily
@@ -22,8 +23,7 @@ describe('InputBorderDirective', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InputBorderDirective],
-      declarations: [HostTestComponent]
+      imports: [InputBorderDirective, HostTestComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HostTestComponent);
@@ -71,37 +71,44 @@ describe('InputBorderDirective', () => {
     expect(foundIndex).toBe(expectedIndex);
   });
 
-  it('should add/remove the input-valid or input-invalid class from inputTag', () => {
-    // add input-valid class
-    let className = 'input-valid';
-    inputTag.nativeElement.className += ' ' + className;
+  it('should add/remove the input-valid or input-invalid class from inputTag by click trigger', fakeAsync(() => {
     directive['_refInput'] = inputTag.nativeElement;
-    expect(directive['_refInput'].className.includes(className)).toBeTrue();
+    inputTag.triggerEventHandler('click', { currentTarget: inputTag.nativeElement });
+    expect(directive['_refInput']).toBeDefined();
+
+    // add input-valid class
+    let className = ' input-valid';
+    fixture.componentRef.setInput('isValid', true);
+    fixture.detectChanges();
+    tick(100);
+    expect(directive['_refInput'].className).toContain(className);
 
     // remove input-valid class by clearPreviousBorderClass
     directive['clearPreviousBorderClass']();
-    expect(directive['_refInput'].className.includes(className)).toBeFalse();
+    expect(directive['_refInput'].className).not.toContain(className);
 
     // add input-invalid class
-    className = 'input-invalid';
-    inputTag.nativeElement.className += ' ' + className;
-    directive['_refInput'] = inputTag.nativeElement;
-    expect(directive['_refInput'].className.includes(className)).toBeTrue();
+    className = ' input-invalid';
+    fixture.componentRef.setInput('isValid', false);
+    fixture.detectChanges();
+    tick(100);
+    expect(directive['_refInput'].className).toContain(className);
 
     // remove input-invalid class by clearPreviousBorderClass
     directive['clearPreviousBorderClass']();
-    expect(directive['_refInput'].className.includes(className)).toBeFalse();
+    expect(directive['_refInput'].className).not.toContain(className);
 
-    // add random class with 'input' keyword
-    className = 'input-random';
-    inputTag.nativeElement.className += ' ' + className;
-    directive['_refInput'] = inputTag.nativeElement;
-    expect(directive['_refInput'].className.includes(className)).toBeTrue();
+    // set input-valid class again
+    className = ' input-valid';
+    fixture.componentRef.setInput('isValid', true);
+    fixture.detectChanges();
+    tick(100);
+    expect(directive['_refInput'].className).toContain(className);
 
     // remove random class by clearPreviousBorderClass
     directive['clearPreviousBorderClass']();
-    expect(directive['_refInput'].className.includes(className)).toBeFalse();
-  });
+    expect(directive['_refInput'].className).not.toContain(className);
+  }));
 
   it('should not call clearPreviousBorderClass, if input className is empy!', () => {
     spyOn(directive as any, 'findCurrentClassBy').and.callThrough();
@@ -114,21 +121,35 @@ describe('InputBorderDirective', () => {
 
   it('should apply input classes(valid) if the directive isValid is true', fakeAsync(() => {
     directive['_refInput'] = inputTag.nativeElement;
+    inputTag.triggerEventHandler('click', { currentTarget: inputTag.nativeElement });
+    fixture.detectChanges();
+    // change detectChanges to wait for effect to run
+    tick(100);
+    
     // apply the input-valid
     fixture.componentRef.setInput('isValid', true);
     fixture.detectChanges();
+    // change detectChanges to wait for effect to run
     tick(100);
+    
     expect(directive['_refInput']).toBeDefined();
-    expect(directive['_refInput'].className.includes('input-valid')).toBeTrue();
+    expect(directive['_refInput'].className).toContain('input-valid');
   }));
 
-  xit('should apply input classes(invalid) if the directive isValid is false', fakeAsync(() => {
+  it('should apply input classes(invalid) if the directive isValid is false', fakeAsync(() => {
     directive['_refInput'] = inputTag.nativeElement;
-    // apply the input-invalid
-    fixture.componentRef.setInput('isValid', false);
+    inputTag.triggerEventHandler('click', { currentTarget: inputTag.nativeElement });
+    // change detectChanges to wait for effect to run
     fixture.detectChanges();
     tick(100);
+    
+    // apply the input-invalid
+    fixture.componentRef.setInput('isValid', false);
+    // change detectChanges to wait for effect to run
+    fixture.detectChanges();
+    tick(100);
+
     expect(directive['_refInput']).toBeDefined();
-    expect(directive['_refInput'].className.includes('input-invalid')).toBeTrue();
+    expect(directive['_refInput'].className).toContain('input-invalid');
   }));
 });

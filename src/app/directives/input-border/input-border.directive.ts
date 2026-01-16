@@ -35,7 +35,7 @@ export class InputBorderDirective {
   public onClick(target: Event): void {
     if (target.currentTarget) {
       this._refInput = target.currentTarget as HTMLInputElement;
-      // it runs fist to change border of the input field
+      // it runs at first to change border of the input field
       this.changeBorderBy(this.isValid());
     }
   }
