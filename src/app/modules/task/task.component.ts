@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
@@ -24,7 +24,7 @@ import { TaskCardComponent } from './task-card/task-card.component';
     standalone: true,
     imports: [CommonModule, FormsModule, MatButtonModule, MatSelectModule, MatCardModule, MatFormFieldModule, TaskCardComponent]
 })
-export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TaskComponent implements OnInit, OnDestroy {
   /** Stores task items. */
   public taskList: Task[] = [];
   /** Statuses of the Task. */
@@ -68,13 +68,10 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedTaskTime = TaskTime.Today.toString();
   }
 
-  /** Gets tasks form the service. */
   ngOnInit(): void {
+    /** Gets tasks form the service. */
     this.getAllTask();
-  }
-
-  /** StatusList is filled in before the view rendering. */
-  ngAfterViewInit(): void {
+    /** StatusList is filled in before the view rendering. */
     this.fillInStatusSelection();
   }
 
