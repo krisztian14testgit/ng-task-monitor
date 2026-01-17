@@ -1,5 +1,5 @@
 import { NO_ERRORS_SCHEMA, SimpleChange } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatMenuModule } from '@angular/material/menu';
 
 import { MenuItem } from 'src/app/services/models/app-menu.model';
@@ -37,22 +37,23 @@ describe('MenuItemComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display title button', () => {
+  it('should display title button', fakeAsync(() => {
+    const buttonTitle = fixture.debugElement.nativeElement.querySelector('button');
     expect(component.title).toBe('');
-    component.title = 'TestTitle';
+    tick(100);
 
+    component.title = 'TestTitle';
     fixture.detectChanges();
-    let buttonTitle = fixture.debugElement.nativeElement.querySelector('button');
     expect(buttonTitle).toBeDefined();
     expect(buttonTitle.innerText).toBe('TestTitle');
+    tick(100);
 
     // set empty title
     component.title = '';
     fixture.detectChanges();
-    buttonTitle = fixture.debugElement.nativeElement.querySelector('button');
     expect(buttonTitle).toBeDefined();
     expect(buttonTitle.innerText).toBe('');
-  });
+  }));
 
   it('should adjust and display menuLabelKeys', () => {
     // menuItems dict does not exist yet
@@ -66,7 +67,7 @@ describe('MenuItemComponent', () => {
     expect(component.menuLabelKeys).toEqual(expectedLabels);
   });
 
-  it('should test the isDisplayedLAbels switch to show labels or not', () => {
+  it('should test the isDisplayedLLabels switch to show labels or not', () => {
     component.menuItems_dict = menuItemWithLabel;
     const expectedLabels = ['label1', 'label2'];
 
