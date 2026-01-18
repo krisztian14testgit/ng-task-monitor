@@ -247,9 +247,9 @@ npm run start
 
 ## References
 
-- [GHSA-8qq5-rm4j-mr97](https://github.com/advisories/GHSA-8qq5-rm4j-mr97) - tar vulnerability
-- [GHSA-52f5-9888-hmc6](https://github.com/advisories/GHSA-52f5-9888-hmc6) - tmp vulnerability
-- [GHSA-g9mf-h72j-4rw9](https://github.com/advisories/GHSA-g9mf-h72j-4rw9) - undici vulnerability
+- [GHSA-8qq5-rm4j-mr97](https://github.com/advisories/GHSA-8qq5-rm4j-mr97) - node-tar: Arbitrary File Overwrite and Symlink Poisoning
+- [GHSA-52f5-9888-hmc6](https://github.com/advisories/GHSA-52f5-9888-hmc6) - tmp: Arbitrary File Write via Symbolic Link
+- [GHSA-g9mf-h72j-4rw9](https://github.com/advisories/GHSA-g9mf-h72j-4rw9) - undici: Unbounded Decompression Resource Exhaustion
 - [Electron Security Best Practices](https://www.electronjs.org/docs/latest/tutorial/security)
 - [Angular Security Guide](https://angular.dev/best-practices/security)
 
