@@ -48,7 +48,7 @@ This would downgrade `@electron-forge/cli` from `7.10.2` to `7.6.1` (breaking ch
 
 **CVE**: GHSA-52f5-9888-hmc6  
 **Affected Versions**: tmp <=0.2.3  
-**Issue**: Arbitrary temporary file/directory write via symbolic link `dir` parameter
+**Issue**: Arbitrary temporary file/directory write via symbolic link. An attacker can exploit the `dir` parameter by providing a path that contains a symbolic link, potentially allowing writes to unintended locations on the filesystem.
 
 **Impact Assessment**:
 - ✅ **Development tool only** - Used by `@inquirer/prompts` in `@electron-forge/cli`
@@ -263,7 +263,16 @@ npm run start
 tar  <=7.5.2
 Severity: high
 node-tar is Vulnerable to Arbitrary File Overwrite and Symlink Poisoning
-28 vulnerabilities (7 low, 21 high)
+
+tmp  <=0.2.3
+Severity: high
+Arbitrary temporary file / directory write via symbolic link
+
+undici  7.0.0 - 7.18.1
+Severity: low
+Unbounded decompression chain in HTTP responses
+
+28 vulnerabilities (0 critical, 21 high, 7 low)
 
 To address issues that do not require attention, run:
   npm audit fix
