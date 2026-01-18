@@ -1,4 +1,4 @@
-import { Component, effect, input, OnInit, signal } from '@angular/core';
+import { Component, effect, input, model, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
@@ -13,8 +13,8 @@ import { tap } from 'rxjs';
     imports: [CommonModule]
 })
 export class AlertWindowComponent implements OnInit {
-  /** Contains the given/adjusted alert message. */
-  public alertMsg = input('');
+  /** Two-way binding, it contains the given/adjusted alert message. */
+  public alertMsg = model('');
   /** 
    * Not closing automatically the alert window after 3 sec.
    * Default value is false. If it is true, alert window won't close itself.
@@ -78,6 +78,7 @@ export class AlertWindowComponent implements OnInit {
         this._alertType = this.getAlertTypeFromMessage(message);
       }
 
+      this.alertMsg.update(() =>message);
       this.show();
       this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
     });
