@@ -1,6 +1,6 @@
 # Security Audit Report
 
-**Generated**: January 18, 2026  
+**Audit Date**: January 18, 2026  
 **Auditor**: GitHub Copilot Agent  
 **Branch**: `copilot/sub-pr-60`
 
