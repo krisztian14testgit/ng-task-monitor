@@ -262,7 +262,7 @@ npm run start
 
 tar  <=7.5.2
 Severity: high
-node-tar is Vulnerable to Arbitrary File Overwrite and Symlink Poisoning
+node-tar is vulnerable to Arbitrary File Overwrite and Symlink Poisoning
 
 tmp  <=0.2.3
 Severity: high
