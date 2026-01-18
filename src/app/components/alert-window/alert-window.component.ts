@@ -1,8 +1,9 @@
-import { Component, effect, input, OnInit, signal } from '@angular/core';
+import { Component, effect, input, model, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { AlertLabel, AlertOptions, AlertType } from './alert.model';
+import { tap } from 'rxjs';
 
 @Component({
     selector: 'app-alert-window',
@@ -12,8 +13,8 @@ import { AlertLabel, AlertOptions, AlertType } from './alert.model';
     imports: [CommonModule]
 })
 export class AlertWindowComponent implements OnInit {
-  /** Contains the given/adjusted alert message. */
-  public alertMsg = input('');
+  /** Two-way binding, it contains the given/adjusted alert message. */
+  public alertMsg = model('');
   /** 
    * Not closing automatically the alert window after 3 sec.
    * Default value is false. If it is true, alert window won't close itself.
@@ -66,13 +67,18 @@ export class AlertWindowComponent implements OnInit {
   /** Subscription on the alertMessage service to get multicasted message from other component. */
   ngOnInit(): void {
     this.alertMessageService.getMessage()
-    .subscribe(([message, alertType]) => {
+    .pipe(tap(() => {
+      // clear the previous timeout process.
+      this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
+    }))
+    .subscribe(([message, alertType]: [string, AlertType | undefined]) => {
       if (alertType) {
         this._alertType = alertType;
       } else {
         this._alertType = this.getAlertTypeFromMessage(message);
       }
-      
+
+      this.alertMsg.update(() =>message);
       this.show();
       this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
     });

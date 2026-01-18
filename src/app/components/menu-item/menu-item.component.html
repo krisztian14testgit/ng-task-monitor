@@ -1,18 +1,18 @@
 <!-- menu title -->
 <button mat-raised-button
   mat-button [matMenuTriggerFor]="beforeMenu">
-  @if (mainMenuIcon) {
+  @if (mainMenuIcon()) {
     <mat-icon class="menu-main-icon ">
-      {{mainMenuIcon}}
+      {{mainMenuIcon()}}
     </mat-icon>
   }
-  <span>{{title}}</span>
+  <span>{{title()}}</span>
 </button>
 <!-- nested menu template -->
 <mat-menu #beforeMenu="matMenu" xPosition="before">
-  @if (isDisplayedLabels) {
+  @if (isDisplayedLabels()) {
     <!-- label key -->
-    @for (labelKey of menuLabelKeys; track labelKey) {
+    @for (labelKey of menuLabelKeys(); track labelKey) {
       <div>
         <div class="menu-label">{{labelKey}}</div>
         <hr> <!--line -->
@@ -20,7 +20,7 @@
           <app-style-theme></app-style-theme>
         }
         <!-- menu-items -->
-        @for (menuItem of menuItems_dict[labelKey]; track menuItem) {
+        @for (menuItem of menuItems_dict()[labelKey]; track menuItem) {
           <span>
             <a mat-menu-item [routerLink]="['/' + menuItem.linkKey]" routerLinkActive="activated-route">
               @if (menuItem.icon) {
@@ -35,8 +35,8 @@
   }
 
   <!-- Display sub-menu without topic key -->
-  @if (!isDisplayedLabels) {
-    @for (menuItem of menuItemValues; track menuItem) {
+  @if (!isDisplayedLabels()) {
+    @for (menuItem of menuItemValues(); track menuItem) {
       <a mat-menu-item
         [routerLink]="'/' + menuItem.linkKey" routerLinkActive="activated-route">
         {{menuItem.title}}

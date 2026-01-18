@@ -1,5 +1,5 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { MatRadioChange } from '@angular/material/radio';
 import { StyleThemes } from 'src/app/services/models/app-style.model';
 
@@ -14,7 +14,7 @@ describe('StyleThemeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ StyleThemeComponent ],
+      imports: [ StyleThemeComponent ],
       providers: [
         { provide: StyleManagerService, useClass: MockStyleManagerService }
       ],
@@ -70,34 +70,38 @@ describe('StyleThemeComponent', () => {
 
     // checking the value of the each raido buttons, we have all.
     for (let i = 0; i < radioButtonItems.length; i++) {
-      expect(radioButtonItems[i].value).toBe(themeKeys[i]);
+      expect(radioButtonItems[i].innerText).toBe(themeKeys[i]);
     }
   });
 
   it('should clicked on the radio button to change theme', fakeAsync(() => {
-    spyOn(component as any, 'changeTheme').and.stub();
+    spyOn(component as any, 'changeTheme').and.callThrough();
 
     const radioButtonItems = fixture.debugElement.nativeElement.querySelectorAll('mat-radio-button');
     expect(radioButtonItems.length).toBeGreaterThan(0);
 
     // Dark theme is selected
     const darkThemeIndex = 1;
+    const darkThemeKey = 'Dark';
     const radioDarkItem = radioButtonItems[darkThemeIndex];
-    component.onChangeTheme(new MatRadioChange(
-      radioDarkItem as any, (radioDarkItem as any).value));
     fixture.detectChanges();
-
-    expect(component.selectedTheme).toBe('Dark');
+    
+    component.onChangeTheme(new MatRadioChange(
+      radioDarkItem as any, darkThemeKey));
+    expect(component.selectedTheme).toBe(darkThemeKey);
     expect(component['changeTheme']).toHaveBeenCalledWith(component.selectedTheme);
+    tick(100);
 
     // Default: Light theme is selected
     const lightThemeIndex = 0;
+    const lightThemeKey = 'Light';
     const radioLightItem = radioButtonItems[lightThemeIndex];
+    
     component.onChangeTheme(new MatRadioChange(
-      radioLightItem as any, (radioLightItem as any).value));
+      radioLightItem as any, lightThemeKey));
     fixture.detectChanges();
-
-    expect(component.selectedTheme).toBe('Light');
+    expect(component.selectedTheme).toBe(lightThemeKey);
     expect(component['changeTheme']).toHaveBeenCalledWith(component.selectedTheme);
+    flush();
   }));
 });

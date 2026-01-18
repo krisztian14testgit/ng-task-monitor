@@ -40,7 +40,7 @@ export class MockTaskService {
     public add(task: Task): Observable<Task> {
         FakedTask.addNewTask(task);
         this.taskList$.next(FakedTask.list);
-        return of(FakedTask.getLatestNewTask());
+        return of(task);
     }
 
     /**

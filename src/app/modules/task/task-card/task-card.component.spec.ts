@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { MockTaskService } from 'src/app/tests/mock-services/mock-task.service';
 import { TaskService } from '../services/task.service';
+import { TaskTimerService } from '../services/task-timer/task-timer.service';
 
 import { TaskCardComponent } from './task-card.component';
 
@@ -14,11 +15,11 @@ describe('TaskCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [ TaskCardComponent ],
+      imports: [TaskCardComponent, ReactiveFormsModule],
       providers: [
         { provide: TaskService, useClass: MockTaskService },
-        { provide: AlertMessageService }
+        { provide: AlertMessageService },
+        { provide: TaskTimerService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
