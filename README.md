@@ -58,24 +58,7 @@ Run `npm run build.prod` to build the project. The build artifacts will be store
 
 ## Running unit tests
 
-Run `npm run test` to execute the unit tests via Karma.
-
-### Prerequisites for Local Testing
-The unit tests require Chrome or Chromium to be installed on your system. The karma configuration will automatically detect and use the system Chrome installation.
-
-**Supported Chrome locations:**
-- Linux: `/usr/bin/google-chrome`, `/usr/bin/chromium-browser`, `/usr/bin/chromium`
-- Windows: `C:\Program Files\Google\Chrome\Application\chrome.exe`
-- macOS: `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`
-
-If Chrome is not found in the standard locations, you can set the `CHROME_BIN` environment variable to point to your Chrome executable:
-```bash
-export CHROME_BIN=/path/to/chrome
-npm run test
-```
-
-### CI/CD Testing
-The GitHub Actions workflow automatically installs Chrome in the CI environment, so no additional configuration is needed for automated tests.
+Run `npm run test` to execute the unit tests
 
 ## Running eslint 
 Check js syntax error, code format in your project.
