@@ -28,7 +28,7 @@ describe('LocationService', () => {
     expect(instanceObj).toBeTruthy();
   }));
 
-  xit('should get location setting', fakeAsync(() => {
+  it('should get location setting', fakeAsync(() => {
     service.getLocationSetting()
     .subscribe((locSetting: LocationSetting) => {
       expect(locSetting).toBeDefined();
@@ -36,38 +36,41 @@ describe('LocationService', () => {
       expect(locSetting.taskPath).toBe(fakedPath);
     });
 
-    const req = mockHttp.expectOne({url: locationUrl, method: 'GET'});
-    expect(req.request.method).toBe('GET');
-
-    // sent dummy data
-    const dummyData = new LocationSetting();
-    dummyData.appSettingPath = fakedPath;
-    dummyData.taskPath = fakedPath;
-    req.flush(dummyData);
+    // No HTTP request expected - service returns local data via of() observable
+    mockHttp.expectNone(locationUrl);
   }));
 
-  xit('should save location setting', fakeAsync(() => {
+  it('should save location setting', fakeAsync(() => {
     service.saveLocation(LocationPath.AppSettingPath, fakedPath)
-    .subscribe(isTrue => expect(isTrue).toBeTrue());
+    .subscribe(isTrue => {
+      expect(isTrue).toBe(true);
+    });
+
+    const req = mockHttp.expectOne({url: locationUrl, method: 'POST'});
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toBeDefined();
+    expect(req.request.body.appSettingPath).toBe(fakedPath);
+
+    // sent dummy data - any response will be mapped to true
+    req.flush({success: true});
+    mockHttp.verify();
+  }));
+
+  it('should save location setting is failed, 503', fakeAsync(() => {
+    service.saveLocation(LocationPath.AppSettingPath, fakedPath)
+    .subscribe({
+      next: () => fail('Should have failed with 503 error'),
+      error: (err) => {
+        expect(err.status).toBe(503);
+        expect(err.statusText).toBe('Bad request');
+      }
+    });
 
     const req = mockHttp.expectOne({url: locationUrl, method: 'POST'});
     expect(req.request.method).toBe('POST');
 
-    // sent dummy data
-    req.flush(true); // saving was success
-  }));
-
-  xit('should save location setting is failed, 503', fakeAsync(() => {
-    service.saveLocation(LocationPath.AppSettingPath, fakedPath)
-    .subscribe(() => {return ;}, (err) =>  {
-      expect(err.status).toBe(503);
-      expect(err.statusText).toBe('Bad request');
-    });
-
-    const req = mockHttp.expectOne({url: locationUrl, method: 'POST'});
-    // expect(req).toBe('POST');
-
-    // sent dummy data
-    req.flush(false, {status: 503, statusText: 'Bad request'});
+    // sent error response
+    req.flush('Error occurred', {status: 503, statusText: 'Bad request'});
+    mockHttp.verify();
   }));
 });
