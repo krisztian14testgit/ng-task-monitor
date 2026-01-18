@@ -23,7 +23,7 @@ export class TaskService {
     // Check if running in Electron
     this._isElectron = !!(window && window.electronAPI);
     
-    // Todo: temporay, add new faked task for test cases (only for web version)
+    // TODO: temporary, add new faked task for test cases (only for web version)
     if (!this._isElectron) {
       const task1 = new Task('', 'statusChanged');
       FakedTask.addNewTask(task1, TaskStatus.Completed);
@@ -38,7 +38,7 @@ export class TaskService {
   }
 
   /**
-   * Retruns the all tasks from the server or Electron.
+   * Returns the all tasks from the server or Electron.
    * @returns Task[]
    */
   public getAll(): Observable<Task[]> {

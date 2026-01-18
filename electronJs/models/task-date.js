@@ -6,7 +6,7 @@ const DIFF_7DAYS_MILLISEC  = 7 * 24 * 60 * 60 * 1000;
 
 class TaskDate {
 
-    /** Contains the current system date of pc. It will be adjusted/reset when callig removeOldTaskByDate method. */
+    /** Contains the current system date of pc. It will be adjusted/reset when calling removeOldTaskByDate method. */
     static _currentSystemDate = undefined;
     /**
      * Returns the new array which won't contain those tasks which are created more than 7 days/one week.
