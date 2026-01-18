@@ -258,7 +258,7 @@ npm run start
 ## Appendix: Full npm audit Output
 
 ```
-# npm audit report
+# npm audit report (Summary)
 
 tar  <=7.5.2
 Severity: high
@@ -281,7 +281,7 @@ To address all issues possible (including breaking changes), run:
   npm audit fix --force
 ```
 
-**Note**: The full output has been summarized in this report. Run `npm audit` for complete details.
+**Note**: This is an abbreviated summary showing the 3 primary vulnerability types. The 28 total vulnerabilities result from these issues cascading through the dependency tree (e.g., `tar` affects 21 @electron-forge packages). Run `npm audit` for the complete dependency chain output.
 
 ---
 
