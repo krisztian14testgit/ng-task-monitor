@@ -1,18 +1,34 @@
 # NgTaskMonitor
 
-## Updated frameworks with copilot and AI agent
-### Angular framework from v14 => v21
+## Recent Updates
+
+### ElectronJS Upgrade to v39 (January 2026)
+* **Branch**: `copilot/upgrade-electronjs-v39`
+* **Electron**: 21.2.2 → 39.2.7 (Latest stable)
+* **Node.js**: 16.x → 22.20.0 LTS (bundled with Electron 39, EOL: April 2027)
+* **Electron Forge**: 6.0.0 → 7.10.2
+* **Security**: Implemented all modern Electron security best practices
+  - `nodeIntegration: false`
+  - `contextIsolation: true`
+  - Secure IPC through contextBridge
+* Dual-mode support: Application now works in both web and Electron environments
+* See `UPGRADE_NOTES.md` for detailed upgrade information
+
+### Angular Framework from v14 => v21
 * Created upgrading plans with AI and my knowledge, the sources are in 'angular-upgrade-plan' folder.
 * Branch name: 'copilot/upgrade-angular-to-v21'
-* Applying the latest feautres of angular such as standalone, control flow syntax, adapting signals
+* Applying the latest features of angular such as standalone, control flow syntax, adapting signals
 
 
 ## Purpose
 This is a little demo project which represents a part of my knowledge what I worked at the previous workplace.
 
-It has been written with Angular 21 framework.
+It has been written with Angular 21 framework and can run as both a web application and a desktop application using Electron 39.
 
-Angular CLI version: 21.0.5
+**Current Version**:
+- Angular CLI version: 21.0.5
+- Electron version: 39.2.7
+- Node.js version: 22.20.0 LTS
 
 ## Features
 * Theme changing: light, dark, blueDragon
@@ -39,9 +55,15 @@ Angular CLI version: 21.0.5
     - bug/      => bug fixxing for all branch
 
 ## Development server
-__Pay attantion:__ It is different in "inElectornJs" and "inFirebase" branch!
 
+### Web Version
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+### Electron Desktop Version
+1. Build the Angular application: `npm run build.prod`
+2. Start Electron: `npm run start.electron`
+
+Or use Electron Forge: `npm run start.forge`
 
 ## Code scaffolding
 
@@ -49,7 +71,13 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Build
 
+### Web Version
 Run `npm run build.prod` to build the project. The build artifacts will be stored in the `dist/ng-task-monitor` directory.
+
+### Electron Desktop Version
+1. Build Angular: `npm run build.prod`
+2. Package Electron app: `npm run package`
+3. Create installers: `npm run make`
 
 ## Deploying process
 1. Run the `npm run build.prod` command in cli

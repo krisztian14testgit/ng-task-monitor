@@ -1,18 +1,25 @@
 {
   "name": "ng-task-monitor",
-  "version": "2.1.0",
+  "version": "3.0.0",
+  "description": "This version is built in ElectronJs with Angular 21",
   "author": {
     "name": "Sára Krisztián",
     "email": "",
     "url": ""
   },
+  "main": "./electronJs/app.js",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build.prod": "ng build --configuration production",
+    "start.electron": "electron ./electronJs/app.js --trace-warnings",
+    "start.forge": "electron-forge start",
+    "build.prod": "ng build --configuration production --base-href ./",
+    "build.electron.withtemplate": "npm run build.prod && npm run start.electron",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --karma-config karma.conf.js --web-worker-ts-config tsconfig.worker.json",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "private": true,
   "dependencies": {
@@ -30,7 +37,8 @@
     "ng2-charts": "^6.0.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.4.1",
-    "zone.js": "~0.15.1"
+    "zone.js": "~0.15.1",
+    "electron-squirrel-startup": "^1.0.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^21.0.5",
@@ -41,10 +49,16 @@
     "@angular-eslint/template-parser": "^21.1.0",
     "@angular/cli": "~21.0.5",
     "@angular/compiler-cli": "~21.0.8",
+    "@electron-forge/cli": "^7.10.2",
+    "@electron-forge/maker-deb": "^7.10.2",
+    "@electron-forge/maker-rpm": "^7.10.2",
+    "@electron-forge/maker-squirrel": "^7.10.2",
+    "@electron-forge/maker-zip": "^7.10.2",
     "@types/jasmine": "^4.3.0",
-    "@types/node": "^18.11.9",
+    "@types/node": "^22.10.0",
     "@typescript-eslint/eslint-plugin": "^8.52.0",
     "@typescript-eslint/parser": "^8.52.0",
+    "electron": "^39.2.7",
     "eslint": "^9.39.2",
     "globals": "^17.0.0",
     "jasmine-core": "~5.1.0",
@@ -55,5 +69,47 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "puppeteer": "~24.34.0",
     "typescript": "~5.9.3"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "name": "TaskMonitor",
+        "out": "out",
+        "ignore": [
+          "node_modules",
+          "\\.[abegv].*",
+          "plan",
+          "angular-upgrade-plan",
+          "electronJs-upgrade-plan",
+          "src",
+          "storer",
+          "tsconfig.*.json",
+          "angular.json",
+          "karma.conf.js"
+        ]
+      },
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "ng_task_monitor"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
   }
 }
