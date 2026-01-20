@@ -89,8 +89,11 @@ export class LocationService {
    */
   private _electronSaveLocationPaths(pathType: LocationPath, locSetting: LocationSetting): Promise<boolean> {
     try {
+      if (!window.electronAPI) {
+        return Promise.reject(new Error('Electron API is not available'));
+      }
       // sending data to save via ipc, return NOTHING, not throw error
-      window.electronAPI?.ipcLocation.save(pathType, locSetting);
+      window.electronAPI.ipcLocation.save(pathType, locSetting);
       return Promise.resolve(true);
     } catch(err) {
       return Promise.reject(err);
@@ -103,6 +106,9 @@ export class LocationService {
    * @memberof Electron ipcLocation
    */
   private _electronGetLocationPaths(): Promise<LocationSetting> {
-    return window.electronAPI!.ipcLocation.getPaths();
+    if (!window.electronAPI) {
+      return Promise.reject(new Error('Electron API is not available'));
+    }
+    return window.electronAPI.ipcLocation.getPaths();
   }
 }
