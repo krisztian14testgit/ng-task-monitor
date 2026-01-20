@@ -1,4 +1,5 @@
 import { LocationSetting } from '../modules/change-location/services/location/location-setting.model';
+import { Task } from '../modules/task/services/task.model';
 
 declare global {
   interface Window {
@@ -8,7 +9,7 @@ declare global {
         getPaths: () => Promise<LocationSetting>;
       };
       ipcTaskList: {
-        save: (taskList: any[]) => void;
+        save: (taskList: Task[]) => void;
         getAll: () => Promise<{[prop: string]: string | number | Date}[]>;
       };
     };

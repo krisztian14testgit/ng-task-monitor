@@ -90,7 +90,7 @@ export class LocationService {
   private _electronSaveLocationPaths(pathType: LocationPath, locSetting: LocationSetting): Promise<boolean> {
     try {
       // sending data to save via ipc, return NOTHING, not throw error
-      (window as any).electronAPI.ipcLocation.save(pathType, locSetting);
+      window.electronAPI?.ipcLocation.save(pathType, locSetting);
       return Promise.resolve(true);
     } catch(err) {
       return Promise.reject(err);
@@ -103,6 +103,6 @@ export class LocationService {
    * @memberof Electron ipcLocation
    */
   private _electronGetLocationPaths(): Promise<LocationSetting> {
-    return (window as any).electronAPI.ipcLocation.getPaths();
+    return window.electronAPI!.ipcLocation.getPaths();
   }
 }
