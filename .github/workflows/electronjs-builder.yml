@@ -44,3 +44,4 @@ jobs:
         with:
           name: electronjs-distributables
           path: out/
+          retention-days: 30
