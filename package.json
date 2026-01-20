@@ -2,6 +2,7 @@
   "name": "ng-task-monitor",
   "version": "3.0.0",
   "description": "This version is built in ElectronJs with Angular 21",
+  "license": "MIT",
   "author": {
     "name": "Sára Krisztián",
     "email": "",
@@ -74,6 +75,7 @@
     "forge": {
       "packagerConfig": {
         "name": "TaskMonitor",
+        "executableName": "TaskMonitor",
         "out": "out",
         "ignore": [
           "node_modules",
@@ -103,11 +105,19 @@
         },
         {
           "name": "@electron-forge/maker-deb",
-          "config": {}
+          "config": {
+            "options": {
+              "bin": "TaskMonitor"
+            }
+          }
         },
         {
           "name": "@electron-forge/maker-rpm",
-          "config": {}
+          "config": {
+            "options": {
+              "bin": "TaskMonitor"
+            }
+          }
         }
       ]
     }
