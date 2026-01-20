@@ -201,9 +201,13 @@ export class TaskService {
   private _electronSaveTasks(taskList: Task[]) {
     if (taskList.length > 0) {
       try {
-        (window as any).electronAPI.ipcTaskList.save(taskList);
-      } catch (error: any) {
-        throw Error(error.message);
+        if (!window.electronAPI) {
+          throw new Error('Electron API is not available');
+        }
+        window.electronAPI.ipcTaskList.save(taskList);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        throw new Error(errorMessage);
       }
     }
   }
@@ -214,7 +218,10 @@ export class TaskService {
    * @memberof Electron ipcTaskList
    */
   private _electronGetAllTask(): Promise<{[prop: string]: string | number | Date}[]> {
-    return (window as any).electronAPI.ipcTaskList.getAll();
+    if (!window.electronAPI) {
+      return Promise.reject(new Error('Electron API is not available'));
+    }
+    return window.electronAPI.ipcTaskList.getAll();
   }
 
   /**
