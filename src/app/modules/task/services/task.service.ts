@@ -207,7 +207,7 @@ export class TaskService {
         window.electronAPI.ipcTaskList.save(taskList);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-        throw Error(errorMessage);
+        throw new Error(errorMessage);
       }
     }
   }
