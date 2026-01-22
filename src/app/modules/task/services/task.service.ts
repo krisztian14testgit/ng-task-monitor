@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Task, TaskStatus } from './task.model';
-import { environment } from 'src/environments/environment';
+import { Task } from './task.model';
 
 import { FakedTask } from '../../../tests/models/faked-task.model';
 
@@ -177,8 +176,8 @@ export class TaskService {
     if (taskList.length > 0) {
       try {
         (window as any).electronAPI.ipcTaskList.save(taskList);
-      } catch (error: any) {
-        throw Error(error.message);
+      } catch (error: unknown) {
+        throw Error(error instanceof Error ? error.message : 'Unknown error occurred');
       }
     }
   }
