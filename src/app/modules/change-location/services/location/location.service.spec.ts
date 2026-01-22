@@ -1,5 +1,7 @@
 import { fakeAsync, inject, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { throwError } from 'rxjs';
+
 import { LocationService } from './location.service';
 import { LocationPath, LocationSetting } from './location-setting.model';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -10,7 +12,7 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
  */
 describe('LocationService', () => {
   let service: LocationService;
-  let mockHttp: HttpTestingController;
+   let mockHttp: HttpTestingController;
   const locationUrl = 'http://localhost:8080/location';
   const fakedPath = 'C:/Users/../Documents/';
 
@@ -22,6 +24,9 @@ describe('LocationService', () => {
 
     service = TestBed.inject(LocationService);
     mockHttp = TestBed.inject(HttpTestingController);
+
+    // it is used for saving location method
+    spyOn(service as any, '_electronSaveLocationPaths').and.stub();
   });
 
   it('should be created', inject([LocationService], (instanceObj: LocationService ) => {

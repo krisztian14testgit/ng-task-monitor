@@ -66,7 +66,7 @@ function openWindow () {
     mainWindow = createBrowserWindow();
 
     // clear session chache of chromium
-    mainWindow.webContents.clearHistory();
+    mainWindow.webContents.navigationHistory.clear();
     mainWindow.webContents.session.clearCache().then(() => {
         console.log('Electron.js session cache has been cleaned');
     });

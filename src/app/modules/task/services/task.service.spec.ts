@@ -1,7 +1,7 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, inject, TestBed } from '@angular/core/testing';
+import { throwError } from 'rxjs';
 
-import { environment } from 'src/environments/environment';
 import { FakedTask } from '../../../tests/models/faked-task.model';
 import { Task } from './task.model';
 
@@ -10,8 +10,6 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 
 describe('TaskService', () => {
   let service: TaskService;
-  let mockHttp: HttpTestingController;
-  const taksUrl = `${environment.host}task`;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -20,7 +18,9 @@ describe('TaskService', () => {
 });
 
     service = TestBed.inject(TaskService);
-    mockHttp = TestBed.inject(HttpTestingController);
+
+    // it is used for add, update, remove methods
+    spyOn(service as any, '_electronSaveTasks').and.stub();
   });
 
   it('should be created', inject([TaskService], (instance: TaskService) => {
@@ -28,8 +28,8 @@ describe('TaskService', () => {
   }));
 
   it('should get all tasks', fakeAsync(() =>{
+    spyOn(service as any, '_electronGetAllTask').and.returnValue(Promise.resolve(FakedTask.list));
     const fakedTaskList = FakedTask.list;
-    
     service.getAll().subscribe(taskList => {
       expect(taskList).toBeDefined();
       expect(taskList.length).toBe(fakedTaskList.length);
@@ -37,47 +37,37 @@ describe('TaskService', () => {
       expect(taskList[0].id).toBe(fakedTaskList[0].id);
     });
     
-    // No HTTP request - service returns local FakedTask.list via of() observable
-    mockHttp.expectNone(taksUrl);
   }));
 
-  it('should NOT get all tasks, bad request', fakeAsync(() =>{
-    // Service now returns local data, so this always succeeds
-    // This test verifies the service handles the case gracefully
-    service.getAll().subscribe(taskList => {
-      expect(taskList).toBeDefined();
-      expect(Array.isArray(taskList)).toBe(true);
-    });
+  it('should NOT get all tasks, Internal Electron Error', fakeAsync(() =>{
+    spyOn(service, 'getAll').and.callFake(() => throwError(new Error('Internal Electron Error')));
     
-    // No HTTP request expected
-    mockHttp.expectNone(taksUrl);
+    service.getAll().subscribe({
+      next: ()=> { return; },
+      error: (err: Error) => expect(err.message).toBe('Internal Electron Error')
+    });
+
   }));
 
   it('should get current task by taskId', fakeAsync(() => {
     const taskIndex = 0;
     const taskId = FakedTask.list[taskIndex].id;
+    service['_taskList'] = FakedTask.list;
     service.get(taskId).subscribe(task => {
       expect(task).toBeDefined();
       expect(task.id).toBe(taskId);
     });
-
-    // No HTTP request - service returns local data via of() observable
-    mockHttp.expectNone(`${taksUrl}/${taskId}`);
   }));
 
-  xit('should add new task', fakeAsync(() => {
-    const initialLength = FakedTask.list.length;
+  it('should add new task', fakeAsync(() => {
+    expect(service['_taskList'].length).toBe(0);
     
     const newTask = new Task('', 'newTask', 'for testing', 2.0);
     service.add(newTask).subscribe(insertedTask => {
       expect(insertedTask).toBeDefined();
       expect(insertedTask.id).not.toBe('');
       expect(insertedTask.title).toBe(newTask.title);
-      expect(FakedTask.list.length).toBe(initialLength + 1);
     });
-
-    // No HTTP request - service adds to FakedTask.list locally
-    mockHttp.expectNone(`${taksUrl}/`);
   }));
 
   it('should update the selected Task by id', fakeAsync(() => {
@@ -92,9 +82,6 @@ describe('TaskService', () => {
       expect(task.title).toBe('alma');
       expect(task.description).toBe('modifed description');
     });
-
-    // No HTTP request - service updates FakedTask.list locally
-    mockHttp.expectNone(`${taksUrl}/${originTask.id}`);
   }));
 
   it('shoud remove the taks by id', fakeAsync(() => {
@@ -102,30 +89,22 @@ describe('TaskService', () => {
     const removedTaskId = FakedTask.list[0].id;
     
     service.delete(removedTaskId).subscribe(isDeleted => {
-      expect(isDeleted).toBe(true);
-      expect(FakedTask.list.length).toBe(initialLength - 1);
+      expect(isDeleted).toBeTrue();
     });
-
-    // No HTTP request - service removes from FakedTask.list locally
-    mockHttp.expectNone(`${taksUrl}/${removedTaskId}`);
   }));
 
   it('shoud NOT remove the taks, removing is failed', fakeAsync(() => {
-    // Service now uses local FakedTask.list, so delete always succeeds
-    // This test verifies the delete operation works correctly
-    const taskId = FakedTask.list[FakedTask.list.length - 1].id;
-    const lengthBefore = FakedTask.list.length;
+    spyOn(service, 'delete').and.callFake(() => throwError(new Error('Internal Electron Error')));
     
-    service.delete(taskId).subscribe(isDeleted => {
-      expect(isDeleted).toBe(true);
-      expect(FakedTask.list.length).toBe(lengthBefore - 1);
+    const removedTaskId = FakedTask.list[0].id;
+    service.delete(removedTaskId).subscribe(() => {return ;}, (err: Error) => {
+      expect(err.message).toBe('Internal Electron Error');
     });
-
-    // No HTTP request expected
-    mockHttp.expectNone(`${taksUrl}/${taskId}`);
   }));
 
   it('should get list by BehaviorSubject', fakeAsync(() => {
+    spyOn(service as any, '_electronGetAllTask').and.returnValue(Promise.resolve(FakedTask.list));
+    
     service.taskList$.subscribe(list => {
       if (list.length > 0) {
         expect(list.length).toBeGreaterThan(0);

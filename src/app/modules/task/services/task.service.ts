@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, from } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -12,29 +11,15 @@ import { FakedTask } from '../../../tests/models/faked-task.model';
 export class TaskService {
   /** This subject emtis changes of the task list, if get/deted/updated item from the list. */
   public readonly taskList$: BehaviorSubject<Task[]>;
-  private readonly _taskUrl = `${environment.host}task`;
   private _taskList: Task[];
   private readonly _isElectron: boolean;
 
-  constructor(private readonly http: HttpClient) {
+  constructor() {
     this._taskList = [];
     this.taskList$ = new BehaviorSubject<Task[]>(this._taskList);
-    
-    // Check if running in Electron
-    this._isElectron = !!(window && window.electronAPI);
-    
-    // TODO: temporary, add new faked task for test cases (only for web version)
-    if (!this._isElectron) {
-      const task1 = new Task('', 'statusChanged');
-      FakedTask.addNewTask(task1, TaskStatus.Completed);
 
-      const task2 = new Task('', 'oldTask-yesterday', '', 10);
-      FakedTask.addNewTask(task2, TaskStatus.Completed, '2022-06-30 18:00:00');
-
-      const task3 = new Task('', 'oldTask3', '', 10);
-      FakedTask.addNewTask(task3, TaskStatus.Completed, '2022-06-28 18:00:00');
-      this.taskList$.next(FakedTask.list);
-    }
+     // Check if running in Electron
+    this._isElectron = !!(window && (window as any).electronAPI);
   }
 
   /**
@@ -45,9 +30,10 @@ export class TaskService {
     // If running in Electron, use Electron API
     if (this._isElectron) {
       return from(this._electronGetAllTask())
-      .pipe(map((rawTasks: {[prop: string]: string | number | Date}[]) => {
+      .pipe(map((rawTasks: object[]) => {
         const wrappedTasks = rawTasks.map(rawTask => {
-          const task = Task.convertObjectToTask(rawTask);
+          const typedTask = rawTask as  {[prop: string]: string | number | Date};
+          const task = Task.convertObjectToTask(typedTask);
           return task;
         });
         
@@ -67,7 +53,7 @@ export class TaskService {
   }
 
   /**
-   * Returns the actual task by task id from the server.
+   * Returns the actual task by task id from stored task list.
    * @param taskId The id of the task instance.
    * @returns Task
    */
@@ -78,7 +64,7 @@ export class TaskService {
   }
 
   /**
-   * Returns the new Task instance from the server if the inserting is success.
+   * Returns the new Task instance from electron main process if the inserting is success.
    * @param task The new Task instance.
    * @returns new Task
    */
@@ -105,7 +91,7 @@ export class TaskService {
   }
 
   /**
-   * Returns the updated Task instance from the server if the updated is success.
+   * Returns the updated Task instance from the electron main process if the updated is success.
    * @param task The modified Task instance.
    * @returns updated Task
    */
@@ -164,32 +150,21 @@ export class TaskService {
 
   /**
    * Returns true if the delete request run successfully.
-   * Deleting the task by task id from the server.
-   * @param taskId The id of the task which will be removed.
+   * Deleting the tasks by the ids from taskList.json.
+   * @param taskIdArgs It can be one or more ids of the tasks which will be removed.
    * @returns boolean
    */
-  public delete(taskId: string): Observable<boolean> {
-    /*return this.http.delete(`${this._taskUrl}/${taskId}`, {headers: ServiceBase.HttpHeaders})
-    .pipe(map(_ => {
-      const taskIndex = this._taskList.findIndex(task => task.id === taskId);
-      this._taskList.splice(taskIndex, 1);
-      this.taskList$.next(this._taskList);
-      return true;
-    }));*/
-
-    if (this._isElectron) {
-      const taskIndex = this._taskList.findIndex(task => task.id === taskId);
+  public delete(...taskIdArgs: string[]): Observable<boolean> {
+    let taskIndex = -1;
+    for (const taskId of taskIdArgs) {
+      taskIndex = this._taskList.findIndex(task => task.id === taskId);
       if (taskIndex > -1) {
         this._taskList.splice(taskIndex, 1);
       }
-      this.taskList$.next(this._taskList);
-      this._electronSaveTasks(this._taskList);
-      return of(true);
     }
 
-    const fakedIndex = FakedTask.list.findIndex(task => task.id === taskId);
-    FakedTask.list.splice(fakedIndex, 1);
-    this.taskList$.next(FakedTask.list);
+    this.taskList$.next(this._taskList);
+    this._electronSaveTasks(this._taskList);
     return of(true);
   }
 
@@ -201,38 +176,29 @@ export class TaskService {
   private _electronSaveTasks(taskList: Task[]) {
     if (taskList.length > 0) {
       try {
-        if (!window.electronAPI) {
-          throw new Error('Electron API is not available');
-        }
-        window.electronAPI.ipcTaskList.save(taskList);
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-        throw new Error(errorMessage);
+        (window as any).electronAPI.ipcTaskList.save(taskList);
+      } catch (error: any) {
+        throw Error(error.message);
       }
     }
   }
 
   /**
-   * Returns all tasks from electron main process via ipc communication.
-   * @returns Promise<{[prop: string]: string | number | Date}[]>
+   * Retruns the saved task items from task.list.json via ipc communication of electron.
+   * @returns Promise<Task[]>
    * @memberof Electron ipcTaskList
    */
-  private _electronGetAllTask(): Promise<{[prop: string]: string | number | Date}[]> {
-    if (!window.electronAPI) {
-      return Promise.reject(new Error('Electron API is not available'));
-    }
-    return window.electronAPI.ipcTaskList.getAll();
+  private _electronGetAllTask(): Promise<Task[]> {
+    return (window as any).electronAPI.ipcTaskList.getAll();
   }
 
-  /**
-   * Generates a unique identifier (UUID v4).
-   * @returns string UUID
-   */
+  /** 
+   * Returns the genereted Uuid/Guid as string.
+   * @return string*/
   private _createUUID(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-      const r = Math.random() * 16 | 0;
-      const v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+       const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+       return v.toString(16);
     });
-  }
+ }
 }

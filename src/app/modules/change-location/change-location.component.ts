@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -12,6 +11,7 @@ import { LocationService } from './services/location/location.service';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { AlertType } from 'src/app/components/alert-window/alert.model';
 
+type IndexStructure = { [property: string]:string };
 @Component({
     selector: 'app-change-location',
     templateUrl: './change-location.component.html',
@@ -33,6 +33,8 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
    * * Saving during: true
   */
   private _isSavingDone = false;
+  /** Preserve the pervious paths of the AppSettingPAth and TaskPath. */
+  private _previousLocationSetting!: LocationSetting;
 
   //#region Properties
   /** Returns the reference of taskData FormControl. */
@@ -49,7 +51,7 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   constructor(private readonly locationService: LocationService,
               private readonly alertMessageService: AlertMessageService) {
     this.createLocationFormValidation();
-    this.inputInvalidText = 'Please enter a valid path! E.g.: C:/folder/...';
+    this.inputInvalidText = 'Please enter a valid path! E.g.: C:/folder/sub-forlders/...';
   }
 
   /** Sets saved tasks and appSetting paths. */
@@ -92,53 +94,62 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * This is an key-up event function.
-   * It runs when the typing is occured.
+   * This is an onClick event function.
+   * It runs when the 'Save changes' button is clicked on.
    * 
-   * Runs it by the every button is pressed.
-   * Saving the typed folder path if it is valid.
+   * Saving the folder paths of appSettingPath or taskPath if they are valid.
    *  
-   * @event keyup
-   * @param keyLocation It is string, value can be LocationPath(AppSettingPath, TaskPath)
-   * @param formControlRef the reference of the given formControl.
+   * @event click
    */
-  public onChangePath(keyLocation: string, formControlRef: FormControl): void {
-    if (formControlRef.valid) {
-      const locKey: number = LocationPath[keyLocation as keyof typeof LocationPath];
-      
-      if (locKey !== undefined && locKey > -1) {
-        this.saveLocationPath(locKey, formControlRef);
+  public saveChangedPaths(): void {
+    if (this.taskDataControl.valid && this.appSettingControl.valid) {
+      let locKey = -1;
+      // taskPath is changed
+      if (!this.taskDataControl.pristine) {
+        locKey = LocationPath.TaskPath;
+        this.saveLocationPath(locKey, this.taskDataControl);
       }
+
+      // appSetting path is changed
+      if (!this.appSettingControl.pristine) {
+        locKey = LocationPath.AppSettingPath;
+        this.saveLocationPath(locKey, this.appSettingControl);
+      }
+    } else {
+      this.alertMessageService.sendMessage('One of paths is invalid', AlertType.Warning);
     }
   }
 
   /**
-   * Sending the adjusted location path to the server.
+   * Sending the adjusted location paths to the electron through the service.
    * @param keyLocation It is enum type, value can be LocationPath(AppSettingPath, TaskPath)
    */
   private saveLocationPath(keyLocation: LocationPath, formControlRef: FormControl): void {
-    const waitSeconds = 2000;
     
     this.locationService.saveLocation(keyLocation, formControlRef.value)
-    .pipe(
-      // drop previous request if it get new request in during 2 sec
-      debounceTime(waitSeconds))
     .subscribe(() => {
       // saving was success
       this.alertMessageService.sendMessage('Path is saved!', AlertType.Success);
     }, () => {
       // saving was unccess
-      this.alertMessageService.sendMessage('Path saving is failed!', AlertType.Error);
+      this.alertMessageService.sendMessage(`Path saving is failed at ${LocationPath[keyLocation]}! 
+        Perhaps, The app doesn't have permission to create folder.`, AlertType.Error);
+      // re-adjust the previous path
+      const propNames = ['appSettingPath', 'taskPath'];
+      const selectedLocProp = propNames[keyLocation];
+      formControlRef.setValue((this._previousLocationSetting as unknown as IndexStructure)[selectedLocProp]);
     }, () => {
       // finally branch
       this._isSavingDone = false;
     });
   }
 
-  /** Sets the location paths by the location service which come from the server. */
+  /** Sets the location paths by the location service which come from the appSetting.json file. */
   private getlocationPathFromService(): void {
     this._locationService$ = this.locationService.getLocationSetting()
     .subscribe((locSetting: LocationSetting) => {
+      // deep copy the locSetting fields.
+      this._previousLocationSetting = {...locSetting};
       this.appSettingControl.setValue(locSetting.appSettingPath);
       this.taskDataControl.setValue(locSetting.taskPath);
     });

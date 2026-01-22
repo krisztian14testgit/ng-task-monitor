@@ -58,6 +58,7 @@ export class TaskComponent implements OnInit, OnDestroy {
    */
   private _preservedTaskList: Task[] = [];
   /** Stores those tasks which are filtered by the time period. Created: today/yesterday or in the week. */
+  /** Stores those tasks which are filtered by the time period. Created: today/yesterday or in the week. */
   private _filteredTaskListByDate: Task[] = [];
 
   constructor(private readonly taskService: TaskService,

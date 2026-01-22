@@ -196,7 +196,7 @@ export class Task {
             if (!tempTask.isHasOwnPoperty(objProp)) {
                 throw new TypeError(`The conversation failed!
                 The given obj has one property(${objProp}) which Task class does NOT HAVE!`);
-            }
+            } 
         }
 
         // Converting process

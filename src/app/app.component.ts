@@ -11,6 +11,5 @@ import { AlertWindowComponent } from './components/alert-window/alert-window.com
     imports: [RouterOutlet, HeaderComponent, AlertWindowComponent]
 })
 export class AppComponent {
-  public readonly noApiLinkedText = `This app hasn't been linked with web API yet!`;
   constructor() {}
 }

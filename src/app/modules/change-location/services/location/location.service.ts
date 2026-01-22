@@ -15,7 +15,7 @@ export class LocationService {
   private readonly _locationUrl = `${environment.host}location`;
   private readonly _isElectron: boolean;
 
-  constructor(private readonly http: HttpClient) {
+   constructor(private readonly http: HttpClient) {
     this._defaultPath = 'C:/Users/../Documents/';
 
     this._locSetting = new LocationSetting();
@@ -45,14 +45,15 @@ export class LocationService {
 
   /**
    * Saves the given path by pathType.
-   * Returns true the saving process is succed.
+   * Returns true the saving process is succeed.
    * 
    * @param pathType It can be LocationPath.AppSettingPath or LocationPath.TaskPath.
    * @param path The path to be stored.
    * @returns boolean
    */
   public saveLocation(pathType: LocationPath, path: string): Observable<boolean> {
-    let keyProperty = LocationPath[pathType]; // get enum name
+    // get enum name
+    let keyProperty = LocationPath[pathType];
 
     // first char to be lowerCase
     const firstChar = keyProperty[0].toLowerCase();
@@ -63,7 +64,7 @@ export class LocationService {
     } else {
       this._locSetting.appSettingPath = path;
     }*/
-    // avoiding if condition
+    // avoiding if condition above
     (this._locSetting as {[prop: string]: string})[keyProperty] = path;
     
     // If running in Electron, use Electron API
