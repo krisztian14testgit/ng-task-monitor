@@ -27,8 +27,8 @@ export namespace FormValidator {
      */
     export class RegExpPatterns {
         private static _rules: string[] = [
-            // library path regExp: C:/folder/sub-folder/
-            '[A-Z]?:/{1}([a-zA-Z0-9-_ ]+/{1})*$',
+            // library path regExp: C:/folder/sub-folder/ or folder/
+            '([a-zA-Z0-9-_: ]+/{1})*$',
             // task name regExp: tt, Task1, task-22, task_01
             '[^-0-9]{1}[a-zA-Z0-9-_]+',
             // decimal regExp: only allow the digits and dot sign.

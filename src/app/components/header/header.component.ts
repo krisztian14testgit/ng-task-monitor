@@ -32,7 +32,7 @@ export class HeaderComponent implements OnInit {
   constructor(private readonly router: Router) {
     this.appMenus = new AppMenu();
     this.appMenus.title = 'Menu';
-    this.appMenus.icon = 'menu'
+    this.appMenus.icon = 'menu';
     this.appMenus.isDisplayedLable = true;
     this.appMenus.menuItemsWithLabel = {
       Tasks: [

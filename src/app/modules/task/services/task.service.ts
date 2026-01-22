@@ -1,9 +1,8 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, from } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import { Task, TaskStatus } from './task.model';
-import { environment } from '../../../../environments/environment';
+import { Task } from './task.model';
 
 import { FakedTask } from '../../../tests/models/faked-task.model';
 
@@ -11,30 +10,37 @@ import { FakedTask } from '../../../tests/models/faked-task.model';
 export class TaskService {
   /** This subject emtis changes of the task list, if get/deted/updated item from the list. */
   public readonly taskList$: BehaviorSubject<Task[]>;
-  private readonly _taskUrl = `${environment.host}task`;
   private _taskList: Task[];
+  private readonly _isElectron: boolean;
 
-  constructor(private readonly http: HttpClient) {
+  constructor() {
     this._taskList = [];
     this.taskList$ = new BehaviorSubject<Task[]>(this._taskList);
-    
-    // Todo: temporay, add new faked task for test cases
-    const task1 = new Task('', 'statusChanged');
-    FakedTask.addNewTask(task1, TaskStatus.Completed);
 
-    const task2 = new Task('', 'oldTask-yesterday', '', 10);
-    FakedTask.addNewTask(task2, TaskStatus.Completed, '2022-06-30 18:00:00');
-
-    const task3 = new Task('', 'oldTask3', '', 10);
-    FakedTask.addNewTask(task3, TaskStatus.Completed, '2022-06-28 18:00:00');
-    this.taskList$.next(FakedTask.list);
+     // Check if running in Electron
+    this._isElectron = !!(window && (window as any).electronAPI);
   }
 
   /**
-   * Retruns the all tasks from the server.
+   * Returns the all tasks from the server or Electron.
    * @returns Task[]
    */
   public getAll(): Observable<Task[]> {
+    // If running in Electron, use Electron API
+    if (this._isElectron) {
+      return from(this._electronGetAllTask())
+      .pipe(map((rawTasks: object[]) => {
+        const wrappedTasks = rawTasks.map(rawTask => {
+          const typedTask = rawTask as  {[prop: string]: string | number | Date};
+          const task = Task.convertObjectToTask(typedTask);
+          return task;
+        });
+        
+        this._taskList = wrappedTasks;
+        this.taskList$.next(wrappedTasks);
+        return wrappedTasks;
+      }));
+    }
     
     /*return this.http.get<Task[]>(this._taskUrl, {headers: ServiceBase.HttpHeaders})
     .pipe(map((tasks: Task[]) => {
@@ -46,17 +52,18 @@ export class TaskService {
   }
 
   /**
-   * Returns the actual task by task id from the server.
+   * Returns the actual task by task id from stored task list.
    * @param taskId The id of the task instance.
    * @returns Task
    */
   public get(taskId: string): Observable<Task> {
     // return this.http.get<Task>(`${this._taskUrl}/${taskId}`, {headers: ServiceBase.HttpHeaders});
-    return of(FakedTask.list.find(task => task.id === taskId) as Task);
+    const taskList = this._isElectron ? this._taskList : FakedTask.list;
+    return of(taskList.find(task => task.id === taskId) as Task);
   }
 
   /**
-   * Returns the new Task instance from the server if the inserting is success.
+   * Returns the new Task instance from electron main process if the inserting is success.
    * @param task The new Task instance.
    * @returns new Task
    */
@@ -68,13 +75,22 @@ export class TaskService {
       return newTask;
     }));*/
 
+    if (this._isElectron) {
+      // get generated guid for task
+      task['_id'] = this._createUUID();
+      this._taskList.push(task);
+      this.taskList$.next(this._taskList);
+      this._electronSaveTasks(this._taskList);
+      return of(task);
+    }
+
     FakedTask.addNewTask(task);
     this.taskList$.next(FakedTask.list);
     return of(FakedTask.getLatestNewTask());
   }
 
   /**
-   * Returns the updated Task instance from the server if the updated is success.
+   * Returns the updated Task instance from the electron main process if the updated is success.
    * @param task The modified Task instance.
    * @returns updated Task
    */
@@ -88,6 +104,14 @@ export class TaskService {
       this.taskList$.next(this._taskList);
       return updatedTask;
     }));*/
+
+    if (this._isElectron) {
+      const foundTaskIndex = this._taskList.findIndex(taskItem => taskItem.id === task.id);
+      this._taskList[foundTaskIndex] = task;
+      this.taskList$.next(this._taskList);
+      this._electronSaveTasks(this._taskList);
+      return of(task);
+    }
 
     const foundTaskIndex = FakedTask.list.findIndex(taskItem => taskItem.id === task.id);
     FakedTask.list[foundTaskIndex] = task;
@@ -109,6 +133,12 @@ export class TaskService {
         return true;
       }));*/
 
+      if (this._isElectron) {
+        this.taskList$.next(this._taskList);
+        this._electronSaveTasks(this._taskList);
+        return of(true);
+      }
+
       FakedTask.list = tasks;
       this.taskList$.next(FakedTask.list);
       return of(true);
@@ -119,22 +149,55 @@ export class TaskService {
 
   /**
    * Returns true if the delete request run successfully.
-   * Deleting the task by task id from the server.
-   * @param taskId The id of the task which will be removed.
+   * Deleting the tasks by the ids from taskList.json.
+   * @param taskIdArgs It can be one or more ids of the tasks which will be removed.
    * @returns boolean
    */
-  public delete(taskId: string): Observable<boolean> {
-    /*return this.http.delete(`${this._taskUrl}/${taskId}`, {headers: ServiceBase.HttpHeaders})
-    .pipe(map(_ => {
-      const taskIndex = this._taskList.findIndex(task => task.id === taskId);
-      this._taskList.splice(taskIndex, 1);
-      this.taskList$.next(this._taskList);
-      return true;
-    }));*/
+  public delete(...taskIdArgs: string[]): Observable<boolean> {
+    let taskIndex = -1;
+    for (const taskId of taskIdArgs) {
+      taskIndex = this._taskList.findIndex(task => task.id === taskId);
+      if (taskIndex > -1) {
+        this._taskList.splice(taskIndex, 1);
+      }
+    }
 
-    const fakedIndex = FakedTask.list.findIndex(task => task.id === taskId);
-    FakedTask.list.splice(fakedIndex, 1);
-    this.taskList$.next(FakedTask.list);
+    this.taskList$.next(this._taskList);
+    this._electronSaveTasks(this._taskList);
     return of(true);
   }
+
+  /**
+   * Emits the given taskList via ipc communication of electron to save list.
+   * @param taskList Task items
+   * @memberof Electron ipcTaskList
+   */
+  private _electronSaveTasks(taskList: Task[]) {
+    if (taskList.length > 0) {
+      try {
+        (window as any).electronAPI.ipcTaskList.save(taskList);
+      } catch (error: unknown) {
+        throw Error(error instanceof Error ? error.message : 'Unknown error occurred');
+      }
+    }
+  }
+
+  /**
+   * Retruns the saved task items from task.list.json via ipc communication of electron.
+   * @returns Promise<Task[]>
+   * @memberof Electron ipcTaskList
+   */
+  private _electronGetAllTask(): Promise<Task[]> {
+    return (window as any).electronAPI.ipcTaskList.getAll();
+  }
+
+  /** 
+   * Returns the genereted Uuid/Guid as string.
+   * @return string*/
+  private _createUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+       const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+       return v.toString(16);
+    });
+ }
 }
