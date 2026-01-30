@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 import { LineChartComponent } from './line-chart.component';
 import { FakedTask } from 'src/app/tests/models/faked-task.model';
@@ -12,6 +13,7 @@ describe('LineChartComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ LineChartComponent ],
+      providers: [provideCharts(withDefaultRegisterables())],
       schemas: [NO_ERRORS_SCHEMA]
     })
     .compileComponents();

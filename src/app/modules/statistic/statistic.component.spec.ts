@@ -3,6 +3,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 import { MockTaskService } from 'src/app/tests/mock-services/mock-task.service';
 import { TaskService } from '../task/services/task.service';
@@ -24,7 +25,8 @@ describe('StatisticComponent', () => {
         StatisticComponent
       ],
       providers: [
-        { provide: TaskService, useClass: MockTaskService }
+        { provide: TaskService, useClass: MockTaskService },
+        provideCharts(withDefaultRegisterables())
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
