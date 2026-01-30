@@ -52,7 +52,7 @@ describe('StatisticComponent', () => {
     tick(100);
     
     component.ngOnInit();
-    expect(component.isDailyReport).toBeTrue();
+    expect(component.isDailyReport()).toBeTrue();
     expect(component.loadedReportCharts).toEqual(component['_dailyReportCharts']);
   }));
 
@@ -62,14 +62,14 @@ describe('StatisticComponent', () => {
     tick(100);
     
     component.ngOnInit();
-    expect(component.isDailyReport).toBeFalse();
+    expect(component.isDailyReport()).toBeFalse();
     expect(component.loadedReportCharts).toEqual(component['_weeklyReportCharts']);
   }));
 
   it('should load the chart if selectedChartType has good value, daily statistic', () => {
     // pie-chart
-    component.selectedChartType = 0;
-    component.isDailyReport = true;
+    component.selectedChartType.set(0);
+    component.isDailyReport.set(true);
     fixture.detectChanges();
     const chartDiv = fixture.debugElement.query(By.css('.chart'));
     expect(chartDiv).toBeDefined();
@@ -78,15 +78,15 @@ describe('StatisticComponent', () => {
 
   it('should display one pie chart if the selectedChartType has wrong value, weekly statistic', () => {
     // contains one defualt pie-chart, comboBox does have 3 index option.
-    component.selectedChartType = 3;
-    component.isDailyReport = false;
+    component.selectedChartType.set(3);
+    component.isDailyReport.set(false);
     fixture.detectChanges();
     let chartDiv = fixture.debugElement.query(By.css('.chart'));
     expect(chartDiv).toBeDefined();
     expect(chartDiv.children.length).toBe(1);
 
     // wrong value
-    component.selectedChartType = null as any;
+    component.selectedChartType.set(null as any);
     fixture.detectChanges();
     chartDiv = fixture.debugElement.query(By.css('.chart'));
     expect(chartDiv).toBeDefined();

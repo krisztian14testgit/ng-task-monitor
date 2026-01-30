@@ -86,14 +86,13 @@ describe('AlertWindowComponent', () => {
     spyOn(component as any, 'closeAutomatically').and.callThrough();
     spyOn(component, 'onClose').and.callThrough();
     // displayed after close
-    component.alertMsg = 'Automatic close was successful!';
-    component.ngOnChanges({'alertMsg': new SimpleChange('', component.alertMsg, true)});
+    fixture.componentRef.setInput('alertMsg', 'Automatic close was successful!');
     fixture.detectChanges();
 
     // get window from DOM
     let alertWin = fixture.debugElement.query(By.css('.alert-window'));
     expect(alertWin).not.toBeNull();
-    expect(component.isDisplayed).toBeTrue();
+    expect(component.isDisplayed()).toBeTrue();
     expect(component['closeAutomatically']).toHaveBeenCalled();
     tick(3000);
 
@@ -102,7 +101,7 @@ describe('AlertWindowComponent', () => {
     alertWin = fixture.debugElement.query(By.css('.alert-window'));
     expect(alertWin).toBeNull();
     expect(component.onClose).toHaveBeenCalled();
-    expect(component.isDisplayed).toBeFalse();
+    expect(component.isDisplayed()).toBeFalse();
     flush();
   }));
 

@@ -5,12 +5,14 @@ import { InputBorderDirective } from './input-border.directive';
 
 @Component({
     template: `
-    <input dirInputBorder [isValid]="false"
+    <input dirInputBorder [isValid]="isValidValue"
       id="test-input" type="text" class="input-control"/>
   `,
     standalone: false
 })
-class HostTestComponent {}
+class HostTestComponent {
+  isValidValue = false;
+}
 
 describe('InputBorderDirective', () => {
   let fixture: ComponentFixture<HostTestComponent>;
@@ -109,17 +111,21 @@ describe('InputBorderDirective', () => {
   });
 
   it('should apply input classes(valid, invalid) base on isValid', () => {
+    const hostComponent = fixture.componentInstance;
     directive['_refInput'] = inputTag.nativeElement;
+    
+    // First click to initialize _refInput
+    inputTag.nativeElement.click();
+    fixture.detectChanges();
+    
     // apply the input-valid
-    directive.isValid = true;
-    // calls changeBorderBy method
-    directive.ngOnChanges();
+    hostComponent.isValidValue = true;
+    fixture.detectChanges();
     expect(directive['_refInput'].className.includes('input-valid')).toBeTrue();
 
     // apply the input-invalid
-    directive.isValid = false;
-    // calls changeBorderBy method
-    directive.ngOnChanges();
+    hostComponent.isValidValue = false;
+    fixture.detectChanges();
     expect(directive['_refInput'].className.includes('input-invalid')).toBeTrue();
   });
 });
