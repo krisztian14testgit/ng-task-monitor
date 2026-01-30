@@ -67,7 +67,7 @@ export class TaskTimerComponent implements OnInit, OnDestroy {
       const minutes = this.timerInMinutes();
       const status = this.statusLabel();
       
-      if (minutes > 0) {
+      if (minutes > 0 && !this.isTimerStarted()) {
         this.timerInMillisec.set(TaskTimer.convertsToMilliSec(minutes));
         this._preTimerInMillisec = this.timerInMillisec();
         

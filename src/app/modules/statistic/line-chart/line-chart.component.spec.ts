@@ -13,7 +13,7 @@ describe('LineChartComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ LineChartComponent ],
-      providers: [provideCharts(withDefaultRegisterables())],
+      providers: [ provideCharts(withDefaultRegisterables()) ],
       schemas: [NO_ERRORS_SCHEMA]
     })
     .compileComponents();
