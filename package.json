@@ -23,6 +23,10 @@
     "make": "electron-forge make"
   },
   "private": true,
+  "overrides": {
+    "tar": "7.5.7",
+    "tmp": "0.2.5"
+  },
   "dependencies": {
     "@angular/animations": "~21.0.8",
     "@angular/cdk": "~21.0.5",
