@@ -14,8 +14,7 @@ describe('TaskCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      imports: [ TaskCardComponent ],
+      imports: [ReactiveFormsModule, TaskCardComponent],
       providers: [
         { provide: TaskService, useClass: MockTaskService },
         { provide: AlertMessageService }

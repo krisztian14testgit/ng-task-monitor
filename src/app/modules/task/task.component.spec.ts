@@ -17,8 +17,7 @@ describe('TaskComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ RouterTestingModule.withRoutes([]) ],
-      imports: [ TaskComponent ],
+      imports: [ RouterTestingModule.withRoutes([]), TaskComponent ],
       providers: [
         { provide: TaskService, useClass: MockTaskService },
         { provide: CountdownTimerService, useClass: MockCountdownTimerService },
