@@ -1,0 +1,121 @@
+# npm audit report
+
+tar  <=7.5.6
+Severity: high
+node-tar is Vulnerable to Arbitrary File Overwrite and Symlink Poisoning via Insufficient Path Sanitization - https://github.com/advisories/GHSA-8qq5-rm4j-mr97
+Race Condition in node-tar Path Reservations via Unicode Ligature Collisions on macOS APFS - https://github.com/advisories/GHSA-r6q2-hw4h-h46w
+node-tar Vulnerable to Arbitrary File Creation/Overwrite via Hardlink Path Traversal - https://github.com/advisories/GHSA-34x7-hfp2-rc4v
+fix available via `npm audit fix --force`
+Will install @electron-forge/cli@7.6.1, which is a breaking change
+node_modules/tar
+  @electron/node-gyp  *
+  Depends on vulnerable versions of make-fetch-happen
+  Depends on vulnerable versions of tar
+  node_modules/@electron/node-gyp
+    @electron/rebuild  3.2.10 - 4.0.2
+    Depends on vulnerable versions of @electron/node-gyp
+    Depends on vulnerable versions of tar
+    node_modules/@electron/rebuild
+      @electron-forge/core  *
+      Depends on vulnerable versions of @electron-forge/core-utils
+      Depends on vulnerable versions of @electron-forge/maker-base
+      Depends on vulnerable versions of @electron-forge/plugin-base
+      Depends on vulnerable versions of @electron-forge/publisher-base
+      Depends on vulnerable versions of @electron-forge/shared-types
+      Depends on vulnerable versions of @electron-forge/template-base
+      Depends on vulnerable versions of @electron-forge/template-vite
+      Depends on vulnerable versions of @electron-forge/template-vite-typescript
+      Depends on vulnerable versions of @electron-forge/template-webpack
+      Depends on vulnerable versions of @electron-forge/template-webpack-typescript
+      Depends on vulnerable versions of @electron/rebuild
+      node_modules/@electron-forge/core
+        @electron-forge/cli  *
+        Depends on vulnerable versions of @electron-forge/core
+        Depends on vulnerable versions of @electron-forge/core-utils
+        Depends on vulnerable versions of @electron-forge/shared-types
+        Depends on vulnerable versions of @inquirer/prompts
+        node_modules/@electron-forge/cli
+      @electron-forge/core-utils  *
+      Depends on vulnerable versions of @electron-forge/shared-types
+      Depends on vulnerable versions of @electron/rebuild
+      node_modules/@electron-forge/core-utils
+        @electron-forge/template-base  *
+        Depends on vulnerable versions of @electron-forge/core-utils
+        Depends on vulnerable versions of @electron-forge/shared-types
+        node_modules/@electron-forge/template-base
+          @electron-forge/template-vite  *
+          Depends on vulnerable versions of @electron-forge/shared-types
+          Depends on vulnerable versions of @electron-forge/template-base
+          node_modules/@electron-forge/template-vite
+          @electron-forge/template-vite-typescript  *
+          Depends on vulnerable versions of @electron-forge/shared-types
+          Depends on vulnerable versions of @electron-forge/template-base
+          node_modules/@electron-forge/template-vite-typescript
+          @electron-forge/template-webpack  *
+          Depends on vulnerable versions of @electron-forge/shared-types
+          Depends on vulnerable versions of @electron-forge/template-base
+          node_modules/@electron-forge/template-webpack
+          @electron-forge/template-webpack-typescript  *
+          Depends on vulnerable versions of @electron-forge/shared-types
+          Depends on vulnerable versions of @electron-forge/template-base
+          node_modules/@electron-forge/template-webpack-typescript
+      @electron-forge/shared-types  *
+      Depends on vulnerable versions of @electron/rebuild
+      node_modules/@electron-forge/shared-types
+        @electron-forge/maker-base  *
+        Depends on vulnerable versions of @electron-forge/shared-types
+        node_modules/@electron-forge/maker-base
+        @electron-forge/maker-deb  *
+        Depends on vulnerable versions of @electron-forge/maker-base
+        Depends on vulnerable versions of @electron-forge/shared-types
+        node_modules/@electron-forge/maker-deb
+        @electron-forge/maker-rpm  *
+        Depends on vulnerable versions of @electron-forge/maker-base
+        Depends on vulnerable versions of @electron-forge/shared-types
+        node_modules/@electron-forge/maker-rpm
+        @electron-forge/maker-squirrel  *
+        Depends on vulnerable versions of @electron-forge/maker-base
+        Depends on vulnerable versions of @electron-forge/shared-types
+        node_modules/@electron-forge/maker-squirrel
+        @electron-forge/maker-zip  *
+        Depends on vulnerable versions of @electron-forge/maker-base
+        Depends on vulnerable versions of @electron-forge/shared-types
+        node_modules/@electron-forge/maker-zip
+        @electron-forge/plugin-base  *
+        Depends on vulnerable versions of @electron-forge/shared-types
+        node_modules/@electron-forge/plugin-base
+        @electron-forge/publisher-base  *
+        Depends on vulnerable versions of @electron-forge/shared-types
+        node_modules/@electron-forge/publisher-base
+  cacache  14.0.0 - 18.0.4
+  Depends on vulnerable versions of tar
+  node_modules/cacache
+    make-fetch-happen  7.1.1 - 14.0.0
+    Depends on vulnerable versions of cacache
+    node_modules/make-fetch-happen
+
+tmp  <=0.2.3
+tmp allows arbitrary temporary file / directory write via symbolic link `dir` parameter - https://github.com/advisories/GHSA-52f5-9888-hmc6
+fix available via `npm audit fix --force`
+Will install @electron-forge/cli@7.6.1, which is a breaking change
+node_modules/external-editor/node_modules/tmp
+  external-editor  >=1.1.1
+  Depends on vulnerable versions of tmp
+  node_modules/external-editor
+    @inquirer/editor  <=4.2.15
+    Depends on vulnerable versions of external-editor
+    node_modules/@electron-forge/cli/node_modules/@inquirer/editor
+      @inquirer/prompts  <=6.0.1
+      Depends on vulnerable versions of @inquirer/editor
+      node_modules/@electron-forge/cli/node_modules/@inquirer/prompts
+
+25 vulnerabilities (4 low, 21 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.

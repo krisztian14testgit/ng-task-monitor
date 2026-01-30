@@ -1,0 +1,565 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "@electron-forge/cli": {
+      "name": "@electron-forge/cli",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "@electron-forge/core",
+        "@electron-forge/core-utils",
+        "@electron-forge/shared-types",
+        "@inquirer/prompts"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/cli"
+      ],
+      "fixAvailable": {
+        "name": "@electron-forge/cli",
+        "version": "7.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@electron-forge/core": {
+      "name": "@electron-forge/core",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@electron-forge/core-utils",
+        "@electron-forge/maker-base",
+        "@electron-forge/plugin-base",
+        "@electron-forge/publisher-base",
+        "@electron-forge/shared-types",
+        "@electron-forge/template-base",
+        "@electron-forge/template-vite",
+        "@electron-forge/template-vite-typescript",
+        "@electron-forge/template-webpack",
+        "@electron-forge/template-webpack-typescript",
+        "@electron/rebuild"
+      ],
+      "effects": [
+        "@electron-forge/cli"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/core"
+      ],
+      "fixAvailable": {
+        "name": "@electron-forge/cli",
+        "version": "7.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@electron-forge/core-utils": {
+      "name": "@electron-forge/core-utils",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@electron-forge/shared-types",
+        "@electron/rebuild"
+      ],
+      "effects": [
+        "@electron-forge/cli",
+        "@electron-forge/template-base"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/core-utils"
+      ],
+      "fixAvailable": {
+        "name": "@electron-forge/cli",
+        "version": "7.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@electron-forge/maker-base": {
+      "name": "@electron-forge/maker-base",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@electron-forge/shared-types"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/maker-base"
+      ],
+      "fixAvailable": true
+    },
+    "@electron-forge/maker-deb": {
+      "name": "@electron-forge/maker-deb",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "@electron-forge/maker-base",
+        "@electron-forge/shared-types"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/maker-deb"
+      ],
+      "fixAvailable": false
+    },
+    "@electron-forge/maker-rpm": {
+      "name": "@electron-forge/maker-rpm",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "@electron-forge/maker-base",
+        "@electron-forge/shared-types"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/maker-rpm"
+      ],
+      "fixAvailable": false
+    },
+    "@electron-forge/maker-squirrel": {
+      "name": "@electron-forge/maker-squirrel",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "@electron-forge/maker-base",
+        "@electron-forge/shared-types"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/maker-squirrel"
+      ],
+      "fixAvailable": false
+    },
+    "@electron-forge/maker-zip": {
+      "name": "@electron-forge/maker-zip",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "@electron-forge/maker-base",
+        "@electron-forge/shared-types"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/maker-zip"
+      ],
+      "fixAvailable": false
+    },
+    "@electron-forge/plugin-base": {
+      "name": "@electron-forge/plugin-base",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@electron-forge/shared-types"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/plugin-base"
+      ],
+      "fixAvailable": true
+    },
+    "@electron-forge/publisher-base": {
+      "name": "@electron-forge/publisher-base",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@electron-forge/shared-types"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/publisher-base"
+      ],
+      "fixAvailable": true
+    },
+    "@electron-forge/shared-types": {
+      "name": "@electron-forge/shared-types",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@electron/rebuild"
+      ],
+      "effects": [
+        "@electron-forge/maker-base",
+        "@electron-forge/maker-deb",
+        "@electron-forge/maker-rpm",
+        "@electron-forge/maker-squirrel",
+        "@electron-forge/maker-zip",
+        "@electron-forge/plugin-base",
+        "@electron-forge/publisher-base",
+        "@electron-forge/template-base",
+        "@electron-forge/template-vite",
+        "@electron-forge/template-vite-typescript",
+        "@electron-forge/template-webpack",
+        "@electron-forge/template-webpack-typescript"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/shared-types"
+      ],
+      "fixAvailable": {
+        "name": "@electron-forge/cli",
+        "version": "7.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@electron-forge/template-base": {
+      "name": "@electron-forge/template-base",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@electron-forge/core-utils",
+        "@electron-forge/shared-types"
+      ],
+      "effects": [
+        "@electron-forge/core",
+        "@electron-forge/template-vite",
+        "@electron-forge/template-vite-typescript",
+        "@electron-forge/template-webpack",
+        "@electron-forge/template-webpack-typescript"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/template-base"
+      ],
+      "fixAvailable": {
+        "name": "@electron-forge/cli",
+        "version": "7.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@electron-forge/template-vite": {
+      "name": "@electron-forge/template-vite",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@electron-forge/shared-types",
+        "@electron-forge/template-base"
+      ],
+      "effects": [
+        "@electron-forge/core"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/template-vite"
+      ],
+      "fixAvailable": {
+        "name": "@electron-forge/cli",
+        "version": "7.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@electron-forge/template-vite-typescript": {
+      "name": "@electron-forge/template-vite-typescript",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@electron-forge/shared-types",
+        "@electron-forge/template-base"
+      ],
+      "effects": [
+        "@electron-forge/core"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/template-vite-typescript"
+      ],
+      "fixAvailable": {
+        "name": "@electron-forge/cli",
+        "version": "7.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@electron-forge/template-webpack": {
+      "name": "@electron-forge/template-webpack",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@electron-forge/shared-types",
+        "@electron-forge/template-base"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/template-webpack"
+      ],
+      "fixAvailable": true
+    },
+    "@electron-forge/template-webpack-typescript": {
+      "name": "@electron-forge/template-webpack-typescript",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@electron-forge/shared-types",
+        "@electron-forge/template-base"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron-forge/template-webpack-typescript"
+      ],
+      "fixAvailable": true
+    },
+    "@electron/node-gyp": {
+      "name": "@electron/node-gyp",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "make-fetch-happen",
+        "tar"
+      ],
+      "effects": [
+        "@electron/rebuild"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@electron/node-gyp"
+      ],
+      "fixAvailable": {
+        "name": "@electron-forge/cli",
+        "version": "7.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@electron/rebuild": {
+      "name": "@electron/rebuild",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@electron/node-gyp",
+        "tar"
+      ],
+      "effects": [
+        "@electron-forge/core",
+        "@electron-forge/core-utils",
+        "@electron-forge/shared-types"
+      ],
+      "range": "3.2.10 - 4.0.2",
+      "nodes": [
+        "node_modules/@electron/rebuild"
+      ],
+      "fixAvailable": {
+        "name": "@electron-forge/cli",
+        "version": "7.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@inquirer/editor": {
+      "name": "@inquirer/editor",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "external-editor"
+      ],
+      "effects": [
+        "@inquirer/prompts"
+      ],
+      "range": "<=4.2.15",
+      "nodes": [
+        "node_modules/@electron-forge/cli/node_modules/@inquirer/editor"
+      ],
+      "fixAvailable": {
+        "name": "@electron-forge/cli",
+        "version": "7.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@inquirer/prompts": {
+      "name": "@inquirer/prompts",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "@inquirer/editor"
+      ],
+      "effects": [
+        "@electron-forge/cli"
+      ],
+      "range": "<=6.0.1",
+      "nodes": [
+        "node_modules/@electron-forge/cli/node_modules/@inquirer/prompts"
+      ],
+      "fixAvailable": {
+        "name": "@electron-forge/cli",
+        "version": "7.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "cacache": {
+      "name": "cacache",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "tar"
+      ],
+      "effects": [
+        "make-fetch-happen"
+      ],
+      "range": "14.0.0 - 18.0.4",
+      "nodes": [
+        "node_modules/cacache"
+      ],
+      "fixAvailable": true
+    },
+    "external-editor": {
+      "name": "external-editor",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "tmp"
+      ],
+      "effects": [
+        "@inquirer/editor"
+      ],
+      "range": ">=1.1.1",
+      "nodes": [
+        "node_modules/external-editor"
+      ],
+      "fixAvailable": {
+        "name": "@electron-forge/cli",
+        "version": "7.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "make-fetch-happen": {
+      "name": "make-fetch-happen",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "cacache"
+      ],
+      "effects": [],
+      "range": "7.1.1 - 14.0.0",
+      "nodes": [
+        "node_modules/make-fetch-happen"
+      ],
+      "fixAvailable": true
+    },
+    "tar": {
+      "name": "tar",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1112255,
+          "name": "tar",
+          "dependency": "tar",
+          "title": "node-tar is Vulnerable to Arbitrary File Overwrite and Symlink Poisoning via Insufficient Path Sanitization",
+          "url": "https://github.com/advisories/GHSA-8qq5-rm4j-mr97",
+          "severity": "high",
+          "cwe": [
+            "CWE-22"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=7.5.2"
+        },
+        {
+          "source": 1112329,
+          "name": "tar",
+          "dependency": "tar",
+          "title": "Race Condition in node-tar Path Reservations via Unicode Ligature Collisions on macOS APFS",
+          "url": "https://github.com/advisories/GHSA-r6q2-hw4h-h46w",
+          "severity": "high",
+          "cwe": [
+            "CWE-176"
+          ],
+          "cvss": {
+            "score": 8.8,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:H/A:L"
+          },
+          "range": "<=7.5.3"
+        },
+        {
+          "source": 1112659,
+          "name": "tar",
+          "dependency": "tar",
+          "title": "node-tar Vulnerable to Arbitrary File Creation/Overwrite via Hardlink Path Traversal",
+          "url": "https://github.com/advisories/GHSA-34x7-hfp2-rc4v",
+          "severity": "high",
+          "cwe": [
+            "CWE-22",
+            "CWE-59"
+          ],
+          "cvss": {
+            "score": 8.2,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:L/A:N"
+          },
+          "range": "<7.5.7"
+        }
+      ],
+      "effects": [
+        "@electron/node-gyp",
+        "@electron/rebuild",
+        "cacache"
+      ],
+      "range": "<=7.5.6",
+      "nodes": [
+        "node_modules/tar"
+      ],
+      "fixAvailable": {
+        "name": "@electron-forge/cli",
+        "version": "7.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "tmp": {
+      "name": "tmp",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1109537,
+          "name": "tmp",
+          "dependency": "tmp",
+          "title": "tmp allows arbitrary temporary file / directory write via symbolic link `dir` parameter",
+          "url": "https://github.com/advisories/GHSA-52f5-9888-hmc6",
+          "severity": "low",
+          "cwe": [
+            "CWE-59"
+          ],
+          "cvss": {
+            "score": 2.5,
+            "vectorString": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:N/I:L/A:N"
+          },
+          "range": "<=0.2.3"
+        }
+      ],
+      "effects": [
+        "external-editor"
+      ],
+      "range": "<=0.2.3",
+      "nodes": [
+        "node_modules/external-editor/node_modules/tmp"
+      ],
+      "fixAvailable": {
+        "name": "@electron-forge/cli",
+        "version": "7.6.1",
+        "isSemVerMajor": true
+      }
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 4,
+      "moderate": 0,
+      "high": 21,
+      "critical": 0,
+      "total": 25
+    },
+    "dependencies": {
+      "prod": 24,
+      "dev": 1606,
+      "optional": 196,
+      "peer": 1,
+      "peerOptional": 0,
+      "total": 1629
+    }
+  }
+}
