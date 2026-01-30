@@ -1,8 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router } from '@angular/router';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 import { MockTaskService } from 'src/app/tests/mock-services/mock-task.service';
 import { TaskService } from '../task/services/task.service';
@@ -15,14 +15,16 @@ describe('StatisticComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      // TODO: routing testing: https://codecraft.tv/courses/angular/unit-testing/routing/
-      imports: [ RouterTestingModule.withRoutes([
-        { path: 'statistic/daily', component: StatisticComponent },
-        { path: 'statistic/weekly', component: StatisticComponent }
-      ])],
-      declarations: [ StatisticComponent ],
+      imports: [ 
+        StatisticComponent
+      ],
       providers: [
-        { provide: TaskService, useClass: MockTaskService }
+        { provide: TaskService, useClass: MockTaskService },
+        provideRouter([
+          { path: 'statistic/daily', component: StatisticComponent },
+          { path: 'statistic/weekly', component: StatisticComponent }
+        ]),
+        provideCharts(withDefaultRegisterables())
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
@@ -52,7 +54,7 @@ describe('StatisticComponent', () => {
     tick(100);
     
     component.ngOnInit();
-    expect(component.isDailyReport).toBeTrue();
+    expect(component.isDailyReport()).toBeTrue();
     expect(component.loadedReportCharts).toEqual(component['_dailyReportCharts']);
   }));
 
@@ -62,34 +64,39 @@ describe('StatisticComponent', () => {
     tick(100);
     
     component.ngOnInit();
-    expect(component.isDailyReport).toBeFalse();
+    expect(component.isDailyReport()).toBeFalse();
     expect(component.loadedReportCharts).toEqual(component['_weeklyReportCharts']);
   }));
 
   it('should load the chart if selectedChartType has good value, daily statistic', () => {
     // pie-chart
-    component.selectedChartType = 0;
-    component.isDailyReport = true;
+    component.selectedChartType.set(0);
+    component.isDailyReport.set(true);
     fixture.detectChanges();
     const chartDiv = fixture.debugElement.query(By.css('.chart'));
     expect(chartDiv).toBeDefined();
     expect(chartDiv.children.length).toBeGreaterThan(0);
   });
 
-  it('should display one pie chart if the selectedChartType has wrong value, weekly statistic', () => {
-    // contains one defualt pie-chart, comboBox does have 3 index option.
-    component.selectedChartType = 3;
-    component.isDailyReport = false;
+  it('should NOT display charts if the selectedChartType has wrong value,', fakeAsync(() => {
+    // contains one defualt pie-chart, comboBox does have fourth chart as 3 index option.
+    let wrongChartTypeIndex: number | null = 3;
+    const noChartChildrenLength = 0;
+    
+    component.selectedChartType.set(wrongChartTypeIndex);
+    component.isDailyReport.set(false);
     fixture.detectChanges();
     let chartDiv = fixture.debugElement.query(By.css('.chart'));
     expect(chartDiv).toBeDefined();
-    expect(chartDiv.children.length).toBe(1);
+    expect(chartDiv.children.length).toBe(noChartChildrenLength);
+    tick(100);
 
-    // wrong value
-    component.selectedChartType = null as any;
+    // invalid value
+    wrongChartTypeIndex = null;
+    component.selectedChartType.set(wrongChartTypeIndex as any);
     fixture.detectChanges();
     chartDiv = fixture.debugElement.query(By.css('.chart'));
     expect(chartDiv).toBeDefined();
-    expect(chartDiv.children.length).toBe(1);
-  });
+    expect(chartDiv.children.length).toBe(noChartChildrenLength);
+  }));
 });

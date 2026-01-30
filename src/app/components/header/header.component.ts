@@ -50,9 +50,9 @@ export class HeaderComponent implements OnInit {
     this.optionMenus = new AppMenu();
     this.optionMenus.title = 'Options';
     this.optionMenus.icon = 'settings';
-    this.optionMenus.isDisplayedLable = false;
+    this.optionMenus.isDisplayedLable = true;
     this.optionMenus.menuItemsWithLabel = {
-      Themes: [ /** app-style-themes loading, not attaching link*/ ],
+      Themes: [ /** app-style-themes loading at line 20 in menu-item.component.html, not attaching by link*/ ],
       Location: [
         {linkKey: "location", title: "Change location"}
       ]

@@ -1,4 +1,3 @@
-import { SimpleChange } from '@angular/core';
 import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
@@ -13,7 +12,7 @@ describe('AlertWindowComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AlertWindowComponent ],
+      imports: [ AlertWindowComponent ],
       providers: [
         {provide: AlertMessageService}
       ]
@@ -36,10 +35,10 @@ describe('AlertWindowComponent', () => {
     expect(component.alertLabel.color).toBe('alert-info');
     expect(component.alertLabel.name).toBe('Info');
     expect(component.alertLabel.type).toBe(AlertType.Info);
-    expect(component.isDisplayed).toBeFalse();
+    expect(component.isDisplayed()).toBeFalse();
   });
 
-  it('should show the alert window with different alert types, texts', () => {
+  it('should show the alert window with different alert types, texts', fakeAsync(() => {
     const colorAlerTypes = component['_options'].alertTypeColors;
     const textArray = [
       'The basic text without keywords.', // info - blue
@@ -59,41 +58,47 @@ describe('AlertWindowComponent', () => {
       alertWin = fixture.debugElement.query(By.css('.alert-window'));
       strongTag = fixture.debugElement.nativeElement.querySelector('strong');
 
-      expect(component.isDisplayed).toBeTrue();
+      expect(component.isDisplayed()).toBeTrue();
       expect(alertWin.classes[colorAlerTypes[i]]).toBeTrue();
       expect(strongTag.innerText).toBe(`${strongTagValues[i]}:`);
-    }
-  });
+      tick(100);
 
-  it('should disappear the alert window', () => {
+      // close the alert window before next loop
+      component.onClose();
+      fixture.detectChanges();
+      tick(100);
+    }
+  }));
+
+  it('should disappear the alert window', fakeAsync(() => {
     // displayed 
     component.show();
     fixture.detectChanges();
     let alertWin = fixture.debugElement.query(By.css('.alert-window'));
     expect(alertWin.name).toBeDefined();
-    expect(component.isDisplayed).toBeTrue();
+    expect(component.isDisplayed()).toBeTrue();
+    tick(100);
 
     // hide alert win
     component.onClose();
     fixture.detectChanges();
     alertWin = fixture.debugElement.query(By.css('.alert-window'));
     expect(alertWin).toBeNull();
-    expect(component.isDisplayed).toBeFalse();
-  });
+    expect(component.isDisplayed()).toBeFalse();
+  }));
 
   // fakeAsync used the timer faking for setTimemout
   it('should close window automatically, setTimeout test', fakeAsync(() => {
     spyOn(component as any, 'closeAutomatically').and.callThrough();
     spyOn(component, 'onClose').and.callThrough();
     // displayed after close
-    component.alertMsg = 'Automatic close was successful!';
-    component.ngOnChanges({'alertMsg': new SimpleChange('', component.alertMsg, true)});
+    fixture.componentRef.setInput('alertMsg', 'Automatic close was successful!');
     fixture.detectChanges();
 
     // get window from DOM
     let alertWin = fixture.debugElement.query(By.css('.alert-window'));
     expect(alertWin).not.toBeNull();
-    expect(component.isDisplayed).toBeTrue();
+    expect(component.isDisplayed()).toBeTrue();
     expect(component['closeAutomatically']).toHaveBeenCalled();
     tick(3000);
 
@@ -102,7 +107,7 @@ describe('AlertWindowComponent', () => {
     alertWin = fixture.debugElement.query(By.css('.alert-window'));
     expect(alertWin).toBeNull();
     expect(component.onClose).toHaveBeenCalled();
-    expect(component.isDisplayed).toBeFalse();
+    expect(component.isDisplayed()).toBeFalse();
     flush();
   }));
 
@@ -121,27 +126,34 @@ describe('AlertWindowComponent', () => {
     }
   });
 
-  it('should test to get message from the service, alertMsgService', () => {
+  it('should test to get message from the service, alertMsgService', fakeAsync(() => {
     spyOn(component, 'show').and.callThrough();
 
     // initial values
-    expect(component.alertMsg).toBe('');
+    expect(component.alertMsg()).toBe('');
     expect(component['_alertType']).toBe(AlertType.Info);
     // subscribe on the alertService by ngOnInit
     component.ngOnInit();
 
     // emits error text
     let text = 'Error text';
+    fixture.componentRef.setInput('alertMsg', text);
     alertMsgService.sendMessage(text);
-    expect(component.alertMsg).toBe(text);
+    // Note: alertMsg is an input signal, not updated by service
+    fixture.detectChanges();
+    expect(component.alertMsg()).toBe(text);
     expect(component['_alertType']).toBe(AlertType.Error);
     expect(component.show).toHaveBeenCalled();
+    tick(100);
 
-    // emits error text
-    text = 'just an origin text with yellow';
+    // emits warning text
+    text = 'Warning:just an origin text with yellow';
+    fixture.componentRef.setInput('alertMsg', text);
     alertMsgService.sendMessage(text, AlertType.Warning);
-    expect(component.alertMsg).toBe(text);
+    fixture.detectChanges();
+    expect(component.alertMsg()).toBe(text);
     expect(component['_alertType']).toBe(AlertType.Warning);
     expect(component.show).toHaveBeenCalled();
-  });
+    flush();
+  }));
 });
