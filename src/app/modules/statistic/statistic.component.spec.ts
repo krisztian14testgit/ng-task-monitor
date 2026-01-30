@@ -20,7 +20,7 @@ describe('StatisticComponent', () => {
         { path: 'statistic/daily', component: StatisticComponent },
         { path: 'statistic/weekly', component: StatisticComponent }
       ])],
-      declarations: [ StatisticComponent ],
+      imports: [ StatisticComponent ],
       providers: [
         { provide: TaskService, useClass: MockTaskService }
       ],

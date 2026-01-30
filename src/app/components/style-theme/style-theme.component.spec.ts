@@ -14,7 +14,7 @@ describe('StyleThemeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ StyleThemeComponent ],
+      imports: [ StyleThemeComponent ],
       providers: [
         { provide: StyleManagerService, useClass: MockStyleManagerService }
       ],

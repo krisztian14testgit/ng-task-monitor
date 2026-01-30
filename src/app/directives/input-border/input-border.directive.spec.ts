@@ -21,7 +21,8 @@ describe('InputBorderDirective', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [InputBorderDirective, HostTestComponent]
+      declarations: [HostTestComponent],
+      imports: [InputBorderDirective]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HostTestComponent);

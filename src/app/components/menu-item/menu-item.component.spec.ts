@@ -12,7 +12,7 @@ describe('MenuItemComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MenuItemComponent ],
+      imports: [ MenuItemComponent ],
       imports: [MatMenuModule],
       schemas: [NO_ERRORS_SCHEMA]
     })

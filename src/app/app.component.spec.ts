@@ -9,7 +9,7 @@ describe('AppComponent', () => {
       imports: [
         RouterTestingModule
       ],
-      declarations: [
+      imports: [
         AppComponent
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]

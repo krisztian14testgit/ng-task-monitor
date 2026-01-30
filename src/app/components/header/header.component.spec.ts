@@ -37,7 +37,7 @@ describe('HeaderComponent', () => {
       imports: [
         RouterTestingModule.withRoutes(routeTable)
       ],
-      declarations: [ HeaderComponent ],
+      imports: [ HeaderComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();
