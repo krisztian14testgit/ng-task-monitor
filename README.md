@@ -11,13 +11,14 @@
   - `nodeIntegration: false`
   - `contextIsolation: true`
   - Secure IPC through contextBridge
-* Dual-mode support: Application now works in both web and Electron environments
-* See `UPGRADE_NOTES.md` for detailed upgrade information
+* **Dual-mode support**: Application now works in both web and Electron environments
+* **Electron upgrade**: Created upgrading plans with AI and my knowledge, the sources are in 'elektronjs-upgrade-plan' folder.
+* **Branch name**: copilot/upgrade-electronjs-v39
 
-### Angular Framework from v14 => v21
-* Created upgrading plans with AI and my knowledge, the sources are in 'angular-upgrade-plan' folder.
-* Branch name: 'copilot/upgrade-angular-to-v21'
-* Applying the latest features of angular such as standalone, control flow syntax, adapting signals
+### Angular Framework from v14 => v21 (January 2026)
+* **Angular upgrade**: Created upgrading plans with AI and my knowledge, the sources are in 'angular-upgrade-plan' folder.
+* **Branch name**: 'copilot/upgrade-angular-to-v21'
+* **latest feature**: Applying the latest features of angular such as standalone, control flow syntax, adapting signals
 
 
 ## Purpose
