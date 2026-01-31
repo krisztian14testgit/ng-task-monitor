@@ -1,10 +1,12 @@
 <div class="style-themes">
-    <mat-radio-group aria-label="Select an theme"
-                    class="style-radio-group"
-                    [value]="selectedTheme"
-                    (change)="onChangeTheme($event)">
-        <mat-radio-button *ngFor="let theme of styleThemes;"
-                            [value]="theme">{{theme}}</mat-radio-button>
-    </mat-radio-group>
+  <mat-radio-group aria-label="Select an theme"
+    class="style-radio-group"
+    [value]="selectedTheme"
+    (change)="onChangeTheme($event)">
+    @for (theme of styleThemes; track theme) {
+      <mat-radio-button
+      [value]="theme">{{theme}}</mat-radio-button>
+    }
+  </mat-radio-group>
 </div>
 

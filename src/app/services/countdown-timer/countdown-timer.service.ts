@@ -58,7 +58,6 @@ export class CountdownTimerService {
               // stores the calculated rest time.
               taskList[i].timeMinutes = restTimeList[i];
             }
-            
           }
         }
       };

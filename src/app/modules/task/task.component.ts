@@ -1,7 +1,12 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { MatSelectChange } from '@angular/material/select';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { TaskService } from './services/task.service';
 import { Task, TaskStatus, TaskTime } from './services/task.model';
@@ -10,13 +15,16 @@ import { AlertType } from 'src/app/components/alert-window/alert.model';
 import { CountdownTimerService } from 'src/app/services/countdown-timer/countdown-timer.service';
 import { TaskTimerService } from './services/task-timer/task-timer.service';
 import { TimerState } from './services/task-timer/task-timer.model';
+import { TaskCardComponent } from './task-card/task-card.component';
 
 @Component({
-  selector: 'app-task',
-  templateUrl: './task.component.html',
-  styleUrls: ['./task.component.css']
+    selector: 'app-task',
+    templateUrl: './task.component.html',
+    styleUrls: ['./task.component.css'],
+    standalone: true,
+    imports: [CommonModule, FormsModule, MatButtonModule, MatSelectModule, MatCardModule, MatFormFieldModule, TaskCardComponent]
 })
-export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TaskComponent implements OnInit, OnDestroy {
   /** Stores task items. */
   public taskList: Task[] = [];
   /** Statuses of the Task. */
@@ -30,7 +38,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    * * Yesterday = 1
    * * Week = 2
    */
-  public selectedTaskTime = '0';
+  public selectedTaskTime: string;
   /** Contains the count of tasks which are filtered by date. */
   public filteredTaskCount = 0;
   /** 
@@ -41,6 +49,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   public isLockedTasks = false;
   public readonly MAX_LIMIT_TASKS = 10;
+  public readonly TASK_TIME_YESTERDAY = String(TaskTime.Yesterday);
   /** Stores the reference of task stream. */
   private _taskSubscription!: Subscription;
   /**
@@ -49,6 +58,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private _preservedTaskList: Task[] = [];
   /** Stores those tasks which are filtered by the time period. Created: today/yesterday or in the week. */
+  /** Stores those tasks which are filtered by the time period. Created: today/yesterday or in the week. */
   private _filteredTaskListByDate: Task[] = [];
 
   constructor(private readonly taskService: TaskService,
@@ -56,18 +66,13 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
               private readonly alertMessageService: AlertMessageService,
               private readonly timerWorkerService: CountdownTimerService,
               private readonly router: Router) {
-    // In Electron versoin the, the default time period: Today report
     this.selectedTaskTime = TaskTime.Today.toString();
-    this.isLockedTasks = false;
   }
 
-  /** Gets tasks form the service. */
   ngOnInit(): void {
+    /** Gets tasks form the service. */
     this.getAllTask();
-  }
-
-  /** StatusList is filled in before the view rendering. */
-  ngAfterViewInit(): void {
+    /** StatusList is filled in before the view rendering. */
     this.fillInStatusSelection();
   }
 
@@ -94,8 +99,8 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     // All: not filtering by status, all task will display
     
     // If time period filtering was run at once time
-	const timeFilterLength = this._filteredTaskListByDate.length;
-    if (timeFilterLength > 0) {
+    const timeFilterLength = this._filteredTaskListByDate.length;
+     if (timeFilterLength > 0) {
       this.taskList = [...this._filteredTaskListByDate];
     } else {
       this.taskList = [];
@@ -202,12 +207,12 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
           .filter((task:Task) => task.isCreatedYesterday() === true);
           break;
         
-        case TaskTime.Week:
+        default:
           // show all tasks, deep copy origin task items
           this._filteredTaskListByDate = [...this._preservedTaskList];
           break;
       }
-   }
+    }
 
     this.filteredTaskCount = this._filteredTaskListByDate.length;
     return this._filteredTaskListByDate;
@@ -223,7 +228,7 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
     .subscribe(tasks => {
       this._preservedTaskList = [...tasks];
       inProgressTasks = this.calculateRestTimeOfTasksByWebWorker(this._preservedTaskList);
-      
+
       // Sleeping main thread a little, hence the sub-thread timer calculation to be executed.
       const delayMilliSec = 500;
       setTimeout(() => {
@@ -300,14 +305,14 @@ export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
         if (isSaved) {
           this.alertMessageService.sendMessage('Tasks are saved.', AlertType.Success);
         }
-      }, (error => {
+      }, ((error: Error) => {
         if (error) {
           this.alertMessageService.sendMessage('Saving tasks is failed!', AlertType.Error);
         }
       }));
     }
   }
-
+  
   /**
    * Web-wroker process.
    * Returns the inProgress tasks into array.

@@ -1,11 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, NavigationStart, Router, Event } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { AppMenu, MenuItem } from 'src/app/services/models/app-menu.model';
+import { MenuItemComponent } from '../menu-item/menu-item.component';
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+    selector: 'app-header',
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.css'],
+    standalone: true,
+    imports: [CommonModule, MatGridListModule, MenuItemComponent]
 })
 export class HeaderComponent implements OnInit {
   /** Stores the title of the side by url navigation. */
@@ -27,15 +32,16 @@ export class HeaderComponent implements OnInit {
   constructor(private readonly router: Router) {
     this.appMenus = new AppMenu();
     this.appMenus.title = 'Menu';
+    this.appMenus.icon = 'menu';
     this.appMenus.isDisplayedLable = true;
     this.appMenus.menuItemsWithLabel = {
       Tasks: [
         {linkKey: "tasks/all", title: "All tasks"},
-        {linkKey: "tasks/finished", title: "Finished"}
+        {linkKey: "tasks/finished", title: "Finished", icon: "done_all"}
       ],
       Charts: [
-        {linkKey: "statistic/daily", title: "Daily"},
-        {linkKey: "statistic/weekly", title: "In-Weekly"}
+        {linkKey: "statistic/daily", title: "Daily", icon: "donut_small"},
+        {linkKey: "statistic/weekly", title: "In-Weekly", icon: "timeline"}
       ]
     };
     // contains default the "All tasks" title.
@@ -43,9 +49,10 @@ export class HeaderComponent implements OnInit {
 
     this.optionMenus = new AppMenu();
     this.optionMenus.title = 'Options';
-    this.optionMenus.isDisplayedLable = false;
+    this.optionMenus.icon = 'settings';
+    this.optionMenus.isDisplayedLable = true;
     this.optionMenus.menuItemsWithLabel = {
-      Themes: [ /** app-style-themes loading, not attaching link*/ ],
+      Themes: [ /** app-style-themes loading at line 20 in menu-item.component.html, not attaching by link*/ ],
       Location: [
         {linkKey: "location", title: "Change location"}
       ]

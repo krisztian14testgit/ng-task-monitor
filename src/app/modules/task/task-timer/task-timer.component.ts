@@ -1,4 +1,7 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, effect, EventEmitter, input, OnDestroy, OnInit, Output, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { TaskTimer, TimerState } from '../services/task-timer/task-timer.model';
 import { TaskTimerService } from '../services/task-timer/task-timer.service';
@@ -11,18 +14,20 @@ import { TaskStatus } from '../services/task.model';
  * Emits/handles status of the timer if it is over or interrupted.
  */
 @Component({
-  selector: 'app-task-timer',
-  templateUrl: './task-timer.component.html',
-  styleUrls: ['./task-timer.component.css']
+    selector: 'app-task-timer',
+    templateUrl: './task-timer.component.html',
+    styleUrls: ['./task-timer.component.css'],
+    standalone: true,
+    imports: [CommonModule, MatButtonModule, MatProgressBarModule]
 })
-export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() public taskId = '';
+export class TaskTimerComponent implements OnInit, OnDestroy {
+  public taskId = input('');
   /** The Task minutes of time. */
-  @Input() public timerInMinutes = 0;
+  public timerInMinutes = input(0);
   /** The status label of the status. */
-  @Input() public statusLabel = '';
+  public statusLabel = input('');
   /** This switcher is true then Task-timer 'start' button is active, otherwise it is disabled. */
-  @Input() public isTimePeriodToday!: boolean;
+  public isTimePeriodToday = input(true);
   /** 
    * It triggers when the timer start counting or it is over.
    * 
@@ -37,18 +42,18 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
    * Rest milliSeconds of timer of task. Measuring time.
    * Counter clock reduces this value if it is already started.
    */
-  public timerInMillisec = 0;
+  public timerInMillisec = signal(0);
   /** Contains true if the timer is started. */
-  public isTimerStarted = false;
+  public isTimerStarted = signal(false);
   /** Contains true if the timer is over.*/
-  public isTimerFinished = false;
+  public isTimerFinished = signal(false);
   /** 
    * This value is percentage. Max value is 100%
    * 
    * Contains the calculated percentage of spent time from the timer. 
    * Mat-ProgressBar shows this value.
    */
-  public progessBarPercent = 0;
+  public progessBarPercent = signal(0);
   /** Stores the interval Id of the setInterval function. */
   private _clockIntervalId!: NodeJS.Timeout;
   /** Stores the started date which is the current Date of system clock. */
@@ -56,7 +61,23 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
   /** Preserves the original value of the timerInMilliesc(when we got) of the task. */
   private _preTimerInMillisec = 0;
 
-  constructor(private readonly taskTimerService: TaskTimerService) { }
+  constructor(private readonly taskTimerService: TaskTimerService) {
+    // Effect to react to timerInMinutes input signal changes
+    effect(() => {
+      const minutes = this.timerInMinutes();
+      const status = this.statusLabel();
+      
+      if (minutes > 0 && !this.isTimerStarted()) {
+        this.timerInMillisec.set(TaskTimer.convertsToMilliSec(minutes));
+        this._preTimerInMillisec = this.timerInMillisec();
+        
+        // If timer is interrupted, it was inprogress, start timer again.
+        if (status === TaskStatus[TaskStatus.Inprogress]) {
+          this.startTimer();
+        }
+      }
+    });
+  }
 
   /** 
    * Subscribes on the taskTimer data stream to get emitted timer state.
@@ -65,28 +86,11 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit(): void {
     this.taskTimerService.onChangeState()
       .subscribe(([timerState, interruptedTaskIds]: [number, string[]]) => {
-        if (timerState === TimerState.Interrupted && interruptedTaskIds.includes(this.taskId)) {
+        if (timerState === TimerState.Interrupted && interruptedTaskIds.includes(this.taskId())) {
           // Interrupt the all counterdown clock
           this.emitsTimerState(TimerState.Interrupted);
         }
       });
-  }
-
-  /** 
-   * It runs when the task inputs are changed.
-   * Sets this.timerInMillisec by converting task.timeMinutes to millisec.
-   * Sets the statusLabel by the TaskStatus enum key.
-   */
-  ngOnChanges(changes : SimpleChanges): void {
-    if (changes.timerInMinutes?.currentValue === this.timerInMinutes && this.timerInMinutes > 0) {
-      this.timerInMillisec = TaskTimer.convertsToMilliSec(this.timerInMinutes);
-      this._preTimerInMillisec = this.timerInMillisec;
-      
-      // If timer is interrupted, it was inprogress, start timer again.
-      if (this.statusLabel == TaskStatus[TaskStatus.Inprogress]) {
-        this.startTimer();
-      }
-    }
   }
 
   /**
@@ -96,11 +100,12 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
    */
   ngOnDestroy(): void {
     // The countdown timer is broken, save finished timer date by the emitter.
-    if (this.isTimerStarted && !this.isTimerFinished) {
+    if (this.isTimerStarted() && !this.isTimerFinished()) {
       this.emitsTimerState(TimerState.Interrupted);
     }
 
-    this.isTimerFinished = this.isTimerStarted  = false;
+    this.isTimerFinished.set(false);
+    this.isTimerStarted.set(false);
     this.stopCounterClock();
   }
 
@@ -110,7 +115,7 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
    * Measuring the time if the timerInmillisec is not zero.
    */
   public startTimer() {
-    if (this.timerInMillisec > 0) {
+    if (this.timerInMillisec() > 0) {
       this.emitsTimerState(TimerState.Started);
       clearInterval(this._clockIntervalId);
       this.startCounterClock();
@@ -123,17 +128,17 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
   private startCounterClock() {
     // 1sec -> 1000ms
     const milliSec = 1000;
-    if (this.timerInMillisec > 0) {
-      this.isTimerStarted = true;
+    if (this.timerInMillisec() > 0) {
+      this.isTimerStarted.set(true);
       this._clockIntervalId = setInterval(() => {
         // exit condition: counterClock is over!
-        if (this.timerInMillisec <= 0) {
+        if (this.timerInMillisec() <= 0) {
           this.stopCounterClock();
           this.emitsTimerState(TimerState.Finished);
         }
 
-        this.timerInMillisec -= milliSec;
-        this.progessBarPercent = this.calculateProgressBarValue(this.timerInMillisec);
+        this.timerInMillisec.update(val => val - milliSec);
+        this.progessBarPercent.set(this.calculateProgressBarValue(this.timerInMillisec()));
       }, milliSec);
     }
   }
@@ -143,8 +148,8 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
    */
   private stopCounterClock() {
     clearInterval(this._clockIntervalId);
-    this.isTimerFinished = true;
-    this.timerInMillisec = 0;
+    this.isTimerFinished.set(true);
+    this.timerInMillisec.set(0);
   }
 
   /**
@@ -164,7 +169,7 @@ export class TaskTimerComponent implements OnInit, OnChanges, OnDestroy {
     if (mode === TimerState.Interrupted) {
       // timerFinished date(when will be done) =  timerStarted date + rest milliSec
       const startedDate_millisec = this._timerStartedDate.getTime();
-      const finishedDate_millisec = startedDate_millisec + this.timerInMillisec;
+      const finishedDate_millisec = startedDate_millisec + this.timerInMillisec();
       // future date when task timer is over.
       systemClock = new Date(finishedDate_millisec);
     }

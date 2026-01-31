@@ -61,7 +61,7 @@ class IpcTaskList {
     }
 
     /**
-     * Returns the task path from the appSetting.json if it exsits,
+     * Returns the task path from the appSetting.json if it exists,
      * otherwise returns empty string.
      * @returns string
      */

@@ -9,7 +9,7 @@ describe('TaskTimerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TaskTimerComponent ],
+      imports: [ TaskTimerComponent ],
       providers: [
         { provide: TaskTimerService }
       ]

@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 import { LineChartComponent } from './line-chart.component';
 import { FakedTask } from 'src/app/tests/models/faked-task.model';
@@ -11,7 +12,8 @@ describe('LineChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LineChartComponent ],
+      imports: [ LineChartComponent ],
+      providers: [ provideCharts(withDefaultRegisterables()) ],
       schemas: [NO_ERRORS_SCHEMA]
     })
     .compileComponents();
@@ -32,44 +34,44 @@ describe('LineChartComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-    expect(component['lineChartType']).toBe('line');
-    expect(component['lineChartOptions']).toBeDefined();
-    expect(component['lineChartData']).toBeDefined();
-    expect(component['_lineChartLabels'].length).toBe(2);
-    expect(component['_lineChartDataCallBack'].length).toBe(2);
+    expect(component['currentChartType']).toBe('line');
+    expect(component['currentChartOptions']).toBeDefined();
+    expect(component['currentChartData']).toBeDefined();
+    expect(component['_chartLabels'].length).toBe(2);
+    expect(component['_chartDataCallBack'].length).toBe(2);
   });
 
   it('should set line-chart data(label, data props), showing counted completed tasks', () => {
     // checking initial chart data
-    expect(component.lineChartData.datasets[0].label).toBe('Empty label of the chart');
-    expect(component.lineChartData.datasets[0].data).toEqual([]);
-    expect(component.lineChartData.labels).toEqual([]);
+    expect(component.currentChartData.datasets[0].label).toBe('Empty label of the chart');
+    expect(component.currentChartData.datasets[0].data).toEqual([]);
+    expect(component.currentChartData.labels).toEqual([]);
     
     // chart data showing the counted of completed tasks
     component.lineType = LineChartReport.CompletedTask;
     component.ngOnChanges(); // it will call the setLineChartData func
     // chart datasets
-    expect(component.lineChartData.datasets[0].label).toBe(component['_lineChartLabels'][component.lineType]);
-    expect(component.lineChartData.datasets[0].label?.includes('Completed task')).toBeTrue();
-    expect(component.lineChartData.datasets[0].data.length).toBeGreaterThan(0);
+    expect(component.currentChartData.datasets[0].label).toBe(component['_chartLabels'][component.lineType]);
+    expect(component.currentChartData.datasets[0].label?.includes('Completed task')).toBeTrue();
+    expect(component.currentChartData.datasets[0].data.length).toBeGreaterThan(0);
     // chart labels (x-axis)
-    expect(component.lineChartData.labels?.length).toBeGreaterThan(0);
+    expect(component.currentChartData.labels?.length).toBeGreaterThan(0);
   });
 
   it('should set line-chart data(label, data props), showing spent times on the completed tasks', () => {
     // checking initial chart data
-    expect(component.lineChartData.datasets[0].label).toBe('Empty label of the chart');
-    expect(component.lineChartData.datasets[0].data).toEqual([]);
-    expect(component.lineChartData.labels).toEqual([]);
+    expect(component.currentChartData.datasets[0].label).toBe('Empty label of the chart');
+    expect(component.currentChartData.datasets[0].data).toEqual([]);
+    expect(component.currentChartData.labels).toEqual([]);
     
     // chart data showing the counted of completed tasks
     component.lineType = LineChartReport.SpentTime;
     component.ngOnChanges(); // it will call the setLineChartData func
     // chart datasets
-    expect(component.lineChartData.datasets[0].label).toBe(component['_lineChartLabels'][component.lineType]);
-    expect(component.lineChartData.datasets[0].label?.includes('spent times')).toBeTrue();
-    expect(component.lineChartData.datasets[0].data.length).toBeGreaterThan(0);
+    expect(component.currentChartData.datasets[0].label).toBe(component['_chartLabels'][component.lineType]);
+    expect(component.currentChartData.datasets[0].label?.includes('spent times')).toBeTrue();
+    expect(component.currentChartData.datasets[0].data.length).toBeGreaterThan(0);
     // chart labels (x-axis)
-    expect(component.lineChartData.labels?.length).toBeGreaterThan(0);
+    expect(component.currentChartData.labels?.length).toBeGreaterThan(0);
   });
 });

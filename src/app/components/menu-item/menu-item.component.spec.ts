@@ -1,20 +1,23 @@
-import { NO_ERRORS_SCHEMA, SimpleChange } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatMenuModule } from '@angular/material/menu';
+import { provideRouter } from '@angular/router';
 
 import { MenuItem } from 'src/app/services/models/app-menu.model';
 import { MenuItemComponent } from './menu-item.component';
+import { ComponentRef } from '@angular/core';
 
 describe('MenuItemComponent', () => {
   let component: MenuItemComponent;
+  let componentRef: ComponentRef<MenuItemComponent>;
   let fixture: ComponentFixture<MenuItemComponent>;
   let menuItemWithLabel: {[label: string]: MenuItem[]};
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MenuItemComponent ],
-      imports: [MatMenuModule],
-      schemas: [NO_ERRORS_SCHEMA]
+      imports: [ MenuItemComponent, MatMenuModule ],
+      schemas: [NO_ERRORS_SCHEMA],
+      providers: [provideRouter([])]
     })
     .compileComponents();
   });
@@ -22,7 +25,8 @@ describe('MenuItemComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MenuItemComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    componentRef = fixture.componentRef;
+    
     menuItemWithLabel = {
       'label1': [
         {linkKey: 'menuItem1', title: 'Menu1'},
@@ -32,53 +36,63 @@ describe('MenuItemComponent', () => {
         {linkKey: 'menuItem3', title: 'Menu3'}
       ]
     };
+    
+    // Set required input
+    componentRef.setInput('menuItems_dict', menuItemWithLabel);
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display title button', () => {
-    expect(component.title).toBeUndefined();
-    component.title = 'TestTitle';
+  it('should display title button', fakeAsync(() => {
+    const buttonTitle = fixture.debugElement.nativeElement.querySelector('button');
+    expect(component.title()).toBe('');
+    tick(100);
 
+    componentRef.setInput('title', 'TestTitle');
     fixture.detectChanges();
-    let buttonTitle = fixture.debugElement.nativeElement.querySelector('button');
     expect(buttonTitle).toBeDefined();
     expect(buttonTitle.innerText).toBe('TestTitle');
+    tick(100);
 
     // set empty title
-    component.title = '';
+    componentRef.setInput('title', '');
     fixture.detectChanges();
-    buttonTitle = fixture.debugElement.nativeElement.querySelector('button');
     expect(buttonTitle).toBeDefined();
     expect(buttonTitle.innerText).toBe('');
-  });
+  }));
 
   it('should adjust and display menuLabelKeys', () => {
-    // menuItems dict does not exist yet
-    component.menuItems_dict = undefined as any;
-    expect(component.menuLabelKeys).toEqual([]);
+    // Create a new fixture with undefined menuItems_dict to test the initial state
+    const testFixture = TestBed.createComponent(MenuItemComponent);
+    const testComponent = testFixture.componentInstance;
+    const testComponentRef = testFixture.componentRef;
+    
+    // Don't set menuItems_dict initially - required input will have default empty object behavior
+    // The effect won't run with meaningful data yet
+    expect(testComponent.menuLabelKeys()).toEqual([]);
 
-    // menuItems dict has values to get labels
-    component.menuItems_dict = menuItemWithLabel;
+    // Now set menuItems_dict with values to get labels
+    testComponentRef.setInput('menuItems_dict', menuItemWithLabel);
+    testFixture.detectChanges();
+    
     const expectedLabels = ['label1', 'label2'];
-    component.ngOnChanges({ menuItems_dict: new SimpleChange('', menuItemWithLabel, true) });
-    expect(component.menuLabelKeys).toEqual(expectedLabels);
+    expect(testComponent.menuLabelKeys()).toEqual(expectedLabels);
   });
 
-  it('should test the isDisplayedLAbels switch to show labels or not', () => {
-    component.menuItems_dict = menuItemWithLabel;
+  it('should test the isDisplayedLLabels switch to show labels or not', () => {
     const expectedLabels = ['label1', 'label2'];
 
-    // not display labels by this.isDisplayedLabels
-    component.isDisplayedLabels = false;
-    component.ngOnChanges( {menuItems_dict: new SimpleChange('', '', false)} );
-    expect(component.menuLabelKeys).toEqual([]);
+    // not display labels by isDisplayedLabels
+    componentRef.setInput('isDisplayedLabels', false);
+    fixture.detectChanges();
+    expect(component.menuLabelKeys()).toEqual([]);
 
-    // display label again by by this.isDisplayedLabels
-    component.isDisplayedLabels = true;
-    component.ngOnChanges( {menuItems_dict: new SimpleChange('', '', false)} );
-    expect(component.menuLabelKeys).toEqual(expectedLabels);
+    // display label again by isDisplayedLabels
+    componentRef.setInput('isDisplayedLabels', true);
+    fixture.detectChanges();
+    expect(component.menuLabelKeys()).toEqual(expectedLabels);
   });
 });

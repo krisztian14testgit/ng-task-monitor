@@ -1,36 +1,54 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Task } from './task.model';
+
+import { FakedTask } from '../../../tests/models/faked-task.model';
 
 @Injectable()
 export class TaskService {
   /** This subject emtis changes of the task list, if get/deted/updated item from the list. */
   public readonly taskList$: BehaviorSubject<Task[]>;
   private _taskList: Task[];
+  private readonly _isElectron: boolean;
 
   constructor() {
     this._taskList = [];
     this.taskList$ = new BehaviorSubject<Task[]>(this._taskList);
+
+     // Check if running in Electron
+    this._isElectron = !!(window && (window as any).electronAPI);
   }
 
   /**
-   * Retruns the all tasks from the electorn main process.
+   * Returns the all tasks from the server or Electron.
    * @returns Task[]
    */
   public getAll(): Observable<Task[]> {
-    return from(this._electronGetAllTask())
-    .pipe(map((rawTasks: object[]) => {
-      const wrappedTasks = rawTasks.map(rawTask => {
-        const task = Task.convertObjectToTask(rawTask);
-        return task;
-      });
-      
-      this._taskList = wrappedTasks;
-      this.taskList$.next(wrappedTasks);
-      return wrappedTasks;
-    }));
+    // If running in Electron, use Electron API
+    if (this._isElectron) {
+      return from(this._electronGetAllTask())
+      .pipe(map((rawTasks: object[]) => {
+        const wrappedTasks = rawTasks.map(rawTask => {
+          const typedTask = rawTask as  {[prop: string]: string | number | Date};
+          const task = Task.convertObjectToTask(typedTask);
+          return task;
+        });
+        
+        this._taskList = wrappedTasks;
+        this.taskList$.next(wrappedTasks);
+        return wrappedTasks;
+      }));
+    }
+    
+    /*return this.http.get<Task[]>(this._taskUrl, {headers: ServiceBase.HttpHeaders})
+    .pipe(map((tasks: Task[]) => {
+      this._taskList = tasks;
+      this.taskList$.next(tasks);
+      return tasks;
+    }));*/
+    return of(FakedTask.list);
   }
 
   /**
@@ -39,7 +57,9 @@ export class TaskService {
    * @returns Task
    */
   public get(taskId: string): Observable<Task> {
-    return of(this._taskList.find(task => task.id === taskId) as Task);
+    // return this.http.get<Task>(`${this._taskUrl}/${taskId}`, {headers: ServiceBase.HttpHeaders});
+    const taskList = this._isElectron ? this._taskList : FakedTask.list;
+    return of(taskList.find(task => task.id === taskId) as Task);
   }
 
   /**
@@ -48,12 +68,25 @@ export class TaskService {
    * @returns new Task
    */
   public add(task: Task): Observable<Task> {
-    // get generated guid for task
-    task['_id'] = this._createUUID();
-    this._taskList.push(task);
-    this.taskList$.next(this._taskList);
-    this._electronSaveTasks(this._taskList);
-    return of(task);
+    /*return this.http.post<Task>(`${this._taskUrl}/`, task, {headers: ServiceBase.HttpHeaders})
+    .pipe(map((newTask: Task) => {
+      this._taskList.push(newTask);
+      this.taskList$.next(this._taskList);
+      return newTask;
+    }));*/
+
+    if (this._isElectron) {
+      // get generated guid for task
+      task['_id'] = this._createUUID();
+      this._taskList.push(task);
+      this.taskList$.next(this._taskList);
+      this._electronSaveTasks(this._taskList);
+      return of(task);
+    }
+
+    FakedTask.addNewTask(task);
+    this.taskList$.next(FakedTask.list);
+    return of(FakedTask.getLatestNewTask());
   }
 
   /**
@@ -62,10 +95,27 @@ export class TaskService {
    * @returns updated Task
    */
   public update(task: Task): Observable<Task> {
-    const foundTaskIndex = this._taskList.findIndex(taskItem => taskItem.id === task.id);
-    this._taskList[foundTaskIndex] = task;
-    this.taskList$.next(this._taskList);
-    this._electronSaveTasks(this._taskList);
+    /*return this.http.put<Task>(`${this._taskUrl}/${task.id}`, task, {headers: ServiceBase.HttpHeaders})
+    .pipe(map((updatedTask: Task) => {
+      // The checking is unnecessary as the request run into good branch,
+      // so server found the item in the list and updated it.
+      const foundTaskIndex = this._taskList.findIndex(taskItem => taskItem.id === updatedTask.id);
+      this._taskList[foundTaskIndex] = updatedTask;
+      this.taskList$.next(this._taskList);
+      return updatedTask;
+    }));*/
+
+    if (this._isElectron) {
+      const foundTaskIndex = this._taskList.findIndex(taskItem => taskItem.id === task.id);
+      this._taskList[foundTaskIndex] = task;
+      this.taskList$.next(this._taskList);
+      this._electronSaveTasks(this._taskList);
+      return of(task);
+    }
+
+    const foundTaskIndex = FakedTask.list.findIndex(taskItem => taskItem.id === task.id);
+    FakedTask.list[foundTaskIndex] = task;
+    this.taskList$.next(FakedTask.list);
     return of(task);
   }
 
@@ -75,15 +125,27 @@ export class TaskService {
    * @param tasks Task items
    * @returns boolean
    */
-  public saveAllTask(tasks: Task[]): Observable<boolean> {
+   public saveAllTask(tasks: Task[]): Observable<boolean> {
     if (tasks.length > 0) {
-      this.taskList$.next(this._taskList);
-      this._electronSaveTasks(this._taskList);
+      /*return this.http.post<Task>(`${this._taskUrl}/`, tasks, {headers: ServiceBase.HttpHeaders})
+      .pipe(map((savedAllTask: Task[]) => {
+        this.taskList$.next(savedAllTask);
+        return true;
+      }));*/
+
+      if (this._isElectron) {
+        this.taskList$.next(this._taskList);
+        this._electronSaveTasks(this._taskList);
+        return of(true);
+      }
+
+      FakedTask.list = tasks;
+      this.taskList$.next(FakedTask.list);
       return of(true);
     }
 
     return of(false);
-  }
+   }
 
   /**
    * Returns true if the delete request run successfully.
@@ -114,8 +176,8 @@ export class TaskService {
     if (taskList.length > 0) {
       try {
         (window as any).electronAPI.ipcTaskList.save(taskList);
-      } catch (error: any) {
-        throw Error(error.message);
+      } catch (error: unknown) {
+        throw Error(error instanceof Error ? error.message : 'Unknown error occurred');
       }
     }
   }

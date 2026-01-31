@@ -30,11 +30,14 @@ function createBrowserWindow() {
         width: 800,
         height: 800,
         webPreferences: {
-            nodeIntegration: true,
+            nodeIntegration: false,
+            contextIsolation: true,
             // for the securty reason: defensee OS file system
             sandbox: true,
             // attaching preload.js shares the data to renderer process.
             preload: path.join(__dirname, 'preload.js'),
+            webSecurity: true,
+            allowRunningInsecureContent: false,
         }
     });
 }
@@ -63,7 +66,7 @@ function openWindow () {
     mainWindow = createBrowserWindow();
 
     // clear session chache of chromium
-    mainWindow.webContents.clearHistory();
+    mainWindow.webContents.navigationHistory.clear();
     mainWindow.webContents.session.clearCache().then(() => {
         console.log('Electron.js session cache has been cleaned');
     });

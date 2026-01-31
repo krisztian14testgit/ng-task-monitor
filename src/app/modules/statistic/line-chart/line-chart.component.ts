@@ -1,7 +1,9 @@
 import { WeekDay } from '@angular/common';
 import { Component, Input, OnChanges } from '@angular/core';
 import { ChartType, ChartConfiguration, ChartData } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
 
+import { IBaseChart } from '../../../interfaces/base-chart.interface';
 import { TaskDate } from '../../task/services/task-timer/task-timer.model';
 import { Task } from '../../task/services/task.model';
 import { LineChartReport } from '../services/chart.model';
@@ -12,11 +14,13 @@ import { LineChartReport } from '../services/chart.model';
  * * 2. Amount of spent times on the completed tasks by creation date.
  */
 @Component({
-  selector: 'app-line-chart',
-  templateUrl: './line-chart.component.html',
-  styleUrls: ['./line-chart.component.css']
+    selector: 'app-line-chart',
+    templateUrl: './line-chart.component.html',
+    styleUrls: ['./line-chart.component.css'],
+    standalone: true,
+    imports: [BaseChartDirective]
 })
-export class LineChartComponent implements OnChanges {
+export class LineChartComponent implements OnChanges, IBaseChart {
   /** The tasks elements. */
   @Input() taskList: Task[] = [];
   /** 
@@ -27,29 +31,29 @@ export class LineChartComponent implements OnChanges {
   @Input() lineType: LineChartReport = LineChartReport.CompletedTask;
 
   /** The chartjs types: line, pie, bar, ... */
-  public readonly lineChartType: ChartType;
+  public readonly currentChartType: ChartType;
   /** The chartjs options settings. */
-  public readonly lineChartOptions: ChartConfiguration['options'];
+  public readonly currentChartOptions: ChartConfiguration['options'];
   /** The chartjs Data structure. */
-  public lineChartData: ChartData<'line', number[], string | string[]>;
+  public currentChartData: ChartData<'line', number[], string | string[]>;
   /** The chartjs plugins setting. */
-  public readonly lineChartPlugins = [];
+  public readonly currentChartPlugins = [];
 
   /** Stores the line-chart titles which will be shown on the chart. */
-  private readonly _lineChartLabels: string[];
+  public readonly _chartLabels: string[];
   /** Stores the callback funtion references which calculate the completed Task or spent time data. */
-  private readonly _lineChartDataCallBack: ((taskList: Task[]) => number[])[];
+  public readonly _chartDataCallBack: ((taskList: Task[]) => number[])[];
 
   constructor() {
-    this.lineChartType = 'line';
-    this.lineChartOptions = {
+    this.currentChartType = 'line';
+    this.currentChartOptions = {
       elements: {
         line: {
           tension: 0.5
         }
       },
     };
-    this.lineChartData = {
+    this.currentChartData = {
       labels: [],
       datasets: [{
         label: 'Empty label of the chart',
@@ -57,11 +61,11 @@ export class LineChartComponent implements OnChanges {
         fill: false,
       }]
     };
-    this._lineChartLabels = [
+    this._chartLabels = [
       'Completed task numbers in This week',
       'Amount of spent times on the completed tasks in This week'
     ];
-    this._lineChartDataCallBack = [
+    this._chartDataCallBack = [
       this.getCompletedTaskCounts,
       this.getSpentTimesOfWorkingOnTasks
     ];
@@ -74,7 +78,7 @@ export class LineChartComponent implements OnChanges {
    */
   ngOnChanges(): void {
     if (this.taskList && this.taskList.length > 0) {
-      this.setLineChartDataBy(this.taskList);
+      this._setCurrentChartDataBy(this.taskList);
     }
   }
 
@@ -83,16 +87,16 @@ export class LineChartComponent implements OnChanges {
    * Settings the label and datasets of the line chart.
    * @param taskList The elements of the taskList.
    */
-  private setLineChartDataBy(taskList: Task[]): void {
+  public _setCurrentChartDataBy(taskList: Task[]): void {
     taskList = this.sortTaskByDays(taskList);
     /* Reset the line-Chart data struct, because of the pointer of lineChartDate
      * to refreshing the line-chart's data by new reference. */
-    this.lineChartData = {...this.lineChartData};
+    this.currentChartData = {...this.currentChartData};
     // Set labels
-    this.lineChartData.labels = this.getChartLabelDays(taskList);
+    this.currentChartData.labels = this.getChartLabelDays(taskList);
     // Set datasets (label-title, data)
-    this.lineChartData.datasets[0].label = this._lineChartLabels[this.lineType];
-    this.lineChartData.datasets[0].data = this._lineChartDataCallBack[this.lineType](taskList);
+    this.currentChartData.datasets[0].label = this._chartLabels[this.lineType];
+    this.currentChartData.datasets[0].data = this._chartDataCallBack[this.lineType](taskList);
   }
 
   /**

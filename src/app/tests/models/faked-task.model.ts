@@ -37,7 +37,8 @@ export class FakedTask {
 
     /**
      * Returns the last Task instance from the array.
-     * Removes it from the array
+     * @Note
+     * It removes the last Task from the array.
      * @returns Task
      */
     public static getLatestNewTask(): Task {

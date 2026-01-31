@@ -1,29 +1,46 @@
 <!-- menu title -->
 <button mat-raised-button
-        mat-button [matMenuTriggerFor]="beforeMenu">
-        {{title}}
+  mat-button [matMenuTriggerFor]="beforeMenu">
+  @if (mainMenuIcon()) {
+    <mat-icon class="menu-main-icon ">
+      {{mainMenuIcon()}}
+    </mat-icon>
+  }
+  <span>{{title()}}</span>
 </button>
 <!-- nested menu template -->
 <mat-menu #beforeMenu="matMenu" xPosition="before">
-  <ng-container *ngIf="isDisplayedLabels">
+  @if (isDisplayedLabels()) {
     <!-- label key -->
-    <div *ngFor="let labelKey of menuLabelKeys">
-      <div class="menu-label">{{labelKey}}</div>
-      <hr> <!--line -->
-      <app-style-theme *ngIf="labelKey === 'Themes'"></app-style-theme>
-      <!-- menu-items -->
-      <a *ngFor="let menuItem of menuItems_dict[labelKey]" mat-menu-item
-        [routerLink]="['/' + menuItem.linkKey]" routerLinkActive="activated-route">
-        {{menuItem.title}}
-      </a>
-    </div>
-  </ng-container>
+    @for (labelKey of menuLabelKeys(); track labelKey) {
+      <div>
+        <div class="menu-label">{{labelKey}}</div>
+        <hr> <!--line -->
+        @if (labelKey === 'Themes') {
+          <app-style-theme></app-style-theme>
+        }
+        <!-- menu-items -->
+        @for (menuItem of menuItems_dict()[labelKey]; track menuItem) {
+          <span>
+            <a mat-menu-item [routerLink]="['/' + menuItem.linkKey]" routerLinkActive="activated-route">
+              @if (menuItem.icon) {
+                <mat-icon [ngStyle]="{'color':'inherit'}">{{menuItem.icon}}</mat-icon>
+              }
+              {{menuItem.title}}
+            </a>
+          </span>
+        }
+      </div>
+    }
+  }
 
   <!-- Display sub-menu without topic key -->
-  <ng-container *ngIf="!isDisplayedLabels">
-    <a *ngFor="let menuItem of menuItemValues" mat-menu-item
-      [routerLink]="'/' + menuItem.linkKey" routerLinkActive="activated-route">
-      {{menuItem.title}}
-    </a>
-  </ng-container>
+  @if (!isDisplayedLabels()) {
+    @for (menuItem of menuItemValues(); track menuItem) {
+      <a mat-menu-item
+        [routerLink]="'/' + menuItem.linkKey" routerLinkActive="activated-route">
+        {{menuItem.title}}
+      </a>
+    }
+  }
 </mat-menu>

@@ -3,11 +3,9 @@
  * Contains the basic method for the menu-item controller which have to be implemented.
  * 
  */
-export class IMenuController {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
+export interface IMenuController {
     /** Displays the sub-menu items. */
-    show() {}
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    show(): void;
     /** Hides the sub-menu items */
-    close() {}
+    close(): void;
 }

@@ -1,15 +1,24 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { TaskService } from '../task/services/task.service';
 import { Task } from '../task/services/task.model';
+import { TaskCountChartComponent } from './task-count-chart/task-count-chart.component';
+import { LineChartComponent } from './line-chart/line-chart.component';
 
 @Component({
-  selector: 'app-statistic',
-  templateUrl: './statistic.component.html',
-  styleUrls: ['./statistic.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-statistic',
+    templateUrl: './statistic.component.html',
+    styleUrls: ['./statistic.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [CommonModule, FormsModule, MatCardModule, MatSelectModule, MatFormFieldModule, TaskCountChartComponent, LineChartComponent]
 })
 export class StatisticComponent implements OnInit, OnDestroy {
   /** Contains the task instance from the task Service. */
@@ -18,7 +27,7 @@ export class StatisticComponent implements OnInit, OnDestroy {
    * This a switcher of the report. 
    * If it is true showing daily report, otherwise weekly report.
    */
-  public isDailyReport!: boolean;
+  public isDailyReport = signal(true);
   /** 
    * Contains items for the selection tag. Items come from the dailyReportCharts or weeklyReportCharts arrays 
    * depens on the isDailyReport switcher.
@@ -28,7 +37,7 @@ export class StatisticComponent implements OnInit, OnDestroy {
    */
   public loadedReportCharts!: string[];
   // showing count of the completed Tasks in daily, and weekly
-  public selectedChartType = 0;
+  public selectedChartType = signal(0);
   /** Contains the daily report selection items. */
   private readonly _dailyReportCharts: string[];
   /** Contains the weekly report selection items. */
@@ -68,8 +77,9 @@ export class StatisticComponent implements OnInit, OnDestroy {
    */
   private setReportTypeFromUrl(): void {
     const reportType = 'daily';
-    this.isDailyReport = this.router.url.includes(reportType);
-    this.loadedReportCharts = this.isDailyReport ? this._dailyReportCharts : this._weeklyReportCharts;
+    const isDaily = this.router.url.includes(reportType);
+    this.isDailyReport.set(isDaily);
+    this.loadedReportCharts = isDaily ? this._dailyReportCharts : this._weeklyReportCharts;
   }
 
 }

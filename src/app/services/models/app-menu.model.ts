@@ -4,6 +4,8 @@ export class MenuItem {
     linkKey = '';
     /** The title of sub-menu. Displayed name. */
     title = '';
+    /** Material icon name. */
+    icon? = '';
 }
 
 /** The represent the menu with belong properties of the application. */
@@ -43,4 +45,6 @@ export class AppMenu {
      * @defaultValue false
      */
     isDisplayedLable = false;
+    /** Material icon name. The icon will be display in `<mat-icon>` High-level class. */
+    icon? = ''
 }

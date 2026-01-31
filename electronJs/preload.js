@@ -5,7 +5,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 const locationPath = {
     /** 
-     * Saves the location paths via 'save-locaiton' channel, promise request.
+     * Saves the location paths via 'save-location' channel, promise request.
      * locationSetting has appSettingPath and taskPath.
      * Handle: async - await scope.
      * @param pathType Default is appSettingPath = 0. It can be taskPath = 1
@@ -29,14 +29,14 @@ const locationPath = {
 const taskList = {
     /**
      * Saves the given task list via 'save-taskList' channel, promise request.
-     * Handle: asyn - await scope.
+     * Handle: async - await scope.
      * @param taskList the task items
      * @using app/modules/task/service/task.service
      * @returns Promise<void>
      */
     save: (taskList = []) => ipcRenderer.send('save-taskList', taskList),
     /**
-     * Returns the task items into array, via 'load-taskList' channelm promise request.
+     * Returns the task items into array, via 'load-taskList' channel, promise request.
      * Handle: async - await scope.
      * @using app/modules/task/service/task.service
      * @returns Promise<array>
@@ -44,7 +44,7 @@ const taskList = {
     getAll: () => ipcRenderer.invoke('load-taskList')
 };
 
-// Contains differenct IPC(Inter-Process-Communication) channels for task and location service.
+// Contains different IPC(Inter-Process-Communication) channels for task and location service.
 contextBridge.exposeInMainWorld('electronAPI', {
     ipcLocation: locationPath,
     ipcTaskList: taskList
