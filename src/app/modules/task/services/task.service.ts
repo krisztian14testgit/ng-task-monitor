@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 
 import { Task, TaskStatus } from './task.model';
@@ -15,11 +15,10 @@ export class TaskService {
   private readonly _taskUrl = `${environment.host}task`;
   private _taskList: Task[];
   private readonly STORAGE_KEY = 'ng-task-monitor-tasks';
+  private readonly http = inject(HttpClient);
+  private readonly browserStorage = inject(BrowserStorageService);
 
-  constructor(
-    private readonly http: HttpClient,
-    private readonly browserStorage: BrowserStorageService
-  ) {
+  constructor() {
     this._taskList = [];
     this.taskList$ = new BehaviorSubject<Task[]>(this._taskList);
     
@@ -33,7 +32,14 @@ export class TaskService {
     const task3 = new Task('', 'oldTask3', '', 10);
     FakedTask.addNewTask(task3, TaskStatus.Completed, '2022-06-28 18:00:00');
     
-    // Load tasks from localStorage or use FakedTask list
+    this.loadTasksFromStorage();
+  }
+
+  /**
+   * Loads tasks from localStorage or uses FakedTask list.
+   * Extracted to avoid code duplication.
+   */
+  private loadTasksFromStorage(): void {
     const storedTasks = this.browserStorage.get<Task[]>(this.STORAGE_KEY);
     if (storedTasks && storedTasks.length > 0) {
       FakedTask.list = storedTasks;
@@ -54,11 +60,7 @@ export class TaskService {
       return tasks;
     }));*/
     
-    // Load from localStorage or return FakedTask list
-    const storedTasks = this.browserStorage.get<Task[]>(this.STORAGE_KEY);
-    if (storedTasks && storedTasks.length > 0) {
-      FakedTask.list = storedTasks;
-    }
+    this.loadTasksFromStorage();
     return of(FakedTask.list);
   }
 
