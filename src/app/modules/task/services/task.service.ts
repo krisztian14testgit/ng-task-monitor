@@ -6,6 +6,7 @@ import { Task, TaskStatus } from './task.model';
 import { environment } from '../../../../environments/environment';
 
 import { FakedTask } from '../../../tests/models/faked-task.model';
+import { BrowserStorageService } from '../../../services/browser-storage/browser-storage.service';
 
 @Injectable()
 export class TaskService {
@@ -13,8 +14,12 @@ export class TaskService {
   public readonly taskList$: BehaviorSubject<Task[]>;
   private readonly _taskUrl = `${environment.host}task`;
   private _taskList: Task[];
+  private readonly STORAGE_KEY = 'ng-task-monitor-tasks';
 
-  constructor(private readonly http: HttpClient) {
+  constructor(
+    private readonly http: HttpClient,
+    private readonly browserStorage: BrowserStorageService
+  ) {
     this._taskList = [];
     this.taskList$ = new BehaviorSubject<Task[]>(this._taskList);
     
@@ -27,6 +32,12 @@ export class TaskService {
 
     const task3 = new Task('', 'oldTask3', '', 10);
     FakedTask.addNewTask(task3, TaskStatus.Completed, '2022-06-28 18:00:00');
+    
+    // Load tasks from localStorage or use FakedTask list
+    const storedTasks = this.browserStorage.get<Task[]>(this.STORAGE_KEY);
+    if (storedTasks && storedTasks.length > 0) {
+      FakedTask.list = storedTasks;
+    }
     this.taskList$.next(FakedTask.list);
   }
 
@@ -42,6 +53,12 @@ export class TaskService {
       this.taskList$.next(tasks);
       return tasks;
     }));*/
+    
+    // Load from localStorage or return FakedTask list
+    const storedTasks = this.browserStorage.get<Task[]>(this.STORAGE_KEY);
+    if (storedTasks && storedTasks.length > 0) {
+      FakedTask.list = storedTasks;
+    }
     return of(FakedTask.list);
   }
 
@@ -69,6 +86,7 @@ export class TaskService {
     }));*/
 
     FakedTask.addNewTask(task);
+    this.browserStorage.save(this.STORAGE_KEY, FakedTask.list);
     this.taskList$.next(FakedTask.list);
     return of(FakedTask.getLatestNewTask());
   }
@@ -91,6 +109,7 @@ export class TaskService {
 
     const foundTaskIndex = FakedTask.list.findIndex(taskItem => taskItem.id === task.id);
     FakedTask.list[foundTaskIndex] = task;
+    this.browserStorage.save(this.STORAGE_KEY, FakedTask.list);
     this.taskList$.next(FakedTask.list);
     return of(task);
   }
@@ -110,6 +129,7 @@ export class TaskService {
       }));*/
 
       FakedTask.list = tasks;
+      this.browserStorage.save(this.STORAGE_KEY, FakedTask.list);
       this.taskList$.next(FakedTask.list);
       return of(true);
     }
@@ -134,6 +154,7 @@ export class TaskService {
 
     const fakedIndex = FakedTask.list.findIndex(task => task.id === taskId);
     FakedTask.list.splice(fakedIndex, 1);
+    this.browserStorage.save(this.STORAGE_KEY, FakedTask.list);
     this.taskList$.next(FakedTask.list);
     return of(true);
   }

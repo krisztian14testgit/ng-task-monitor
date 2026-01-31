@@ -7,20 +7,35 @@ import { Task } from './task.model';
 
 import { TaskService } from './task.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { BrowserStorageService } from '../../../services/browser-storage/browser-storage.service';
 
 describe('TaskService', () => {
   let service: TaskService;
   let mockHttp: HttpTestingController;
+  let browserStorageService: jasmine.SpyObj<BrowserStorageService>;
   const taksUrl = `${environment.host}task`;
 
   beforeEach(() => {
+    const browserStorageSpy = jasmine.createSpyObj('BrowserStorageService', ['get', 'save', 'remove']);
+    
     TestBed.configureTestingModule({
     imports: [],
-    providers: [TaskService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+    providers: [
+      TaskService,
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
+      { provide: BrowserStorageService, useValue: browserStorageSpy }
+    ]
 });
 
     service = TestBed.inject(TaskService);
     mockHttp = TestBed.inject(HttpTestingController);
+    browserStorageService = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    
+    // Set default behavior for browserStorageService.get to return null
+    browserStorageService.get.and.returnValue(null);
+    browserStorageService.save.and.returnValue(true);
+    browserStorageService.remove.and.returnValue(true);
   });
 
   it('should be created', inject([TaskService], (instance: TaskService) => {
