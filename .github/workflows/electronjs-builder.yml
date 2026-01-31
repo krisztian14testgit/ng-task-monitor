@@ -38,10 +38,3 @@ jobs:
 
       - name: Make ElectronJS distributables
         run: npm run make
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: electronjs-distributables
-          path: out/
-          retention-days: 30
