@@ -61,7 +61,7 @@ export class Task {
      * * createdDate: is set up after the creation of the task instance.
      * * status: default value is TaskStatus.Start.
     */
-     constructor(id = 'new', title = '', description = '', inMinutes = 0,
+     constructor(id = '', title = '', description = '', inMinutes = 0,
      status = 0, createdDateStr = '', timerStartedDateStr = '', timerFinishedDateStr = '') {
         this._id = id;
         this.title = title;

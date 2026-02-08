@@ -5,7 +5,6 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Task, TaskStatus } from './task.model';
 import { environment } from '../../../../environments/environment';
 
-import { FakedTask } from '../../../tests/models/faked-task.model';
 import { BrowserStorageService } from '../../../services/browser-storage/browser-storage.service';
 
 @Injectable()
@@ -41,11 +40,11 @@ export class TaskService {
   }
 
   /**
-   * Loads tasks from localStorage or uses FakedTask list.
+   * Loads tasks from localStorage.
    * Extracted to avoid code duplication.
    */
   private receiveTasksFromStorage(): Task[] {
-    const storedTasks = this.browserStorage.get<Task[]>(this.STORAGE_KEY);
+    const storedTasks = this.browserStorage.get<unknown[]>(this.STORAGE_KEY);
 
     if (storedTasks === null) {
       return [];
@@ -53,9 +52,8 @@ export class TaskService {
 
     const retTaskArray: Task[] = [];
     let tempTask: Task;
-    let taskItem: any;
     for (let i = 0; i < storedTasks.length; i++) {
-      taskItem = storedTasks[i];
+      const taskItem = storedTasks[i] as {[prop: string]: string | number | Date};
       taskItem['_id'] = `faked-${i}-${taskItem['title']}`;
       tempTask = Task.convertObjectToTask(taskItem);
       retTaskArray.push(tempTask);
