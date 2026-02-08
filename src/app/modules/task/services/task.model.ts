@@ -61,7 +61,7 @@ export class Task {
      * * createdDate: is set up after the creation of the task instance.
      * * status: default value is TaskStatus.Start.
     */
-     constructor(id = '', title = '', description = '', inMinutes = 0,
+     constructor(id = 'new', title = '', description = '', inMinutes = 0,
      status = 0, createdDateStr = '', timerStartedDateStr = '', timerFinishedDateStr = '') {
         this._id = id;
         this.title = title;
@@ -84,10 +84,13 @@ export class Task {
 
     /** 
      * The date of the task when it was created.
-     * @access Readonly
      */
     public get createdDate(): string {
         return this._createdDate.toDateString();
+    }
+
+    public set createdDate(date: Date) {
+        this._createdDate = date;
     }
 
     /**
@@ -201,7 +204,7 @@ export class Task {
 
         // Converting process
         const taskID = obj._id ? String(obj._id) : '';
-        const taskTitle = obj.description ? String(obj.description) : 'Unknown';
+        const taskTitle = obj.title ? String(obj.title) : 'Unknown';
         const taskInitialTime = obj._initialTime ? Number(obj._initialTime) : 0;
         const retTask = new Task(taskID, taskTitle, obj.description as string,
             obj.timeMinutes as number, obj._status as number, obj._createdDate as string,
