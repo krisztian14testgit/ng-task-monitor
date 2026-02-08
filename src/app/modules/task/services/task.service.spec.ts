@@ -43,16 +43,13 @@ describe('TaskService', () => {
   }));
 
   it('should get all tasks', fakeAsync(() =>{
-    // Mock browserStorage to return stored tasks
-    const mockTasks = [
-      { _id: 'faked-0-task1', title: 'task1', description: 'desc1', timeMinutes: 10, _status: 0, _createdDate: new Date().toISOString(), _initialTime: 10 },
-      { _id: 'faked-1-task2', title: 'task2', description: 'desc2', timeMinutes: 20, _status: 0, _createdDate: new Date().toISOString(), _initialTime: 20 }
-    ];
-    browserStorageService.get.and.returnValue(mockTasks);
+    const fakedTaskList = FakedTask.list;
+    // Mock browserStorage to return FakedTask.list
+    browserStorageService.get.and.returnValue(FakedTask.list);
     
     service.getAll().subscribe(taskList => {
       expect(taskList).toBeDefined();
-      expect(taskList.length).toBe(2);
+      expect(taskList.length).toBe(fakedTaskList.length);
       expect(taskList.length).toBeGreaterThan(0);
     });
     
@@ -73,16 +70,14 @@ describe('TaskService', () => {
   }));
 
   it('should get current task by taskId', fakeAsync(() => {
-    // Mock browserStorage to return stored tasks
-    const mockTasks = [
-      { _id: 'faked-0-task1', title: 'task1', description: 'desc1', timeMinutes: 10, _status: 0, _createdDate: new Date().toISOString(), _initialTime: 10 }
-    ];
-    browserStorageService.get.and.returnValue(mockTasks);
+    const taskIndex = 0;
+    const taskId = FakedTask.list[taskIndex].id;
+    // Mock browserStorage to return FakedTask.list
+    browserStorageService.get.and.returnValue(FakedTask.list);
     
     // First call getAll to populate the internal _taskList
     service.getAll().subscribe();
     
-    const taskId = 'faked-0-task1';
     service.get(taskId).subscribe(task => {
       expect(task).toBeDefined();
       expect(task.id).toBe(taskId);
@@ -108,16 +103,14 @@ describe('TaskService', () => {
   }));
 
   it('should update the selected Task by id', fakeAsync(() => {
-    // Mock browserStorage to return stored tasks
-    const mockTasks = [
-      { _id: 'faked-0-task1', title: 'task1', description: 'desc1', timeMinutes: 10, _status: 0, _createdDate: new Date().toISOString(), _initialTime: 10 }
-    ];
-    browserStorageService.get.and.returnValue(mockTasks);
+    const originTask = FakedTask.list[0];
+    // Mock browserStorage to return FakedTask.list
+    browserStorageService.get.and.returnValue(FakedTask.list);
     
     // First call getAll to populate the internal _taskList
     service.getAll().subscribe();
     
-    const updatedTask = new Task('faked-0-task1', 'alma', 'modifed description', 10);
+    const updatedTask = new Task(originTask.id, 'alma', 'modifed description', originTask.timeMinutes);
 
     service.update(updatedTask).subscribe(task => {
       expect(task).toBeDefined();
@@ -126,22 +119,17 @@ describe('TaskService', () => {
     });
 
     // No HTTP request - service updates local data
-    mockHttp.expectNone(`${taksUrl}/faked-0-task1`);
+    mockHttp.expectNone(`${taksUrl}/${originTask.id}`);
   }));
 
   it('shoud remove the taks by id', fakeAsync(() => {
-    // Mock browserStorage to return stored tasks
-    const mockTasks = [
-      { _id: 'faked-0-task1', title: 'task1', description: 'desc1', timeMinutes: 10, _status: 0, _createdDate: new Date().toISOString(), _initialTime: 10 },
-      { _id: 'faked-1-task2', title: 'task2', description: 'desc2', timeMinutes: 20, _status: 0, _createdDate: new Date().toISOString(), _initialTime: 20 }
-    ];
-    browserStorageService.get.and.returnValue(mockTasks);
+    const initialLength = FakedTask.list.length;
+    const removedTaskId = FakedTask.list[0].id;
+    // Mock browserStorage to return FakedTask.list
+    browserStorageService.get.and.returnValue(FakedTask.list);
     
     // First call getAll to populate the internal _taskList
     service.getAll().subscribe();
-    
-    const initialLength = 2;
-    const removedTaskId = 'faked-0-task1';
     
     service.delete(removedTaskId).subscribe(isDeleted => {
       expect(isDeleted).toBe(true);
@@ -155,16 +143,15 @@ describe('TaskService', () => {
   }));
 
   it('shoud NOT remove the taks, removing is failed', fakeAsync(() => {
-    // Mock browserStorage to return stored tasks
-    const mockTasks = [
-      { _id: 'faked-0-task1', title: 'task1', description: 'desc1', timeMinutes: 10, _status: 0, _createdDate: new Date().toISOString(), _initialTime: 10 }
-    ];
-    browserStorageService.get.and.returnValue(mockTasks);
+    // Service now uses local data, so delete always succeeds
+    // This test verifies the delete operation works correctly
+    const taskId = FakedTask.list[FakedTask.list.length - 1].id;
+    const lengthBefore = FakedTask.list.length;
+    // Mock browserStorage to return FakedTask.list
+    browserStorageService.get.and.returnValue(FakedTask.list);
     
     // First call getAll to populate the internal _taskList
     service.getAll().subscribe();
-    
-    const taskId = 'faked-0-task1';
     
     service.delete(taskId).subscribe(isDeleted => {
       expect(isDeleted).toBe(true);
