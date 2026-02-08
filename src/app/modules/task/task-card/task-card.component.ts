@@ -173,10 +173,10 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   private saveTaskService(): void {
     this.taskForm.updateValueAndValidity();
     if (this.taskForm.valid) {
-      const isNewTask = this.task.isNewTask();
       // updating Task object by the taksForm
       this.updateTaskValuesByForm();
-      const serviceMethod = !isNewTask ? 'update': 'add';
+      const isNewTask = !this.taskService.isTaskAlreadyExist(this.task);
+      const serviceMethod = isNewTask ? 'add': 'update';
 
       // updated task by the reference in this.task
       const saving$ = of(this.task);
