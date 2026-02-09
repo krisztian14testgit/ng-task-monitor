@@ -116,7 +116,9 @@ class AngularStyleGuideChecker {
     
     // Check file naming: should be kebab-case
     fileResult.checks++;
-    if (this.isKebabCase(fileName.replace(/\.(ts|spec\.ts)$/, ''))) {
+    // Extract base name without extension and Angular-specific suffixes
+    const baseFileName = fileName.replace(/\.(component|service|directive|pipe|guard|interceptor|resolver|module|model|interface|spec)\.ts$/, '').replace(/\.ts$/, '');
+    if (this.isKebabCase(baseFileName)) {
       fileResult.passed++;
     } else {
       fileResult.issues.push({
@@ -278,7 +280,6 @@ class AngularStyleGuideChecker {
       // Check for standalone or module declaration
       fileResult.checks++;
       const isStandalone = content.includes('standalone: true');
-      const hasImports = content.includes('imports: [');
       
       if (isStandalone || !content.includes('@Component')) {
         fileResult.passed++;
@@ -409,19 +410,15 @@ class AngularStyleGuideChecker {
    */
   areImportsOrganized(importLines) {
     // Simple check: Angular imports should come before application imports
-    let foundAngular = false;
-    let foundThirdParty = false;
     let foundRelative = false;
 
     for (const line of importLines) {
       if (line.includes('@angular/')) {
         if (foundRelative) return false; // Angular imports should come first
-        foundAngular = true;
       } else if (line.includes('./') || line.includes('../')) {
         foundRelative = true;
       } else {
         if (foundRelative) return false; // Third-party should come before relative
-        foundThirdParty = true;
       }
     }
 
