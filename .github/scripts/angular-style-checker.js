@@ -476,8 +476,8 @@ class AngularStyleGuideChecker {
       console.log('Please review and fix the issues listed above.\n');
     }
     
-    // Create markdown report file
-    this.createMarkdownReport(greenFiles, yellowFiles, redFiles, overallScore);
+    // Print style guide reference
+    this.printStyleGuideReference();
   }
 
   /**
@@ -506,85 +506,34 @@ class AngularStyleGuideChecker {
   }
 
   /**
-   * Create markdown report file
+   * Print style guide reference information
    */
-  createMarkdownReport(greenFiles, yellowFiles, redFiles, overallScore) {
-    const reportPath = path.join(process.cwd(), 'angular-style-guide-report.md');
+  printStyleGuideReference() {
+    console.log(`${colors.bold}=== Style Guide Reference ===${colors.reset}\n`);
+    console.log(`This report is based on the ${colors.bold}Angular Style Guide${colors.reset}`);
+    console.log(`Reference: https://angular.dev/style-guide\n`);
     
-    let markdown = `# Angular Style Guide Compliance Report\n\n`;
-    markdown += `**Generated:** ${new Date().toISOString()}\n\n`;
-    markdown += `## Summary\n\n`;
-    markdown += `- **Total files analyzed:** ${this.results.length}\n`;
-    markdown += `- **✅ Green (≥80%):** ${greenFiles.length} files\n`;
-    markdown += `- **⚠️ Yellow (45-80%):** ${yellowFiles.length} files\n`;
-    markdown += `- **❌ Red (<45%):** ${redFiles.length} files\n`;
-    markdown += `- **Overall Compliance Score:** ${overallScore}%\n\n`;
-
-    markdown += `## Compliance Legend\n\n`;
-    markdown += `- 🟢 **Green (≥80%)**: Files that passed the style guide compliance\n`;
-    markdown += `- 🟡 **Yellow (45-80%)**: Files that partially passed\n`;
-    markdown += `- 🔴 **Red (<45%)**: Files that failed the style guide compliance\n\n`;
-
-    if (redFiles.length > 0) {
-      markdown += `## 🔴 Red Files (Failed)\n\n`;
-      redFiles.forEach(file => {
-        markdown += `### ${file.path}\n`;
-        markdown += `**Score:** ${file.score}% (${file.passed}/${file.checks} checks passed)\n\n`;
-        if (file.issues.length > 0) {
-          markdown += `**Issues:**\n`;
-          file.issues.forEach(issue => {
-            markdown += `- **[${issue.rule}]** ${issue.message}\n`;
-          });
-        }
-        markdown += `\n`;
-      });
-    }
-
-    if (yellowFiles.length > 0) {
-      markdown += `## 🟡 Yellow Files (Partially Passed)\n\n`;
-      yellowFiles.forEach(file => {
-        markdown += `### ${file.path}\n`;
-        markdown += `**Score:** ${file.score}% (${file.passed}/${file.checks} checks passed)\n\n`;
-        if (file.issues.length > 0) {
-          markdown += `**Issues:**\n`;
-          file.issues.forEach(issue => {
-            markdown += `- **[${issue.rule}]** ${issue.message}\n`;
-          });
-        }
-        markdown += `\n`;
-      });
-    }
-
-    if (greenFiles.length > 0) {
-      markdown += `## 🟢 Green Files (Passed)\n\n`;
-      greenFiles.forEach(file => {
-        markdown += `- ${file.path} - ${file.score}% (${file.passed}/${file.checks} checks passed)\n`;
-      });
-      markdown += `\n`;
-    }
-
-    markdown += `## Style Guide Reference\n\n`;
-    markdown += `This report is based on the [Angular Style Guide](https://angular.dev/style-guide)\n\n`;
-    markdown += `### Checked Areas\n\n`;
-    markdown += `1. **Naming Conventions**\n`;
-    markdown += `   - File names should use kebab-case\n`;
-    markdown += `   - Class names should use PascalCase with appropriate suffixes (Component, Service, Directive, Pipe)\n`;
-    markdown += `   - Component selectors should use kebab-case with proper prefix\n\n`;
-    markdown += `2. **Project Structure**\n`;
-    markdown += `   - Files should be organized in appropriate folders\n`;
-    markdown += `   - Related files should be co-located\n\n`;
-    markdown += `3. **Dependency Injection**\n`;
-    markdown += `   - Services should use @Injectable decorator\n`;
-    markdown += `   - Constructor-based dependency injection with access modifiers\n`;
-    markdown += `   - Or use the inject() function for DI\n\n`;
-    markdown += `4. **Components and Directives**\n`;
-    markdown += `   - Implement lifecycle interfaces when using lifecycle hooks\n`;
-    markdown += `   - Keep components focused and small\n`;
-    markdown += `   - Use proper template syntax\n`;
-    markdown += `   - Optimize *ngFor with trackBy\n\n`;
-
-    fs.writeFileSync(reportPath, markdown);
-    console.log(`${colors.green}✓ Markdown report saved to: ${reportPath}${colors.reset}\n`);
+    console.log(`${colors.bold}Checked Areas:${colors.reset}\n`);
+    
+    console.log(`${colors.bold}1. Naming Conventions${colors.reset}`);
+    console.log(`   - File names should use kebab-case`);
+    console.log(`   - Class names should use PascalCase with appropriate suffixes (Component, Service, Directive, Pipe)`);
+    console.log(`   - Component selectors should use kebab-case with proper prefix\n`);
+    
+    console.log(`${colors.bold}2. Project Structure${colors.reset}`);
+    console.log(`   - Files should be organized in appropriate folders`);
+    console.log(`   - Related files should be co-located\n`);
+    
+    console.log(`${colors.bold}3. Dependency Injection${colors.reset}`);
+    console.log(`   - Services should use @Injectable decorator`);
+    console.log(`   - Constructor-based dependency injection with access modifiers`);
+    console.log(`   - Or use the inject() function for DI\n`);
+    
+    console.log(`${colors.bold}4. Components and Directives${colors.reset}`);
+    console.log(`   - Implement lifecycle interfaces when using lifecycle hooks`);
+    console.log(`   - Keep components focused and small`);
+    console.log(`   - Use proper template syntax`);
+    console.log(`   - Optimize *ngFor with trackBy\n`);
   }
 }
 

@@ -51,6 +51,3 @@ Thumbs.db
 # Ignored files
 package-lock.json
 ~$TaskTracingApp.pptx
-
-# Generated reports
-angular-style-guide-report.md
