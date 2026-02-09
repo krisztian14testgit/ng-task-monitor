@@ -1,0 +1,68 @@
+---
+name: Angular-style-guide-checker
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  style-guide-check:
+    name: Angular Style Guide Compliance Check
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12
+
+      - name: Run Angular Style Guide Checker
+        run: node .github/scripts/angular-style-checker.js
+
+      - name: Upload Style Guide Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: angular-style-guide-report
+          path: angular-style-guide-report.md
+
+      - name: Comment PR with Report Summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const reportPath = 'angular-style-guide-report.md';
+            
+            if (fs.existsSync(reportPath)) {
+              const report = fs.readFileSync(reportPath, 'utf8');
+              
+              // Extract summary section for PR comment
+              const summaryMatch = report.match(/## Summary\n\n([\s\S]*?)\n\n## /);
+              const summary = summaryMatch ? summaryMatch[1] : 'Could not extract summary';
+              
+              const comment = `## 🎯 Angular Style Guide Compliance Report
+            
+            ${summary}
+            
+            📊 **Full Report:** The complete style guide compliance report has been uploaded as an artifact. You can download it from the workflow run artifacts.
+            
+            ---
+            *This report is based on the [Angular Style Guide](https://angular.dev/style-guide)*
+            `;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
