@@ -343,7 +343,7 @@ class AngularStyleGuideChecker {
     // Check for proper Angular syntax
     fileResult.checks++;
     const hasProperBindings = !content.includes('bind-') && !content.includes('on-');
-    if (hasProperBindings || !content.includes('bind-') && !content.includes('on-')) {
+    if (hasProperBindings) {
       fileResult.passed++;
     } else {
       fileResult.issues.push({
@@ -354,7 +354,7 @@ class AngularStyleGuideChecker {
 
     // Check for proper structural directives
     fileResult.checks++;
-    if (!content.includes('*ngFor') || content.match(/trackBy/)) {
+    if (!content.includes('*ngFor') || content.includes('trackBy')) {
       fileResult.passed++;
     } else {
       fileResult.issues.push({
