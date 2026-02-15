@@ -53,10 +53,15 @@ export class TaskService {
     const retTaskArray: Task[] = [];
     let tempTask: Task;
     for (let i = 0; i < storedTasks.length; i++) {
-      const taskItem = storedTasks[i] as {[prop: string]: string | number | Date};
-      taskItem['_id'] = `faked-${i}-${taskItem['title']}`;
-      tempTask = Task.convertObjectToTask(taskItem);
-      retTaskArray.push(tempTask);
+      // Check if the item is already a Task instance
+      if (storedTasks[i] instanceof Task) {
+        retTaskArray.push(storedTasks[i] as Task);
+      } else {
+        const taskItem = storedTasks[i] as {[prop: string]: string | number | Date};
+        taskItem['_id'] = `faked-${i}-${taskItem['title']}`;
+        tempTask = Task.convertObjectToTask(taskItem);
+        retTaskArray.push(tempTask);
+      }
     }
     
     return retTaskArray;
