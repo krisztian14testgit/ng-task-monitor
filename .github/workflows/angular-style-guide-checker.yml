@@ -1,0 +1,27 @@
+---
+name: Angular-style-guide-checker
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  style-guide-check:
+    name: Angular Style Guide Compliance Check
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12
+
+      - name: Run Angular Style Guide Checker
+        run: node .github/scripts/angular-style-checker.js
