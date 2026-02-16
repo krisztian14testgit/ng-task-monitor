@@ -28,10 +28,13 @@ export class TaskService {
     this._taskList.push (task1);
 
     const task2 = new Task('', 'oldTask-yesterday', '', 10);
-    task2.setStatus(TaskStatus.Start);
+    task2.setStatus(TaskStatus.Completed);
     const yesterdayDay = new Date();
     yesterdayDay.setDate(yesterdayDay.getDate() - 1);
     task2.createdDate = yesterdayDay;
+    task2.timerStartedDate = yesterdayDay;
+    const tenMinsInMillisecond = 10 * 60*1000;
+    task2.timerFinishedDate = new Date(yesterdayDay.getTime() + tenMinsInMillisecond); 
     this._taskList.push (task2);
     
     // storing faked tasks into localStorage
