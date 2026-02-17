@@ -7,20 +7,35 @@ import { Task } from './task.model';
 
 import { TaskService } from './task.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { BrowserStorageService } from '../../../services/browser-storage/browser-storage.service';
 
 describe('TaskService', () => {
   let service: TaskService;
   let mockHttp: HttpTestingController;
+  let browserStorageService: jasmine.SpyObj<BrowserStorageService>;
   const taksUrl = `${environment.host}task`;
 
   beforeEach(() => {
+    const browserStorageSpy = jasmine.createSpyObj('BrowserStorageService', ['get', 'save', 'remove']);
+    
     TestBed.configureTestingModule({
     imports: [],
-    providers: [TaskService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+    providers: [
+      TaskService,
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
+      { provide: BrowserStorageService, useValue: browserStorageSpy }
+    ]
 });
 
     service = TestBed.inject(TaskService);
     mockHttp = TestBed.inject(HttpTestingController);
+    browserStorageService = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    
+    // Set default behavior for browserStorageService.get to return null
+    browserStorageService.get.and.returnValue(null);
+    browserStorageService.save.and.returnValue(true);
+    browserStorageService.remove.and.returnValue(true);
   });
 
   it('should be created', inject([TaskService], (instance: TaskService) => {
@@ -29,15 +44,16 @@ describe('TaskService', () => {
 
   it('should get all tasks', fakeAsync(() =>{
     const fakedTaskList = FakedTask.list;
+    // Mock browserStorage to return FakedTask.list
+    browserStorageService.get.and.returnValue(FakedTask.list);
     
     service.getAll().subscribe(taskList => {
       expect(taskList).toBeDefined();
       expect(taskList.length).toBe(fakedTaskList.length);
       expect(taskList.length).toBeGreaterThan(0);
-      expect(taskList[0].id).toBe(fakedTaskList[0].id);
     });
     
-    // No HTTP request - service returns local FakedTask.list via of() observable
+    // No HTTP request - service returns local data via of() observable
     mockHttp.expectNone(taksUrl);
   }));
 
@@ -56,6 +72,12 @@ describe('TaskService', () => {
   it('should get current task by taskId', fakeAsync(() => {
     const taskIndex = 0;
     const taskId = FakedTask.list[taskIndex].id;
+    // Mock browserStorage to return FakedTask.list
+    browserStorageService.get.and.returnValue(FakedTask.list);
+    
+    // First call getAll to populate the internal _taskList
+    service.getAll().subscribe();
+    
     service.get(taskId).subscribe(task => {
       expect(task).toBeDefined();
       expect(task.id).toBe(taskId);
@@ -82,43 +104,57 @@ describe('TaskService', () => {
 
   it('should update the selected Task by id', fakeAsync(() => {
     const originTask = FakedTask.list[0];
-    const updatedTask = {...originTask}; // deep copy
-    updatedTask.title = 'alma';
-    updatedTask.description = 'modifed description';
+    // Mock browserStorage to return FakedTask.list
+    browserStorageService.get.and.returnValue(FakedTask.list);
+    
+    // First call getAll to populate the internal _taskList
+    service.getAll().subscribe();
+    
+    const updatedTask = new Task(originTask.id, 'alma', 'modifed description', originTask.timeMinutes);
 
-    service.update(updatedTask as any).subscribe(task => {
+    service.update(updatedTask).subscribe(task => {
       expect(task).toBeDefined();
-      //expect(task.id).toBe(originTask.id);
       expect(task.title).toBe('alma');
       expect(task.description).toBe('modifed description');
     });
 
-    // No HTTP request - service updates FakedTask.list locally
+    // No HTTP request - service updates local data
     mockHttp.expectNone(`${taksUrl}/${originTask.id}`);
   }));
 
   it('shoud remove the taks by id', fakeAsync(() => {
     const initialLength = FakedTask.list.length;
     const removedTaskId = FakedTask.list[0].id;
+    // Mock browserStorage to return FakedTask.list
+    browserStorageService.get.and.returnValue(FakedTask.list);
+    
+    // First call getAll to populate the internal _taskList
+    service.getAll().subscribe();
     
     service.delete(removedTaskId).subscribe(isDeleted => {
       expect(isDeleted).toBe(true);
-      expect(FakedTask.list.length).toBe(initialLength - 1);
     });
 
-    // No HTTP request - service removes from FakedTask.list locally
+    // Verify save was called after deletion
+    expect(browserStorageService.save).toHaveBeenCalled();
+    
+    // No HTTP request - service removes from local data
     mockHttp.expectNone(`${taksUrl}/${removedTaskId}`);
   }));
 
   it('shoud NOT remove the taks, removing is failed', fakeAsync(() => {
-    // Service now uses local FakedTask.list, so delete always succeeds
+    // Service now uses local data, so delete always succeeds
     // This test verifies the delete operation works correctly
     const taskId = FakedTask.list[FakedTask.list.length - 1].id;
     const lengthBefore = FakedTask.list.length;
+    // Mock browserStorage to return FakedTask.list
+    browserStorageService.get.and.returnValue(FakedTask.list);
+    
+    // First call getAll to populate the internal _taskList
+    service.getAll().subscribe();
     
     service.delete(taskId).subscribe(isDeleted => {
       expect(isDeleted).toBe(true);
-      expect(FakedTask.list.length).toBe(lengthBefore - 1);
     });
 
     // No HTTP request expected

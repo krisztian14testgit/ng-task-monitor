@@ -1,33 +1,73 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 
 import { Task, TaskStatus } from './task.model';
 import { environment } from '../../../../environments/environment';
 
-import { FakedTask } from '../../../tests/models/faked-task.model';
+import { BrowserStorageService } from '../../../services/browser-storage/browser-storage.service';
 
 @Injectable()
 export class TaskService {
-  /** This subject emtis changes of the task list, if get/deted/updated item from the list. */
-  public readonly taskList$: BehaviorSubject<Task[]>;
   private readonly _taskUrl = `${environment.host}task`;
   private _taskList: Task[];
+  private readonly STORAGE_KEY = 'ng-task-monitor-tasks';
+  private readonly http = inject(HttpClient);
+  private readonly browserStorage = inject(BrowserStorageService);
 
-  constructor(private readonly http: HttpClient) {
+  /** This subject emtis changes of the task list, if get/deted/updated item from the list. */
+  public readonly taskList$ =  new BehaviorSubject<Task[]>([]);
+
+  constructor() {
     this._taskList = [];
-    this.taskList$ = new BehaviorSubject<Task[]>(this._taskList);
     
     // Todo: temporay, add new faked task for test cases
     const task1 = new Task('', 'statusChanged');
-    FakedTask.addNewTask(task1, TaskStatus.Completed);
+    task1.setStatus(TaskStatus.Start);
+    task1.description = 'This task is created to test status change';
+    this._taskList.push (task1);
 
     const task2 = new Task('', 'oldTask-yesterday', '', 10);
-    FakedTask.addNewTask(task2, TaskStatus.Completed, '2022-06-30 18:00:00');
+    task2.setStatus(TaskStatus.Completed);
+    const yesterdayDay = new Date();
+    yesterdayDay.setDate(yesterdayDay.getDate() - 1);
+    task2.createdDate = yesterdayDay;
+    task2.timerStartedDate = yesterdayDay;
+    const tenMinsInMillisecond = 10 * 60*1000;
+    task2.timerFinishedDate = new Date(yesterdayDay.getTime() + tenMinsInMillisecond); 
+    this._taskList.push (task2);
+    
+    // storing faked tasks into localStorage
+    this.browserStorage.save(this.STORAGE_KEY, this._taskList);
+    this.taskList$.next(this._taskList);
+  }
 
-    const task3 = new Task('', 'oldTask3', '', 10);
-    FakedTask.addNewTask(task3, TaskStatus.Completed, '2022-06-28 18:00:00');
-    this.taskList$.next(FakedTask.list);
+  /**
+   * Loads tasks from localStorage.
+   * Extracted to avoid code duplication.
+   */
+  private receiveTasksFromStorage(): Task[] {
+    const storedTasks = this.browserStorage.get<unknown[]>(this.STORAGE_KEY);
+
+    if (storedTasks === null) {
+      return [];
+    }
+
+    const retTaskArray: Task[] = [];
+    let tempTask: Task;
+    for (let i = 0; i < storedTasks.length; i++) {
+      // Check if the item is already a Task instance
+      if (storedTasks[i] instanceof Task) {
+        retTaskArray.push(storedTasks[i] as Task);
+      } else {
+        const taskItem = storedTasks[i] as {[prop: string]: string | number | Date};
+        taskItem['_id'] = `faked-${i}-${taskItem['title']}`;
+        tempTask = Task.convertObjectToTask(taskItem);
+        retTaskArray.push(tempTask);
+      }
+    }
+    
+    return retTaskArray;
   }
 
   /**
@@ -42,7 +82,10 @@ export class TaskService {
       this.taskList$.next(tasks);
       return tasks;
     }));*/
-    return of(FakedTask.list);
+    
+    this._taskList = this.receiveTasksFromStorage();
+    this.taskList$.next(this._taskList);
+    return of(this._taskList);
   }
 
   /**
@@ -52,7 +95,7 @@ export class TaskService {
    */
   public get(taskId: string): Observable<Task> {
     // return this.http.get<Task>(`${this._taskUrl}/${taskId}`, {headers: ServiceBase.HttpHeaders});
-    return of(FakedTask.list.find(task => task.id === taskId) as Task);
+    return of(this._taskList.find(task => task.id === taskId) as Task);
   }
 
   /**
@@ -68,9 +111,10 @@ export class TaskService {
       return newTask;
     }));*/
 
-    FakedTask.addNewTask(task);
-    this.taskList$.next(FakedTask.list);
-    return of(FakedTask.getLatestNewTask());
+    this._taskList.push(task);
+    this.browserStorage.save(this.STORAGE_KEY, this._taskList);
+    this.taskList$.next(this._taskList);
+    return of(this._taskList[this._taskList.length - 1]);
   }
 
   /**
@@ -89,9 +133,13 @@ export class TaskService {
       return updatedTask;
     }));*/
 
-    const foundTaskIndex = FakedTask.list.findIndex(taskItem => taskItem.id === task.id);
-    FakedTask.list[foundTaskIndex] = task;
-    this.taskList$.next(FakedTask.list);
+    const foundTaskIndex = this._taskList.findIndex(taskItem => taskItem.id === task.id);
+    if (foundTaskIndex > -1) {
+      this._taskList[foundTaskIndex] = task;
+      this.browserStorage.save(this.STORAGE_KEY, this._taskList);
+      this.taskList$.next(this._taskList);
+    }
+   
     return of(task);
   }
 
@@ -109,8 +157,9 @@ export class TaskService {
         return true;
       }));*/
 
-      FakedTask.list = tasks;
-      this.taskList$.next(FakedTask.list);
+      this._taskList = tasks;
+      this.browserStorage.save(this.STORAGE_KEY, this._taskList);
+      this.taskList$.next(this._taskList);
       return of(true);
     }
 
@@ -132,9 +181,20 @@ export class TaskService {
       return true;
     }));*/
 
-    const fakedIndex = FakedTask.list.findIndex(task => task.id === taskId);
-    FakedTask.list.splice(fakedIndex, 1);
-    this.taskList$.next(FakedTask.list);
+    const foundIndex = this._taskList.findIndex(task => task.id === taskId);
+    this._taskList.splice(foundIndex, 1);
+    this.browserStorage.save(this.STORAGE_KEY, this._taskList);
+    this.taskList$.next(this._taskList);
     return of(true);
+  }
+  
+  
+  /** 
+   * Returns true if the task is already exist in the list, otherwise false.
+   * @param taskId The id of the task which will be removed.
+   * @returns boolean
+   */
+  public isTaskAlreadyExist(task: Task): boolean {
+    return this._taskList.findIndex(taskItem => taskItem.id === task.id) > -1;
   }
 }
