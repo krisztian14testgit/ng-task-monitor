@@ -110,6 +110,8 @@ export class TaskService {
       }));*/
 
       // Update only the tasks that are in the provided list, keeping others intact
+      // This is important when saveAllTask is called with a filtered list (e.g., only today's tasks)
+      // to avoid losing tasks that were filtered out
       tasks.forEach(task => {
         const foundTaskIndex = FakedTask.list.findIndex(taskItem => taskItem.id === task.id);
         if (foundTaskIndex > -1) {
