@@ -87,7 +87,7 @@ describe('TaskService', () => {
     mockHttp.expectNone(`${taksUrl}/${taskId}`);
   }));
 
-  xit('should add new task', fakeAsync(() => {
+  it('should add new task', fakeAsync(() => {
     const initialLength = FakedTask.list.length;
     
     const newTask = new Task('', 'newTask', 'for testing', 2.0);

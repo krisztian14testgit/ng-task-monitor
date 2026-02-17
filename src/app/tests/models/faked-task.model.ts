@@ -38,10 +38,10 @@ export class FakedTask {
     /**
      * Returns the last Task instance from the array.
      * @Note
-     * It removes the last Task from the array.
+     * It returns the last Task without removing it from the array.
      * @returns Task
      */
     public static getLatestNewTask(): Task {
-        return FakedTask.list.pop() as Task;
+        return FakedTask.list[FakedTask.list.length - 1];
     }
 }
