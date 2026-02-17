@@ -137,4 +137,20 @@ describe('TaskService', () => {
 
     service.getAll().subscribe();
   }));
+
+  it('should preserve unrelated tasks when saveAllTask is called with filtered list', fakeAsync(() => {
+    const initialLength = FakedTask.list.length;
+    const allTasks = [...FakedTask.list];
+    
+    // Simulate saving only a subset of tasks (e.g., filtered by date)
+    const filteredTasks = allTasks.slice(0, 1); // Take only the first task
+    
+    service.saveAllTask(filteredTasks).subscribe(isSaved => {
+      expect(isSaved).toBe(true);
+      // Verify that the full list still has all tasks, not just the filtered ones
+      expect(FakedTask.list.length).toBe(initialLength);
+      // Verify that unrelated tasks are still present
+      expect(FakedTask.list.find(t => t.id === allTasks[1].id)).toBeDefined();
+    });
+  }));
 });

@@ -109,7 +109,13 @@ export class TaskService {
         return true;
       }));*/
 
-      FakedTask.list = tasks;
+      // Update only the tasks that are in the provided list, keeping others intact
+      tasks.forEach(task => {
+        const foundTaskIndex = FakedTask.list.findIndex(taskItem => taskItem.id === task.id);
+        if (foundTaskIndex > -1) {
+          FakedTask.list[foundTaskIndex] = task;
+        }
+      });
       this.taskList$.next(FakedTask.list);
       return of(true);
     }
