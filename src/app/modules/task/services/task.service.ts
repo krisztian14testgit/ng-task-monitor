@@ -20,25 +20,30 @@ export class TaskService {
 
   constructor() {
     this._taskList = [];
-    
-    // Todo: temporay, add new faked task for test cases
-    const task1 = new Task('', 'statusChanged');
-    task1.setStatus(TaskStatus.Start);
-    task1.description = 'This task is created to test status change';
-    this._taskList.push (task1);
 
-    const task2 = new Task('', 'oldTask-yesterday', '', 10);
-    task2.setStatus(TaskStatus.Completed);
-    const yesterdayDay = new Date();
-    yesterdayDay.setDate(yesterdayDay.getDate() - 1);
-    task2.createdDate = yesterdayDay;
-    task2.timerStartedDate = yesterdayDay;
-    const tenMinsInMillisecond = 10 * 60*1000;
-    task2.timerFinishedDate = new Date(yesterdayDay.getTime() + tenMinsInMillisecond); 
-    this._taskList.push (task2);
-    
-    // storing faked tasks into localStorage
-    this.browserStorage.save(this.STORAGE_KEY, this._taskList);
+    // Only seed with faked tasks when localStorage has no existing data
+    const existingTasks = this.browserStorage.get<unknown[]>(this.STORAGE_KEY);
+    if (!existingTasks || existingTasks.length === 0) {
+      // Todo: temporay, add new faked task for test cases
+      const task1 = new Task('', 'statusChanged');
+      task1.setStatus(TaskStatus.Start);
+      task1.description = 'This task is created to test status change';
+      this._taskList.push (task1);
+
+      const task2 = new Task('', 'oldTask-yesterday', '', 10);
+      task2.setStatus(TaskStatus.Completed);
+      const yesterdayDay = new Date();
+      yesterdayDay.setDate(yesterdayDay.getDate() - 1);
+      task2.createdDate = yesterdayDay;
+      task2.timerStartedDate = yesterdayDay;
+      const tenMinsInMillisecond = 10 * 60*1000;
+      task2.timerFinishedDate = new Date(yesterdayDay.getTime() + tenMinsInMillisecond); 
+      this._taskList.push (task2);
+
+      // storing faked tasks into localStorage
+      this.browserStorage.save(this.STORAGE_KEY, this._taskList);
+    }
+
     this.taskList$.next(this._taskList);
   }
 
