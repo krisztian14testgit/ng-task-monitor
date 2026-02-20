@@ -174,3 +174,50 @@ describe('TaskService', () => {
     service.getAll().subscribe();
   }));
 });
+
+describe('TaskService constructor seeding', () => {
+  let browserStorageSpy: jasmine.SpyObj<BrowserStorageService>;
+
+  beforeEach(() => {
+    browserStorageSpy = jasmine.createSpyObj('BrowserStorageService', ['get', 'save', 'remove']);
+    browserStorageSpy.save.and.returnValue(true);
+
+    TestBed.configureTestingModule({
+      providers: [
+        TaskService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+        { provide: BrowserStorageService, useValue: browserStorageSpy }
+      ]
+    });
+  });
+
+  it('should NOT seed and NOT call save when localStorage already has tasks', () => {
+    browserStorageSpy.get.and.returnValue([new Task('existing-id', 'existing task')]);
+    TestBed.inject(TaskService);
+    expect(browserStorageSpy.save).not.toHaveBeenCalled();
+  });
+
+  it('should seed and call save once when localStorage returns null', () => {
+    browserStorageSpy.get.and.returnValue(null);
+    TestBed.inject(TaskService);
+    expect(browserStorageSpy.save).toHaveBeenCalledTimes(1);
+  });
+
+  it('should seed and call save once when localStorage returns empty array', () => {
+    browserStorageSpy.get.and.returnValue([]);
+    TestBed.inject(TaskService);
+    expect(browserStorageSpy.save).toHaveBeenCalledTimes(1);
+  });
+
+  it('should NOT seed and NOT call save when environment is production, even if localStorage is empty', () => {
+    const originalProduction = environment.production;
+    (environment as {production: boolean}).production = true;
+
+    browserStorageSpy.get.and.returnValue(null);
+    TestBed.inject(TaskService);
+    expect(browserStorageSpy.save).not.toHaveBeenCalled();
+
+    (environment as {production: boolean}).production = originalProduction;
+  });
+});
