@@ -24,7 +24,7 @@ export class TaskService {
     // Only seed with faked tasks when localStorage has no existing data
     const existingTasks = this.browserStorage.get<unknown[]>(this.STORAGE_KEY);
     if (!existingTasks || existingTasks.length === 0) {
-      // Todo: temporay, add new faked task for test cases
+      // Todo: temporary, add new faked task for test cases
       const task1 = new Task('', 'statusChanged');
       task1.setStatus(TaskStatus.Start);
       task1.description = 'This task is created to test status change';
