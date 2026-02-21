@@ -33,7 +33,7 @@ export class TaskService {
       yesterdayDay.setDate(yesterdayDay.getDate() - 1);
       task2.createdDate = yesterdayDay;
       task2.timerStartedDate = yesterdayDay;
-      const tenMinsInMillisecond = 10 * 60*1000;
+      const tenMinsInMillisecond = 10 * 60 * 1000;
       task2.timerFinishedDate = new Date(yesterdayDay.getTime() + tenMinsInMillisecond);
       this._taskList.push(task2);
     }
