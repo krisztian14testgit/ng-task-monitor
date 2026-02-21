@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Task } from './task.model';
-
-import { FakedTask } from '../../../tests/models/faked-task.model';
+import { Task, TaskStatus } from './task.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable()
 export class TaskService {
@@ -19,6 +18,27 @@ export class TaskService {
 
      // Check if running in Electron
     this._isElectron = !!(window && (window as any).electronAPI);
+
+    // Only seed with faked tasks in non-production when not running in Electron
+    if (!environment.production && !this._isElectron) {
+      // Todo: temporary, add new faked task for test cases
+      const task1 = new Task('', 'statusChanged');
+      task1.setStatus(TaskStatus.Start);
+      task1.description = 'This task is created to test status change';
+      this._taskList.push(task1);
+
+      const task2 = new Task('', 'oldTask-yesterday', '', 10);
+      task2.setStatus(TaskStatus.Completed);
+      const yesterdayDay = new Date();
+      yesterdayDay.setDate(yesterdayDay.getDate() - 1);
+      task2.createdDate = yesterdayDay;
+      task2.timerStartedDate = yesterdayDay;
+      const tenMinsInMillisecond = 10 * 60*1000;
+      task2.timerFinishedDate = new Date(yesterdayDay.getTime() + tenMinsInMillisecond);
+      this._taskList.push(task2);
+    }
+
+    this.taskList$.next(this._taskList);
   }
 
   /**
@@ -48,7 +68,8 @@ export class TaskService {
       this.taskList$.next(tasks);
       return tasks;
     }));*/
-    return of(FakedTask.list);
+    this.taskList$.next(this._taskList);
+    return of(this._taskList);
   }
 
   /**
@@ -58,8 +79,7 @@ export class TaskService {
    */
   public get(taskId: string): Observable<Task> {
     // return this.http.get<Task>(`${this._taskUrl}/${taskId}`, {headers: ServiceBase.HttpHeaders});
-    const taskList = this._isElectron ? this._taskList : FakedTask.list;
-    return of(taskList.find(task => task.id === taskId) as Task);
+    return of(this._taskList.find(task => task.id === taskId) as Task);
   }
 
   /**
@@ -75,18 +95,14 @@ export class TaskService {
       return newTask;
     }));*/
 
+    // get generated guid for task
+    task['_id'] = this._createUUID();
+    this._taskList.push(task);
+    this.taskList$.next(this._taskList);
     if (this._isElectron) {
-      // get generated guid for task
-      task['_id'] = this._createUUID();
-      this._taskList.push(task);
-      this.taskList$.next(this._taskList);
       this._electronSaveTasks(this._taskList);
-      return of(task);
     }
-
-    FakedTask.addNewTask(task);
-    this.taskList$.next(FakedTask.list);
-    return of(FakedTask.getLatestNewTask());
+    return of(task);
   }
 
   /**
@@ -105,17 +121,14 @@ export class TaskService {
       return updatedTask;
     }));*/
 
-    if (this._isElectron) {
-      const foundTaskIndex = this._taskList.findIndex(taskItem => taskItem.id === task.id);
+    const foundTaskIndex = this._taskList.findIndex(taskItem => taskItem.id === task.id);
+    if (foundTaskIndex > -1) {
       this._taskList[foundTaskIndex] = task;
       this.taskList$.next(this._taskList);
-      this._electronSaveTasks(this._taskList);
-      return of(task);
+      if (this._isElectron) {
+        this._electronSaveTasks(this._taskList);
+      }
     }
-
-    const foundTaskIndex = FakedTask.list.findIndex(taskItem => taskItem.id === task.id);
-    FakedTask.list[foundTaskIndex] = task;
-    this.taskList$.next(FakedTask.list);
     return of(task);
   }
 
@@ -133,14 +146,11 @@ export class TaskService {
         return true;
       }));*/
 
+      this._taskList = tasks;
+      this.taskList$.next(this._taskList);
       if (this._isElectron) {
-        this.taskList$.next(this._taskList);
         this._electronSaveTasks(this._taskList);
-        return of(true);
       }
-
-      FakedTask.list = tasks;
-      this.taskList$.next(FakedTask.list);
       return of(true);
     }
 
@@ -163,8 +173,19 @@ export class TaskService {
     }
 
     this.taskList$.next(this._taskList);
-    this._electronSaveTasks(this._taskList);
+    if (this._isElectron) {
+      this._electronSaveTasks(this._taskList);
+    }
     return of(true);
+  }
+
+  /** 
+   * Returns true if the task is already exist in the list, otherwise false.
+   * @param task The task instance to check.
+   * @returns boolean
+   */
+  public isTaskAlreadyExist(task: Task): boolean {
+    return this._taskList.findIndex(taskItem => taskItem.id === task.id) > -1;
   }
 
   /**

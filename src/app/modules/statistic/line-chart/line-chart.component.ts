@@ -189,6 +189,7 @@ export class LineChartComponent implements OnChanges, IBaseChart {
     const spentTimeSum_dict: {[isoDate: string]: number} = {};
     let isoDate: string;
 
+    
     for (const task of taskList) {
       isoDate = TaskDate.getYearMonthDaysISO(task.createdDate);
       // Adjusts the initial value: 0 if the key does not exist yet in dict.

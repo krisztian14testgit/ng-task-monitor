@@ -25,7 +25,7 @@ $app-dark-theme: mat.m2-define-dark-theme((
 }
 
 @mixin location-card($textColor) {
-  .location .input-valid {
+  app-change-location .input-valid {
     color: $textColor !important;
   }
 }
