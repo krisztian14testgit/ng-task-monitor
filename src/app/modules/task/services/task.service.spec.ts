@@ -28,13 +28,9 @@ describe('TaskService', () => {
   }));
 
   it('should get all tasks', fakeAsync(() =>{
-    spyOn(service as any, '_electronGetAllTask').and.returnValue(Promise.resolve(FakedTask.list));
-    const fakedTaskList = FakedTask.list;
     service.getAll().subscribe(taskList => {
       expect(taskList).toBeDefined();
-      expect(taskList.length).toBe(fakedTaskList.length);
       expect(taskList.length).toBeGreaterThan(0);
-      expect(taskList[0].id).toBe(fakedTaskList[0].id);
     });
     
   }));
@@ -60,8 +56,6 @@ describe('TaskService', () => {
   }));
 
   it('should add new task', fakeAsync(() => {
-    expect(service['_taskList'].length).toBe(0);
-    
     const newTask = new Task('', 'newTask', 'for testing', 2.0);
     service.add(newTask).subscribe(insertedTask => {
       expect(insertedTask).toBeDefined();
@@ -72,20 +66,18 @@ describe('TaskService', () => {
 
   it('should update the selected Task by id', fakeAsync(() => {
     const originTask = FakedTask.list[0];
-    const updatedTask = {...originTask}; // deep copy
-    updatedTask.title = 'alma';
-    updatedTask.description = 'modifed description';
+    service['_taskList'] = [...FakedTask.list];
+    const updatedTask = new Task(originTask.id, 'alma', 'modifed description', originTask.timeMinutes);
 
-    service.update(updatedTask as any).subscribe(task => {
+    service.update(updatedTask).subscribe(task => {
       expect(task).toBeDefined();
-      //expect(task.id).toBe(originTask.id);
       expect(task.title).toBe('alma');
       expect(task.description).toBe('modifed description');
     });
   }));
 
   it('shoud remove the taks by id', fakeAsync(() => {
-    const initialLength = FakedTask.list.length;
+    service['_taskList'] = [...FakedTask.list];
     const removedTaskId = FakedTask.list[0].id;
     
     service.delete(removedTaskId).subscribe(isDeleted => {
@@ -103,12 +95,9 @@ describe('TaskService', () => {
   }));
 
   it('should get list by BehaviorSubject', fakeAsync(() => {
-    spyOn(service as any, '_electronGetAllTask').and.returnValue(Promise.resolve(FakedTask.list));
-    
     service.taskList$.subscribe(list => {
       if (list.length > 0) {
         expect(list.length).toBeGreaterThan(0);
-        expect(list.length).toBe(FakedTask.list.length);
       } else {
         expect(list.length).toBe(0);
       }

@@ -58,7 +58,6 @@ export class TaskComponent implements OnInit, OnDestroy {
    */
   private _preservedTaskList: Task[] = [];
   /** Stores those tasks which are filtered by the time period. Created: today/yesterday or in the week. */
-  /** Stores those tasks which are filtered by the time period. Created: today/yesterday or in the week. */
   private _filteredTaskListByDate: Task[] = [];
 
   constructor(private readonly taskService: TaskService,
@@ -240,7 +239,7 @@ export class TaskComponent implements OnInit, OnDestroy {
         // If there is inProgress task, re-saved all changes, 
         // because the web-worker changes inprogress Task data by reference
         if (inProgressTasks.length > 0) {
-          this.saveAllTask(this.taskList);
+          this.saveAllTask(this._preservedTaskList);
         }
       }, delayMilliSec);
     }, () => {
