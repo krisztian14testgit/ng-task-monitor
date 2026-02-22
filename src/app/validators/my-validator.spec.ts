@@ -94,7 +94,7 @@ describe('FormValidator - regExp Pattern', () => {
         libarryPathControl.setValue(wrongValue);
         libarryPathControl.updateValueAndValidity();
         expect(libarryPathControl.value).toBe(wrongValue);
-        expect(libarryPathControl.valid).toBeTrue();
+        expect(libarryPathControl.valid).toBeFalse();
 
         wrongValue = 'C://';
         libarryPathControl.setValue(wrongValue);

@@ -1,0 +1,19 @@
+Create a new github-action template which is in charge of checking the project source codes, and examone them to be passed through angular style guide and suggestions or not.
+The name of the action will be 'Angular-style-guide-checker'.
+The link of style guide: https://angular.dev/style-guide
+
+
+That action will create a report about the source codes. They are passed or not in the following ways:
+* Green: Those files are passed(approved) which are reached 80% or above of the style-guide rules.
+* Yellow: Those files are parsly passed, where the 45-80% are suitable for the style-guide rules.
+* Red: Those files are failed entirely, not reached 45% of style-guide rules.
+
+The angular style-guide checking areas:
+* Naming convention
+* Project structure
+* Dependency injection
+* Components and directives rules
+ 
+
+Runnable:
+That github-action will have yml file type which is runnable during the the pull-requests, when they are opened for main branch.

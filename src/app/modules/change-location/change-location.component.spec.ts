@@ -63,7 +63,7 @@ describe('ChangeLocationComponent', () => {
     expect(component.appSettingControl.valid).toBeFalse();
 
     // taskDataControl input field controler
-    wrongValue = 'c:/folder/adf';  
+    wrongValue = 'c:/folder/adf/';
     component.taskDataControl.setValue(wrongValue);
     component.taskDataControl.updateValueAndValidity();
 
@@ -95,24 +95,20 @@ describe('ChangeLocationComponent', () => {
   it('should change input value, saving the value of AppSettingPath', () => {
     spyOn(locService, 'saveLocation').and.callThrough();
 
+    const keyLocation = LocationPath[LocationPath.AppSettingPath];
     const expectedPathValue: string = component.appSettingControl.value;
-
-    // control.Pristine will be false by markAsDirty
-    component.appSettingControl.markAsDirty();
     // calling onChangePath event
-    component.saveChangedPaths();
+    component.onChangePath(keyLocation, component.appSettingControl);
     expect(locService.saveLocation).toHaveBeenCalledWith(LocationPath.AppSettingPath, expectedPathValue);
   });
 
   it('should change input value, saving the value of TaskPath', () => {
     spyOn(locService, 'saveLocation').and.callThrough();
 
+    const keyLocation = LocationPath[LocationPath.TaskPath];
     const expectedPathValue: string = component.taskDataControl.value;
-
-    // control.Pristine will be false by markAsDirty
-    component.taskDataControl.markAsDirty();
     // calling onChangePath event
-    component.saveChangedPaths();
+    component.onChangePath(keyLocation, component.taskDataControl);
     expect(locService.saveLocation).toHaveBeenCalledWith(LocationPath.TaskPath, expectedPathValue);
   });
 });

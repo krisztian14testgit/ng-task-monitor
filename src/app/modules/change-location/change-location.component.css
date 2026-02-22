@@ -7,11 +7,3 @@
    color: green;
    border: none;
 }
-
-.location-save-right {
-    padding-bottom: 5vh !important;
-}
-
-.location-save-right > button {
-    float: right;
-}
