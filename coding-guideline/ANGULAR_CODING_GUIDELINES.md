@@ -1,5 +1,6 @@
 # Angular Coding Guidelines
 
+> **Angular version:** 21  
 > **Reference:** [Angular Style Guide](https://angular.dev/style-guide)
 
 You are an expert in TypeScript, Angular, and scalable web application development.
@@ -14,8 +15,9 @@ Write functional, maintainable, performant, and accessible code following Angula
 3. [Accessibility Requirements](#accessibility-requirements)
 4. [Components](#components)
 5. [State Management](#state-management)
-6. [Templates](#templates)
-7. [Services](#services)
+6. [Signals](#signals)
+7. [Templates](#templates)
+8. [Services](#services)
 
 ---
 
@@ -70,6 +72,63 @@ Write functional, maintainable, performant, and accessible code following Angula
 - Use `computed()` for derived state.
 - Keep state transformations **pure** and **predictable**.
 - Do **NOT** use `mutate` on signals — use `update` or `set` instead.
+
+---
+
+## Signals
+
+> **Source:** [Angular Signals: Complete Guide — Angular University](https://blog.angular-university.io/angular-signals/)
+
+Angular Signals are a reactive primitive introduced in Angular 17 that enable fine-grained, synchronous reactivity with automatic change detection — without relying on Zone.js.
+
+### Core API
+
+| API | Purpose |
+|---|---|
+| `signal(value)` | Create a writable signal with an initial value |
+| `computed(() => ...)` | Derive a read-only signal from other signals |
+| `effect(() => ...)` | Run a side effect whenever tracked signals change |
+| `signal.set(v)` | Replace the signal value |
+| `signal.update(fn)` | Update the value based on the current one |
+| `signal.asReadonly()` | Expose a read-only view of a writable signal |
+
+### Best Practices
+
+- **Use signals for local UI state.** Signals are ideal for component-level state such as toggling visibility, button state, or form-driven UI changes.
+- **Use `computed()` for derived state.** Derive values from other signals instead of duplicating logic. Keep `computed()` functions **pure** — no side effects, no mutations, no API calls.
+- **Use `effect()` only for side effects.** Reach for `effect()` when you need to react to signal changes with outgoing interactions (logging, updating non-Angular code, etc.). Do **not** mutate signals inside an `effect()`.
+- **Keep signals writable privately, expose them as readonly.** Follow the private-writable / public-readonly pattern to encapsulate state and prevent accidental mutations from the outside.
+
+  ```ts
+  private readonly _count = signal(0);
+  readonly count = this._count.asReadonly();
+  ```
+
+- **Never mutate objects or arrays in-place.** Always create a new reference when updating signal values to ensure change detection triggers correctly.
+
+  ```ts
+  // ✅ Correct
+  items.update(list => [...list, newItem]);
+
+  // ❌ Wrong — mutates in-place, no change detected
+  items().push(newItem);
+  ```
+
+- **Use signals in templates directly.** Call the signal as a function in the template (`{{ count() }}`). This is more efficient than observables with the async pipe because signals are synchronous and always hold a value.
+- **Provide a custom equality function for complex types.** For object or array signals, pass an `equal` option to avoid unnecessary re-renders when the content has not logically changed.
+
+  ```ts
+  const user = signal<User>({ name: 'Alice' }, { equal: (a, b) => a.name === b.name });
+  ```
+
+- **Avoid signals for async / event-based logic.** Signals are synchronous. Use **RxJS observables** for HTTP requests, timers, or other async streams. You can then write results into a signal with `set()` or `update()` to bridge the two models.
+- **Use `input()` and `output()` for component communication.** Signal-based `input()` / `output()` functions replace `@Input` / `@Output` decorators and integrate naturally with the signals reactivity model.
+
+### Common Pitfalls
+
+- Do **not** read a signal inside a `computed()` conditionally — every signal read inside `computed()` must always be reachable so the dependency graph stays consistent.
+- Do **not** use `effect()` to synchronize two signals — use `computed()` instead.
+- Do **not** call `set()` / `update()` inside a `computed()` — computed signals must remain pure.
 
 ---
 
