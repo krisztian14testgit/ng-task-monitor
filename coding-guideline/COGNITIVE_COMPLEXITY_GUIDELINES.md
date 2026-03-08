@@ -291,7 +291,7 @@ function mapToPayload(data: FormData): UserPayload {
 }
 
 async function saveUser(payload: UserPayload): Promise<void> {
-  try {                         // +1
+  try {
     await api.post('/users', payload);
     showSuccess('User created');
   } catch (error) {             // +1
