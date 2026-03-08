@@ -308,7 +308,7 @@ async function saveUser(payload: UserPayload): Promise<void> {
 Explicit `for` loops with index-based logic and embedded `if/continue/break` accumulate complexity quickly. Functional array methods (`filter`, `map`, `find`, `some`, `every`, `reduce`) declare **intent** rather than **mechanics** and reduce both nesting and complexity score.
 
 ```ts
-// ❌ Bad — procedural loop with branches (complexity: 7)
+// ❌ Bad — procedural loop with branches (complexity: 6)
 function getActiveAdminEmails(users: User[]): string[] {
   const emails: string[] = [];
   for (const user of users) {          // +1
