@@ -32,7 +32,7 @@ Write functional, maintainable, performant, and accessible code following Angula
 ## Angular Best Practices
 
 - Always use **standalone components** over NgModules.
-- Must **NOT** set `standalone: true` inside Angular decorators — it is the default in Angular v20+.
+- Must **NOT** set `standalone: true` inside Angular decorators — it is the default in Angular v19+.
 - Use **signals** for state management.
 - Implement **lazy loading** for feature routes.
 - Do **NOT** use the `@HostBinding` and `@HostListener` decorators.  
