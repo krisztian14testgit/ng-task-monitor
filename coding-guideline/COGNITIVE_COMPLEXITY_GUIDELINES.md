@@ -226,7 +226,7 @@ function isEditable(post: Post): boolean {
 Long functions accumulate many branches and responsibilities, pushing the complexity score up rapidly. Splitting a function into smaller, single-purpose helpers **distributes the complexity** and makes each piece individually easy to understand.
 
 ```ts
-// ❌ Bad — one function does validation, mapping, and persistence (complexity: ~18)
+// ❌ Bad — one function does validation, mapping, and persistence (complexity: ~11)
 async function submitForm(formData: FormData): Promise<void> {
   if (!formData.name || formData.name.trim() === '') {  // +1
     showError('Name is required');
