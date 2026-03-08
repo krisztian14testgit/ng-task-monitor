@@ -248,7 +248,7 @@ async function submitForm(formData: FormData): Promise<void> {
     createdAt: new Date().toISOString(),
   };
 
-  try {                          // +1
+  try {
     await api.post('/users', payload);
     showSuccess('User created');
   } catch (error) {              // +1
