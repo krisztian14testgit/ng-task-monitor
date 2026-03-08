@@ -11,14 +11,13 @@
 1. [What is Cognitive Complexity?](#what-is-cognitive-complexity)
 2. [Cognitive Complexity vs Cyclomatic Complexity](#cognitive-complexity-vs-cyclomatic-complexity)
 3. [How Cognitive Complexity is Scored](#how-cognitive-complexity-is-scored)
-4. [How to Measure Cognitive Complexity](#how-to-measure-cognitive-complexity)
-5. [What Causes High Cognitive Complexity](#what-causes-high-cognitive-complexity)
-6. [Tip 1 — Avoid Deep Nesting with Guard Clauses and Early Returns](#tip-1--avoid-deep-nesting-with-guard-clauses-and-early-returns)
-7. [Tip 2 — Simplify Boolean Conditions](#tip-2--simplify-boolean-conditions)
-8. [Tip 3 — Extract Functions](#tip-3--extract-functions)
-9. [Tip 4 — Choose the Right Loop and Array Method](#tip-4--choose-the-right-loop-and-array-method)
-10. [Tip 5 — Leverage Optional Chaining and Nullish Coalescing](#tip-5--leverage-optional-chaining-and-nullish-coalescing)
-11. [Tip 6 — Avoid Unnecessary Recursion](#tip-6--avoid-unnecessary-recursion)
+4. [What Causes High Cognitive Complexity](#what-causes-high-cognitive-complexity)
+5. [Tip 1 — Avoid Deep Nesting with Guard Clauses and Early Returns](#tip-1--avoid-deep-nesting-with-guard-clauses-and-early-returns)
+6. [Tip 2 — Simplify Boolean Conditions](#tip-2--simplify-boolean-conditions)
+7. [Tip 3 — Extract Functions](#tip-3--extract-functions)
+8. [Tip 4 — Choose the Right Loop and Array Method](#tip-4--choose-the-right-loop-and-array-method)
+9. [Tip 5 — Leverage Optional Chaining and Nullish Coalescing](#tip-5--leverage-optional-chaining-and-nullish-coalescing)
+10. [Tip 6 — Avoid Unnecessary Recursion](#tip-6--avoid-unnecessary-recursion)
 
 ---
 
@@ -111,33 +110,6 @@ function calculateScore(values: number[], threshold: number): number {
 }
 // Total cognitive complexity: 1 + 2 + 1 + 2 + 3 + 1 = 10
 ```
-
----
-
-## How to Measure Cognitive Complexity
-
-### SonarQube / SonarCloud
-The most widely used tool. It analyses your codebase on each commit or pull request and reports:
-- The cognitive complexity score per function
-- Which lines contribute to the score
-- A threshold violation if the score exceeds the configured limit (default: 15)
-
-### ESLint plugin
-The [`@typescript-eslint`](https://typescript-eslint.io/) ecosystem and the [`eslint-plugin-sonarjs`](https://www.npmjs.com/package/eslint-plugin-sonarjs) package expose a `cognitive-complexity` rule that can be enforced locally in your IDE and CI pipeline:
-
-```json
-// .eslintrc.json
-{
-  "plugins": ["sonarjs"],
-  "rules": {
-    "sonarjs/cognitive-complexity": ["error", 15]
-  }
-}
-```
-
-### IDE extensions
-- **SonarLint** (VS Code, IntelliJ, WebStorm) — shows cognitive complexity inline as you type.
-- **CodeMetrics** (VS Code) — displays complexity scores next to each function signature.
 
 ---
 
