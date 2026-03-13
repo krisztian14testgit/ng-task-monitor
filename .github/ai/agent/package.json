@@ -1,0 +1,17 @@
+{
+  "name": "ai-code-review-agent",
+  "version": "1.0.0",
+  "description": "AI Code Review Agent for Angular project",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "start": "node main.mjs",
+    "lint": "eslint *.mjs"
+  },
+  "dependencies": {
+    "@octokit/rest": "^21.0.0",
+    "openai": "^4.56.0"
+  }
+}

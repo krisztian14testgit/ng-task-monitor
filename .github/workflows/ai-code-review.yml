@@ -1,0 +1,145 @@
+# ============================================================
+# AI Code Review Agent — GitHub Actions Workflow
+# ============================================================
+# Triggers on pull requests targeting configurable branches.
+# Supports two modes:
+#   • report-only  (default) — posts a review comment
+#   • auto-fix     (opt-in)  — opens a fix PR into the source branch
+#
+# Tech stack: Node.js v24, Angular v21
+# ============================================================
+
+name: "AI Code Review Agent"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    # The workflow fires for PRs targeting these branches.
+    branches:
+      - main
+      - develop
+      - "release/**"
+
+  # Allow manual dispatch (e.g. for full-repo scans)
+  workflow_dispatch:
+    inputs:
+      scan_mode:
+        description: "Scan mode: 'changes' (PR diff only) or 'full' (entire repo)"
+        required: true
+        default: "changes"
+        type: choice
+        options:
+          - changes
+          - full
+      agent_mode:
+        description: "Agent output mode: 'report' or 'autofix'"
+        required: true
+        default: "report"
+        type: choice
+        options:
+          - report
+          - autofix
+      target_branch:
+        description: "Branch to scan (used in full-scan mode)"
+        required: false
+        default: "main"
+        type: string
+
+# ── Permissions ───────────────────────────────────────────────
+permissions:
+  contents: write        # push fix branches
+  pull-requests: write   # post comments & open PRs
+  issues: write          # (optional) open issues for critical findings
+
+# ── Concurrency guard ────────────────────────────────────────
+concurrency:
+  group: ai-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+# ── Environment variables (shared) ───────────────────────────
+env:
+  NODE_VERSION: "24"
+  # Comma-separated list of guideline files for Angular project
+  GUIDELINE_FILES: "coding-guideline/ANGULAR_CODING_GUIDELINES.md,coding-guideline/RXJS_CODING_GUIDELINES.md,coding-guideline/COGNITIVE_COMPLEXITY_GUIDELINES.md,.github/ai/guidelines/security-rules.md"
+
+jobs:
+  # ────────────────────────────────────────────────────────────
+  # Gate: skip if the PR was created by the bot (prevent loops)
+  # ────────────────────────────────────────────────────────────
+  guard:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - id: check
+        run: |
+          ACTOR="${{ github.actor }}"
+          HEAD_REF="${{ github.head_ref }}"
+          # Skip bot-created PRs and ai-fix branches
+          if [[ "$ACTOR" == "github-actions[bot]" ]] || [[ "$HEAD_REF" == ai-fix/* ]]; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  # ────────────────────────────────────────────────────────────
+  # Main: run the AI agent
+  # ────────────────────────────────────────────────────────────
+  ai-review:
+    needs: guard
+    if: needs.guard.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # ── 1. Checkout ────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history needed for diff
+
+      # ── 2. Node.js setup ───────────────────────────────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: '.github/ai/agent/package.json'
+
+      - name: Install agent dependencies
+        working-directory: .github/ai/agent
+        run: npm install
+
+      # ── 3. Resolve inputs ─────────────────────────────────
+      - name: Resolve agent inputs
+        id: inputs
+        run: |
+          # --- scan_mode ---
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "scan_mode=${{ inputs.scan_mode }}" >> "$GITHUB_OUTPUT"
+            echo "agent_mode=${{ inputs.agent_mode }}" >> "$GITHUB_OUTPUT"
+            echo "target_branch=${{ inputs.target_branch }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "scan_mode=changes" >> "$GITHUB_OUTPUT"
+            echo "agent_mode=report" >> "$GITHUB_OUTPUT"
+            echo "target_branch=${{ github.base_ref }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ── 4. Run agent ──────────────────────────────────────
+      - name: Run AI Code Review Agent
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # --- Agent configuration ---
+          SCAN_MODE: ${{ steps.inputs.outputs.scan_mode }}
+          AGENT_MODE: ${{ steps.inputs.outputs.agent_mode }}
+          TARGET_BRANCH: ${{ steps.inputs.outputs.target_branch }}
+          GUIDELINE_FILES: ${{ env.GUIDELINE_FILES }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO_FULL_NAME: ${{ github.repository }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          # Optional: specify OpenAI model (defaults to gpt-4o)
+          # OPENAI_MODEL: gpt-4o
+        working-directory: .github/ai/agent
+        run: node main.mjs
