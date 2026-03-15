@@ -35,33 +35,33 @@ function runGit(args) {
 function applyFixes(findings) {
   const modified = new Set();
 
-  for (const f of findings) {
+  for (const findObj of findings) {
     // Only apply critical and warning fixes with non-empty suggestions
-    if (!f.suggestion || f.severity === 'info') {
+    if (!findObj.suggestion || findObj.severity === 'info') {
       continue;
     }
 
-    if (!existsSync(f.file)) {
-      console.warn(`[fixer] File not found: ${f.file}`);
+    if (!existsSync(findObj.file)) {
+      console.warn(`[fixer] File not found: ${findObj.file}`);
       continue;
     }
 
     try {
-      const lines = readFileSync(f.file, 'utf8').split('\n');
+      const lines = readFileSync(findObj.file, 'utf8').split('\n');
 
       // Replace the line range with the suggestion
-      const start = Math.max(f.line_start - 1, 0);
-      const end = Math.min(f.line_end, lines.length);
-      const suggestionLines = f.suggestion.trimEnd().split('\n');
+      const start = Math.max(findObj.line_start - 1, 0);
+      const end = Math.min(findObj.line_end, lines.length);
+      const suggestionLines = findObj.suggestion.trimEnd().split('\n');
 
       lines.splice(start, end - start, ...suggestionLines);
 
-      writeFileSync(f.file, lines.join('\n'), 'utf8');
-      modified.add(f.file);
+      writeFileSync(findObj.file, lines.join('\n'), 'utf8');
+      modified.add(findObj.file);
       
-      console.log(`[fixer] Applied fix to ${f.file} (lines ${f.line_start}-${f.line_end})`);
+      console.log(`[fixer] Applied fix to ${findObj.file} (lines ${findObj.line_start}-${findObj.line_end})`);
     } catch (error) {
-      console.warn(`[fixer] Could not apply fix to ${f.file}:`, error.message);
+      console.warn(`[fixer] Could not apply fix to ${findObj.file}:`, error.message);
     }
   }
 
@@ -136,9 +136,9 @@ export async function createFixPR({ repo, sourceBranch, findings, guidelines }) 
     '|------|----------|----------|',
   ];
 
-  for (const f of findings) {
-    if (modified.includes(f.file)) {
-      bodyParts.push(`| \`${f.file}\` | ${f.category} | ${f.severity} |`);
+  for (const findObj of findings) {
+    if (modified.includes(findObj.file)) {
+      bodyParts.push(`| \`${findObj.file}\` | ${findObj.category} | ${findObj.severity} |`);
     }
   }
 

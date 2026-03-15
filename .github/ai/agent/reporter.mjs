@@ -22,7 +22,7 @@ const BOT_MARKER = '<!-- ai-code-review-agent -->';
 function formatReport(findings, scanMode) {
   const modeLabel = scanMode === 'full' 
     ? '🔍 Full Repository Scan' 
-    : '🔎 Changed Files Scan';
+    : 'Changed Files Scan';
 
   const lines = [
     '## 🤖 AI Code Review Report',
@@ -70,29 +70,29 @@ function formatReport(findings, scanMode) {
   };
 
   for (let idx = 0; idx < findings.length; idx++) {
-    const f = findings[idx];
-    const icon = severityIcons[f.severity] || '⚪';
-    const lineRange = f.line_start === f.line_end 
-      ? `Line ${f.line_start}` 
-      : `Lines ${f.line_start}–${f.line_end}`;
+    const findObj = findings[idx];
+    const icon = severityIcons[findObj.severity] || '⚪';
+    const lineRange = findObj.line_start === findObj.line_end 
+      ? `Line ${findObj.line_start}` 
+      : `Lines ${findObj.line_start}–${findObj.line_end}`;
 
     lines.push(
-      `#### ${icon} #${idx + 1} — ${f.category}`,
+      `#### ${icon} #${idx + 1} — ${findObj.category}`,
       '',
-      `**File:** \`${f.file}\` · ${lineRange}`,
-      `**Severity:** ${f.severity} · **Guideline:** ${f.guideline_ref}`,
+      `**File:** \`${findObj.file}\` · ${lineRange}`,
+      `**Severity:** ${findObj.severity} · **Guideline:** ${findObj.guideline_ref}`,
       '',
-      `**Issue:** ${f.description}`,
+      `**Issue:** ${findObj.description}`,
       ''
     );
 
-    if (f.suggestion) {
+    if (findObj.suggestion) {
       lines.push(
         '<details>',
         '<summary>💡 Suggested fix</summary>',
         '',
         '```suggestion',
-        f.suggestion,
+        findObj.suggestion,
         '```',
         '',
         '</details>',
