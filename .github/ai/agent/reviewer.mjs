@@ -1,12 +1,13 @@
 /**
- * reviewer.mjs — Sends code + guidelines to an LLM and parses findings.
- * ======================================================================
+ * reviewer.mjs — Sends code + guidelines to GitHub Models and parses findings.
+ * =============================================================================
  * Returns a structured list of findings the reporter/fixer can consume.
- * 
+ *
  * Node.js v24 / ES Modules
  */
 
-import OpenAI from 'openai';
+const GITHUB_MODELS_ENDPOINT = 'https://models.github.ai/inference/chat/completions';
+const GITHUB_API_VERSION = '2026-03-10';
 
 /**
  * @typedef {Object} Finding
@@ -26,7 +27,7 @@ import OpenAI from 'openai';
 
 const SYSTEM_PROMPT = `You are an expert code reviewer acting as a CI agent for an Angular v21 project.
 Your job is to analyse source code against a set of coding guidelines
-and produce a JSON array of findings.
+and produce a JSON object with a top-level "findings" array.
 
 Each finding MUST have these keys:
   file, line_start, line_end, severity, category, description, suggestion, guideline_ref
@@ -40,7 +41,7 @@ Rules:
   may flag pre-existing issues in the same function if they are critical.
 • Keep suggestions minimal — change only what is necessary.
 • Preserve existing tests — never remove or weaken assertions.
-• Return an empty JSON array [] if there are no issues.
+• Return {"findings": []} if there are no issues.
 
 Tech stack context:
 • Angular v21 with standalone components (standalone: true is the default, NOT needed in decorators)
@@ -50,7 +51,7 @@ Tech stack context:
 • Angular Material v21 for UI components
 • Chart.js with ng2-charts for data visualization
 
-Respond with ONLY the raw JSON array. No markdown fences, no commentary.`;
+Respond with ONLY raw JSON matching this shape: {"findings":[...]}. No markdown fences, no commentary.`;
 
 /**
  * Build the user message with files and guidelines
@@ -103,13 +104,12 @@ function chunkFiles(files) {
  * @returns {Promise<Finding[]>}
  */
 export async function review(files, guidelines) {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error('OPENAI_API_KEY environment variable is required');
+  const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  if (!token) {
+    throw new Error('GITHUB_TOKEN (or GH_TOKEN) environment variable is required for GitHub Models');
   }
 
-  const client = new OpenAI({ apiKey });
-  const model = process.env.OPENAI_MODEL || 'gpt-4o';
+  const model = process.env.GITHUB_MODEL || process.env.OPENAI_MODEL || 'openai/gpt-4.1';
 
   /** @type {Finding[]} */
   const allFindings = [];
@@ -124,23 +124,40 @@ export async function review(files, guidelines) {
     const userMessage = buildUserMessage(chunk, guidelines);
 
     try {
-      const response = await client.chat.completions.create({
-        model,
-        temperature: 0,
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: userMessage },
-        ],
-        response_format: { type: 'json_object' },
+      const response = await fetch(GITHUB_MODELS_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/vnd.github+json',
+          'Authorization': `Bearer ${token}`,
+          'X-GitHub-Api-Version': GITHUB_API_VERSION,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model,
+          temperature: 0,
+          response_format: { type: 'json_object' },
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'user', content: userMessage },
+          ],
+        }),
       });
 
-      const raw = response.choices[0]?.message?.content || '[]';
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `GitHub Models request failed (${response.status} ${response.statusText}): ${errorText.slice(0, 500)}`
+        );
+      }
+
+      const data = await response.json();
+      const raw = data?.choices?.[0]?.message?.content || '{"findings": []}';
 
       try {
         const parsed = JSON.parse(raw);
         // Handle both {"findings": [...]} and bare [...]
         const items = Array.isArray(parsed) ? parsed : (parsed.findings || []);
-        
+
         for (const item of items) {
           // Validate required fields
           if (item.file && item.severity && item.description) {

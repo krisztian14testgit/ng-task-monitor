@@ -50,6 +50,7 @@ permissions:
   contents: write        # push fix branches
   pull-requests: write   # post comments & open PRs
   issues: write          # (optional) open issues for critical findings
+  models: read           # allow GitHub Models inference with GITHUB_TOKEN
 
 # ── Concurrency guard ────────────────────────────────────────
 concurrency:
@@ -59,6 +60,7 @@ concurrency:
 # ── Environment variables (shared) ───────────────────────────
 env:
   NODE_VERSION: "24"
+  GITHUB_MODEL: "openai/gpt-4.1"
   # Comma-separated list of guideline files for Angular project
   GUIDELINE_FILES: "coding-guideline/ANGULAR_CODING_GUIDELINES.md,coding-guideline/RXJS_CODING_GUIDELINES.md,coding-guideline/COGNITIVE_COMPLEXITY_GUIDELINES.md,.github/ai/guidelines/security-rules.md"
 
@@ -129,8 +131,8 @@ jobs:
       - name: Run AI Code Review Agent
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           # --- Agent configuration ---
+          GITHUB_MODEL: ${{ env.GITHUB_MODEL }}
           SCAN_MODE: ${{ steps.inputs.outputs.scan_mode }}
           AGENT_MODE: ${{ steps.inputs.outputs.agent_mode }}
           TARGET_BRANCH: ${{ steps.inputs.outputs.target_branch }}
@@ -139,7 +141,5 @@ jobs:
           REPO_FULL_NAME: ${{ github.repository }}
           HEAD_REF: ${{ github.head_ref }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          # Optional: specify OpenAI model (defaults to gpt-4o)
-          # OPENAI_MODEL: gpt-4o
-        working-directory: .github/ai/agent
-        run: node main.mjs
+        working-directory: .
+        run: node .github/ai/agent/main.mjs
