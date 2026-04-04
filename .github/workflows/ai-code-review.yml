@@ -74,11 +74,13 @@ jobs:
       should_run: ${{ steps.check.outputs.should_run }}
     steps:
       - id: check
+        env:
+          # Use env vars to prevent script injection from untrusted input
+          PR_ACTOR: ${{ github.actor }}
+          PR_HEAD_REF: ${{ github.head_ref }}
         run: |
-          ACTOR="${{ github.actor }}"
-          HEAD_REF="${{ github.head_ref }}"
           # Skip bot-created PRs and ai-fix branches
-          if [[ "$ACTOR" == "github-actions[bot]" ]] || [[ "$HEAD_REF" == ai-fix/* ]]; then
+          if [[ "$PR_ACTOR" == "github-actions[bot]" ]] || [[ "$PR_HEAD_REF" == ai-fix/* ]]; then
             echo "should_run=false" >> "$GITHUB_OUTPUT"
           else
             echo "should_run=true" >> "$GITHUB_OUTPUT"
@@ -115,16 +117,30 @@ jobs:
       # ── 3. Resolve inputs ─────────────────────────────────
       - name: Resolve agent inputs
         id: inputs
+        env:
+          # Use env vars to prevent script injection from untrusted input
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_SCAN_MODE: ${{ inputs.scan_mode }}
+          INPUT_AGENT_MODE: ${{ inputs.agent_mode }}
+          INPUT_TARGET_BRANCH: ${{ inputs.target_branch }}
+          BASE_REF: ${{ github.base_ref }}
+          IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
         run: |
           # --- scan_mode ---
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "scan_mode=${{ inputs.scan_mode }}" >> "$GITHUB_OUTPUT"
-            echo "agent_mode=${{ inputs.agent_mode }}" >> "$GITHUB_OUTPUT"
-            echo "target_branch=${{ inputs.target_branch }}" >> "$GITHUB_OUTPUT"
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "scan_mode=$INPUT_SCAN_MODE" >> "$GITHUB_OUTPUT"
+            echo "agent_mode=$INPUT_AGENT_MODE" >> "$GITHUB_OUTPUT"
+            echo "target_branch=$INPUT_TARGET_BRANCH" >> "$GITHUB_OUTPUT"
           else
             echo "scan_mode=changes" >> "$GITHUB_OUTPUT"
-            echo "agent_mode=report" >> "$GITHUB_OUTPUT"
-            echo "target_branch=${{ github.base_ref }}" >> "$GITHUB_OUTPUT"
+            # SECURITY: Disable autofix for fork PRs to prevent malicious code injection
+            if [[ "$IS_FORK" == "true" ]]; then
+              echo "agent_mode=report" >> "$GITHUB_OUTPUT"
+              echo "[SECURITY] Fork PR detected - autofix disabled" >&2
+            else
+              echo "agent_mode=report" >> "$GITHUB_OUTPUT"
+            fi
+            echo "target_branch=$BASE_REF" >> "$GITHUB_OUTPUT"
           fi
 
       # ── 4. Run agent ──────────────────────────────────────
@@ -139,7 +155,10 @@ jobs:
           GUIDELINE_FILES: ${{ env.GUIDELINE_FILES }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           REPO_FULL_NAME: ${{ github.repository }}
+          # SECURITY: Use env var indirection for untrusted PR metadata
           HEAD_REF: ${{ github.head_ref }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          # SECURITY: Pass fork status to agent for additional validation
+          IS_FORK_PR: ${{ github.event.pull_request.head.repo.fork }}
         working-directory: .
         run: node .github/ai/agent/main.mjs
