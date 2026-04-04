@@ -8,7 +8,7 @@
  * Node.js v24 / ES Modules
  */
 
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 
 /**
  * @typedef {Object} FileToReview
@@ -23,11 +23,11 @@ import { execSync } from 'node:child_process';
  * @returns {string}
  */
 function runGit(args) {
-  const result = execSync(['git', ...args].join(' '), {
+  return execFileSync('git', args, {
     encoding: 'utf8',
     maxBuffer: 50 * 1024 * 1024, // 50MB buffer for large diffs
-  });
-  return result.trim();
+    shell: false,
+  }).trim();
 }
 
 // File-extension allow-list for Angular/TypeScript projects

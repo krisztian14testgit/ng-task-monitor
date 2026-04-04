@@ -6,7 +6,7 @@
  * Node.js v24 / ES Modules
  */
 
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { Octokit } from '@octokit/rest';
 
@@ -16,15 +16,29 @@ import { Octokit } from '@octokit/rest';
 
 /**
  * Execute a git command
- * @param {string[]} args 
+ * @param {string[]} args
  * @returns {string}
  */
 function runGit(args) {
-  const result = execSync(['git', ...args].join(' '), {
+  return execFileSync('git', args, {
     encoding: 'utf8',
     maxBuffer: 10 * 1024 * 1024,
-  });
-  return result.trim();
+    shell: false,
+  }).trim();
+}
+
+/**
+ * Normalize branch names before using them in generated refs
+ * @param {string} name
+ * @returns {string}
+ */
+function sanitizeBranchName(name) {
+  return String(name)
+    .replace(/[^a-zA-Z0-9._/-]/g, '-')
+    .replace(/\/{2,}/g, '/')
+    .replace(/^\/+|\/+$/g, '')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 120) || 'unknown-branch';
 }
 
 /**
@@ -90,7 +104,8 @@ export async function createFixPR({ repo, sourceBranch, findings, guidelines }) 
     return;
   }
 
-  const fixBranch = `ai-fix/${sourceBranch}`;
+  const safeSourceBranch = sanitizeBranchName(sourceBranch);
+  const fixBranch = `ai-fix/${safeSourceBranch}`;
 
   try {
     // Configure git
