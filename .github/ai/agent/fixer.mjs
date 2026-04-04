@@ -42,6 +42,31 @@ function sanitizeBranchName(name) {
 }
 
 /**
+ * Validate file path is safe for writing (no path traversal)
+ * @param {string} filePath
+ * @returns {boolean}
+ */
+function isSafeFilePath(filePath) {
+  // Reject absolute paths and path traversal attempts
+  if (!filePath || typeof filePath !== 'string') return false;
+  if (filePath.startsWith('/') || filePath.startsWith('\\')) return false;
+  if (filePath.includes('..')) return false;
+  if (/^[a-zA-Z]:/.test(filePath)) return false; // Windows absolute path
+  
+  // Reject writes to sensitive locations
+  const sensitivePatterns = [
+    /^\.github[\/\\]workflows/i,
+    /^\.github[\/\\]actions/i,
+    /package\.json$/i,
+    /package-lock\.json$/i,
+    /\.env/i,
+    /\.(pem|key|crt|cer)$/i,
+  ];
+  
+  return !sensitivePatterns.some(pattern => pattern.test(filePath));
+}
+
+/**
  * Apply fix suggestions to local files
  * @param {Finding[]} findings 
  * @returns {string[]} - List of modified file paths
@@ -52,6 +77,12 @@ function applyFixes(findings) {
   for (const findObj of findings) {
     // Only apply critical and warning fixes with non-empty suggestions
     if (!findObj.suggestion || findObj.severity === 'info') {
+      continue;
+    }
+
+    // Security: Validate file path to prevent path traversal attacks
+    if (!isSafeFilePath(findObj.file)) {
+      console.warn(`[fixer] SECURITY: Rejected unsafe file path: ${findObj.file}`);
       continue;
     }
 
