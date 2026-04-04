@@ -1,5 +1,10 @@
 # AI Code Review Agent Setup
 
+> **Inspected by:** GitHub Copilot (Claude Opus 4.6)  
+> **Inspection date:** 2026-04-04  
+> **Source analyzed:** `.github/workflows/ai-code-review.yml`, `.github/ai/agent/*.mjs`  
+> **Reference docs:** [GitHub Actions Workflow Syntax](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions), [GITHUB_TOKEN Authentication](https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication)
+
 This document describes the AI Code Review Agent setup for the ng-task-monitor Angular project.
 
 ## Overview
@@ -68,14 +73,19 @@ coding-guideline/
 
 ## Requirements
 
-### Repository Secrets
+### Repository Secrets & Permissions
 
-Add these secrets to your GitHub repository:
+No additional secrets are required. The agent uses the built-in `GITHUB_TOKEN` (automatically provided by GitHub Actions) with GitHub Models inference.
 
-| Secret | Description |
+| Token / Permission | Description |
 |--------|-------------|
-| `OPENAI_API_KEY` | OpenAI API key for GPT-4o model access |
-| `GITHUB_TOKEN` | Automatically provided by GitHub Actions |
+| `GITHUB_TOKEN` | Automatically provided by GitHub Actions — no manual setup needed |
+| `models: read` | Workflow permission that enables GitHub Models inference API access |
+| `contents: write` | Allows the agent to push fix branches (autofix mode) |
+| `pull-requests: write` | Allows the agent to post PR comments and open fix PRs |
+| `issues: write` | (Optional) allows opening issues for critical findings |
+
+> **Note:** The repository must have GitHub Models access enabled for the `models: read` permission to work. See [Prototyping with AI models](https://docs.github.com/en/github-models/prototyping-with-ai-models).
 
 ### Node.js Version
 
@@ -128,9 +138,17 @@ Excluded paths:
 - `package-lock.json`
 - `.github/ai/agent/` (the agent itself)
 
-### OpenAI Model
+### AI Model (GitHub Models)
 
-By default, the agent uses `gpt-4o`. To change the model, add `OPENAI_MODEL` environment variable in the workflow.
+The agent uses **GitHub Models** inference (not a direct OpenAI API key). The model is configured via the `GITHUB_MODEL` environment variable in the workflow.
+
+| Variable | Default Value | Description |
+|----------|--------------|-------------|
+| `GITHUB_MODEL` | `openai/gpt-4.1` | Model ID for GitHub Models inference |
+
+The inference endpoint used is `https://models.github.ai/inference/chat/completions` with the `GITHUB_TOKEN` for authentication.
+
+To change the model, update the `GITHUB_MODEL` value in the `env` section of `.github/workflows/ai-code-review.yml`.
 
 ## Safety Features
 
@@ -147,9 +165,10 @@ By default, the agent uses `gpt-4o`. To change the model, add `OPENAI_MODEL` env
 
 ### Agent not running
 
-1. Check that `OPENAI_API_KEY` secret is configured
-2. Verify the PR targets a branch configured in the workflow
-3. Check the Actions tab for error logs
+1. Verify the repository has GitHub Models access enabled (required for `models: read` permission)
+2. Confirm the `GITHUB_TOKEN` has sufficient permissions (check repository Settings → Actions → General → Workflow permissions)
+3. Verify the PR targets a branch configured in the workflow (`main`, `develop`, or `release/**`)
+4. Check the Actions tab for error logs
 
 ### No findings posted
 
