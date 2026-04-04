@@ -48,7 +48,23 @@ const EXCLUDED_PATHS = [
   '.angular/',
   'package-lock.json',
   '.github/ai/agent/', // Don't review the agent itself
+  '.github/workflows/', // Don't review workflow files (sensitive)
+  '.env',
 ];
+
+/**
+ * Validate branch name format
+ * @param {string} branch
+ * @returns {boolean}
+ */
+function isValidBranchName(branch) {
+  if (!branch || typeof branch !== 'string') return false;
+  // Reject shell metacharacters and path traversal
+  if (/[;&|`$(){}\[\]<>!\\]/.test(branch)) return false;
+  if (branch.includes('..')) return false;
+  // Only allow alphanumeric, dash, underscore, slash, dot
+  return /^[a-zA-Z0-9._\/-]+$/.test(branch) && branch.length <= 250;
+}
 
 /**
  * Check if a file should be reviewed
@@ -72,6 +88,12 @@ function isReviewable(filePath) {
  * @returns {Promise<FileToReview[]>}
  */
 export async function scanChanges(targetBranch) {
+  // Security: Validate branch name before using in git commands
+  if (!isValidBranchName(targetBranch)) {
+    console.error(`[scanner] SECURITY: Invalid branch name rejected: ${targetBranch}`);
+    return [];
+  }
+
   try {
     // Get merge base
     const mergeBase = runGit(['merge-base', `origin/${targetBranch}`, 'HEAD']);
@@ -120,6 +142,12 @@ export async function scanChanges(targetBranch) {
  * @returns {Promise<FileToReview[]>}
  */
 export async function scanFull(targetBranch) {
+  // Security: Validate branch name before using in git commands
+  if (!isValidBranchName(targetBranch)) {
+    console.error(`[scanner] SECURITY: Invalid branch name rejected: ${targetBranch}`);
+    return [];
+  }
+
   try {
     const allFiles = runGit(['ls-tree', '-r', '--name-only', `origin/${targetBranch}`]);
     
