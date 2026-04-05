@@ -14,15 +14,12 @@ addEventListener('message', (wEvent: MessageEvent) => {
     const currentSystemDate = new Date();
     const tasks = wEvent.data;
     
-    let restMillisec = 0;
-    let restMinAndSec = 0;
     let restDate!: Date;
     
     for (const currentTask of tasks) {
-      restMillisec = 0;
-      restMinAndSec = 0;
+      let restMinAndSec = 0;
       if (currentTask.timerFinishedDate && currentTask.timerStartedDate) {
-        restMillisec = currentTask.timerFinishedDate.getTime() - currentSystemDate.getTime();
+        let restMillisec = currentTask.timerFinishedDate.getTime() - currentSystemDate.getTime();
         // if millisec greather than 0 then timer is not over.
         restMillisec = restMillisec > 0 ? restMillisec : 0;
         restDate = new Date(restMillisec);
