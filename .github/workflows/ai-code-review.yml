@@ -4,7 +4,12 @@
 # Triggers on pull requests targeting configurable branches.
 # Supports two modes:
 #   • report-only  (default) — posts a review comment
-#   • auto-fix     (opt-in)  — opens a fix PR into the source branch
+#   • auto-fix     (DISABLED) — blocked by feature flag in main.mjs
+#
+# ⚠️  Autofix is temporarily DISABLED for security reasons.
+#     The agent_mode input and env vars are preserved but the
+#     agent will refuse to run autofix (AUTOFIX_ENABLED=false).
+#     See code-review-setup/AI-CODE-REVIEW-SETUP.md § Security.
 #
 # Tech stack: Node.js v24, Angular v21
 # ============================================================
@@ -31,14 +36,16 @@ on:
         options:
           - changes
           - full
+      # ⚠️ AUTOFIX TEMPORARILY DISABLED — agent will override to 'report'
+      # Kept for when autofix is re-enabled. See AUTOFIX_ENABLED in main.mjs.
       agent_mode:
-        description: "Agent output mode: 'report' or 'autofix'"
+        description: "Agent output mode: 'report' or 'autofix' (⚠️ autofix currently disabled)"
         required: true
         default: "report"
         type: choice
         options:
           - report
-          - autofix
+          # - autofix   # ⚠️ BLOCKED: uncomment when AUTOFIX_ENABLED=true in main.mjs
       target_branch:
         description: "Branch to scan (used in full-scan mode)"
         required: false
@@ -47,8 +54,9 @@ on:
 
 # ── Permissions ───────────────────────────────────────────────
 permissions:
-  contents: write        # push fix branches
-  pull-requests: write   # post comments & open PRs
+  contents: read         # read repo contents (change to 'write' when autofix is re-enabled)
+  # contents: write      # ⚠️ AUTOFIX: uncomment when re-enabling autofix (push fix branches)
+  pull-requests: write   # post comments (& open PRs when autofix is enabled)
   issues: write          # (optional) open issues for critical findings
   models: read           # allow GitHub Models inference with GITHUB_TOKEN
 
@@ -129,17 +137,15 @@ jobs:
           # --- scan_mode ---
           if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
             echo "scan_mode=$INPUT_SCAN_MODE" >> "$GITHUB_OUTPUT"
+            # ⚠️ AUTOFIX DISABLED: pass agent_mode through, but main.mjs will
+            # override to 'report' because AUTOFIX_ENABLED=false
             echo "agent_mode=$INPUT_AGENT_MODE" >> "$GITHUB_OUTPUT"
             echo "target_branch=$INPUT_TARGET_BRANCH" >> "$GITHUB_OUTPUT"
           else
             echo "scan_mode=changes" >> "$GITHUB_OUTPUT"
-            # SECURITY: Disable autofix for fork PRs to prevent malicious code injection
-            if [[ "$IS_FORK" == "true" ]]; then
-              echo "agent_mode=report" >> "$GITHUB_OUTPUT"
-              echo "[SECURITY] Fork PR detected - autofix disabled" >&2
-            else
-              echo "agent_mode=report" >> "$GITHUB_OUTPUT"
-            fi
+            # SECURITY: Always default to report for PR triggers.
+            # Even if autofix were enabled, fork PRs would be blocked by main.mjs.
+            echo "agent_mode=report" >> "$GITHUB_OUTPUT"
             echo "target_branch=$BASE_REF" >> "$GITHUB_OUTPUT"
           fi
 

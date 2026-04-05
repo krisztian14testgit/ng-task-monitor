@@ -1,7 +1,12 @@
 /**
  * AI Code Review Agent — Entry Point
  * ====================================
- * Orchestrates: scan → review → report (→ auto-fix).
+ * Orchestrates: scan → review → report (→ auto-fix when enabled).
+ * 
+ * ⚠️  Autofix mode is temporarily DISABLED for security reasons.
+ *     To re-enable, set AUTOFIX_ENABLED = true below and update
+ *     the workflow permissions (contents: write).
+ *     See code-review-setup/AI-CODE-REVIEW-SETUP.md § Security → Known Limitations.
  * 
  * Node.js v24 / ES Modules
  */
@@ -12,6 +17,13 @@ import { postReport } from './reporter.mjs';
 import { createFixPR } from './fixer.mjs';
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+
+// ── Autofix feature flag ─────────────────────────────────────
+// Set to true to re-enable autofix mode.
+// SECURITY: Before enabling, ensure the workflow has contents:write
+//           and review the fixer.mjs security guards.
+const AUTOFIX_ENABLED = false;
+// ─────────────────────────────────────────────────────────────
 
 /**
  * Load guidelines from file paths
@@ -49,10 +61,28 @@ async function main() {
   const repo = process.env.REPO_FULL_NAME;
   const headRef = process.env.HEAD_REF;
   const headSha = process.env.HEAD_SHA;
+  const isForkPR = process.env.IS_FORK_PR === 'true';
 
-  console.log(`[agent] scan_mode=${scanMode}  agent_mode=${agentMode}`);
+  // ── Autofix gate ─────────────────────────────────────────
+  // SECURITY: Autofix is blocked by feature flag.
+  // Even if AGENT_MODE=autofix is passed, it will be overridden.
+  let effectiveMode = agentMode;
+  if (effectiveMode === 'autofix' && !AUTOFIX_ENABLED) {
+    console.warn('[agent] BLOCKED: Autofix mode is temporarily disabled (AUTOFIX_ENABLED=false)');
+    effectiveMode = 'report';
+  }
+  // SECURITY: Disable autofix for fork PRs to prevent malicious code injection
+  if (isForkPR && effectiveMode === 'autofix') {
+    console.warn('[agent] SECURITY: Autofix disabled for fork PR');
+    effectiveMode = 'report';
+  }
+
+  console.log(`[agent] scan_mode=${scanMode}  agent_mode=${effectiveMode}${effectiveMode !== agentMode ? ` (requested: ${agentMode})` : ''}`);
   console.log(`[agent] target_branch=${targetBranch}`);
   console.log(`[agent] guidelines=${guidelineFiles.join(', ')}`);
+  if (isForkPR) {
+    console.log('[agent] Fork PR detected - autofix blocked by policy');
+  }
 
   // 1. Load guidelines
   const guidelines = loadGuidelines(guidelineFiles);
@@ -106,8 +136,9 @@ async function main() {
     });
   }
 
-  // 5. Auto-fix (optional, gated)
-  if (agentMode === 'autofix' && headRef) {
+  // 5. Auto-fix (gated by feature flag + security checks)
+  //    Currently DISABLED — AUTOFIX_ENABLED = false
+  if (effectiveMode === 'autofix' && headRef) {
     await createFixPR({
       repo,
       sourceBranch: headRef,
