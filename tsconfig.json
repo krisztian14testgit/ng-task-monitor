@@ -17,7 +17,8 @@
     "importHelpers": true,
     "target": "esnext",
     "module": "es2022",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "ignoreDeprecations": "6.0"
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
