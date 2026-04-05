@@ -1,0 +1,170 @@
+# ============================================================
+# AI Code Review Agent — GitHub Actions Workflow
+# ============================================================
+# Triggers on pull requests targeting configurable branches.
+# Supports two modes:
+#   • report-only  (default) — posts a review comment
+#   • auto-fix     (DISABLED) — blocked by feature flag in main.mjs
+#
+# ⚠️  Autofix is temporarily DISABLED for security reasons.
+#     The agent_mode input and env vars are preserved but the
+#     agent will refuse to run autofix (AUTOFIX_ENABLED=false).
+#     See code-review-setup/AI-CODE-REVIEW-SETUP.md § Security.
+#
+# Tech stack: Node.js v24, Angular v21
+# ============================================================
+
+name: "AI Code Review Agent"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    # The workflow fires for PRs targeting these branches.
+    branches:
+      - main
+      - develop
+      - "release/**"
+
+  # Allow manual dispatch (e.g. for full-repo scans)
+  workflow_dispatch:
+    inputs:
+      scan_mode:
+        description: "Scan mode: 'changes' (PR diff only) or 'full' (entire repo)"
+        required: true
+        default: "changes"
+        type: choice
+        options:
+          - changes
+          - full
+      # ⚠️ AUTOFIX TEMPORARILY DISABLED — agent will override to 'report'
+      # Kept for when autofix is re-enabled. See AUTOFIX_ENABLED in main.mjs.
+      agent_mode:
+        description: "Agent output mode: 'report' or 'autofix' (⚠️ autofix currently disabled)"
+        required: true
+        default: "report"
+        type: choice
+        options:
+          - report
+          # - autofix   # ⚠️ BLOCKED: uncomment when AUTOFIX_ENABLED=true in main.mjs
+      target_branch:
+        description: "Branch to scan (used in full-scan mode)"
+        required: false
+        default: "main"
+        type: string
+
+# ── Permissions ───────────────────────────────────────────────
+permissions:
+  contents: read         # read repo contents (change to 'write' when autofix is re-enabled)
+  # contents: write      # ⚠️ AUTOFIX: uncomment when re-enabling autofix (push fix branches)
+  pull-requests: write   # post comments (& open PRs when autofix is enabled)
+  issues: write          # (optional) open issues for critical findings
+  models: read           # allow GitHub Models inference with GITHUB_TOKEN
+
+# ── Concurrency guard ────────────────────────────────────────
+concurrency:
+  group: ai-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+# ── Environment variables (shared) ───────────────────────────
+env:
+  NODE_VERSION: "24"
+  GITHUB_MODEL: "openai/gpt-4.1"
+  # Comma-separated list of guideline files for Angular project
+  GUIDELINE_FILES: "coding-guideline/ANGULAR_CODING_GUIDELINES.md,coding-guideline/RXJS_CODING_GUIDELINES.md,coding-guideline/COGNITIVE_COMPLEXITY_GUIDELINES.md,.github/ai/guidelines/security-rules.md"
+
+jobs:
+  # ────────────────────────────────────────────────────────────
+  # Gate: skip if the PR was created by the bot (prevent loops)
+  # ────────────────────────────────────────────────────────────
+  guard:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - id: check
+        env:
+          # Use env vars to prevent script injection from untrusted input
+          PR_ACTOR: ${{ github.actor }}
+          PR_HEAD_REF: ${{ github.head_ref }}
+        run: |
+          # Skip bot-created PRs and ai-fix branches
+          if [[ "$PR_ACTOR" == "github-actions[bot]" ]] || [[ "$PR_HEAD_REF" == ai-fix/* ]]; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  # ────────────────────────────────────────────────────────────
+  # Main: run the AI agent
+  # ────────────────────────────────────────────────────────────
+  ai-review:
+    needs: guard
+    if: needs.guard.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # ── 1. Checkout ────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history needed for diff
+
+      # ── 2. Node.js setup ───────────────────────────────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: '.github/ai/agent/package.json'
+
+      - name: Install agent dependencies
+        working-directory: .github/ai/agent
+        run: npm ci --ignore-scripts
+
+      # ── 3. Resolve inputs ─────────────────────────────────
+      - name: Resolve agent inputs
+        id: inputs
+        env:
+          # Use env vars to prevent script injection from untrusted input
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_SCAN_MODE: ${{ inputs.scan_mode }}
+          INPUT_AGENT_MODE: ${{ inputs.agent_mode }}
+          INPUT_TARGET_BRANCH: ${{ inputs.target_branch }}
+          BASE_REF: ${{ github.base_ref }}
+          IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
+        run: |
+          # --- scan_mode ---
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "scan_mode=$INPUT_SCAN_MODE" >> "$GITHUB_OUTPUT"
+            # ⚠️ AUTOFIX DISABLED: pass agent_mode through, but main.mjs will
+            # override to 'report' because AUTOFIX_ENABLED=false
+            echo "agent_mode=$INPUT_AGENT_MODE" >> "$GITHUB_OUTPUT"
+            echo "target_branch=$INPUT_TARGET_BRANCH" >> "$GITHUB_OUTPUT"
+          else
+            echo "scan_mode=changes" >> "$GITHUB_OUTPUT"
+            # SECURITY: Always default to report for PR triggers.
+            # Even if autofix were enabled, fork PRs would be blocked by main.mjs.
+            echo "agent_mode=report" >> "$GITHUB_OUTPUT"
+            echo "target_branch=$BASE_REF" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ── 4. Run agent ──────────────────────────────────────
+      - name: Run AI Code Review Agent
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # --- Agent configuration ---
+          GITHUB_MODEL: ${{ env.GITHUB_MODEL }}
+          SCAN_MODE: ${{ steps.inputs.outputs.scan_mode }}
+          AGENT_MODE: ${{ steps.inputs.outputs.agent_mode }}
+          TARGET_BRANCH: ${{ steps.inputs.outputs.target_branch }}
+          GUIDELINE_FILES: ${{ env.GUIDELINE_FILES }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO_FULL_NAME: ${{ github.repository }}
+          # SECURITY: Use env var indirection for untrusted PR metadata
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          # SECURITY: Pass fork status to agent for additional validation
+          IS_FORK_PR: ${{ github.event.pull_request.head.repo.fork }}
+        working-directory: .
+        run: node .github/ai/agent/main.mjs
