@@ -20,8 +20,8 @@ describe('HeaderComponent', () => {
   let location: Location;
   const routeTable: any[] =  [
     {path: 'tasks/all', component: FakedRouteComponent },
-    {path: 'tasks/inprogress', component: FakedRouteComponent },
-    {path: 'weekly', component: FakedRouteComponent },
+    {path: 'tasks/finished', component: FakedRouteComponent },
+    {path: 'statistic/weekly', component: FakedRouteComponent },
     {path: '', redirectTo: '/tasks/all', pathMatch: 'full'}
   ];
 
@@ -92,10 +92,10 @@ describe('HeaderComponent', () => {
     flush();
   }));
 
-  it('should get titleOfRoute for /tasks/inprogress route', waitForAsync(async () => {
+  it('should get titleOfRoute for /tasks/finished route', waitForAsync(async () => {
     component.ngOnInit();
-    
-    const navUrl = 'tasks/inprogress';
+
+    const navUrl = 'tasks/finished';
     router.navigate([ navUrl ]);
     await fixture.whenStable();
     fixture.detectChanges();
@@ -104,10 +104,10 @@ describe('HeaderComponent', () => {
     expect(component.titleOfRoute).toBe(component['_routerDict'][navUrl]);
   }));
 
-  it('should get titleOfRoute for /weekly route', waitForAsync(async () => {
+  it('should get titleOfRoute for /statistic/weekly route', waitForAsync(async () => {
     component.ngOnInit();
-    
-    const navUrl = 'weekly';
+
+    const navUrl = 'statistic/weekly';
     router.navigate([ navUrl ]);
     await fixture.whenStable();
     fixture.detectChanges();
