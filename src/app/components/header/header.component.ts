@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, NavigationStart, Router, Event } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -29,7 +29,7 @@ export class HeaderComponent implements OnInit {
    */
   private _routerDict: {[routerKey: string]: string} = {};
 
-  constructor(private readonly router: Router, private readonly cdr: ChangeDetectorRef) {
+  constructor(private readonly router: Router) {
     this.appMenus = new AppMenu();
     this.appMenus.title = 'Menu';
     this.appMenus.icon = 'menu'
@@ -78,7 +78,6 @@ export class HeaderComponent implements OnInit {
         const urlKey = event.url.substring(1);
         if (urlKey) {
           this.titleOfRoute = this._routerDict[urlKey];
-          this.cdr.detectChanges();
         }
       }
     });

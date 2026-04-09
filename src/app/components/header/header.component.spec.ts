@@ -1,5 +1,5 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { Location } from "@angular/common";
 import { RouterTestingModule } from '@angular/router/testing';
@@ -92,33 +92,27 @@ describe('HeaderComponent', () => {
     flush();
   }));
 
-  it('should get titleOfRoute for /tasks/inprogress route', fakeAsync(() => {
-    spyOn(router, 'navigate').and.callThrough();
+  it('should get titleOfRoute for /tasks/inprogress route', waitForAsync(async () => {
     component.ngOnInit();
     
     const navUrl = 'tasks/inprogress';
     router.navigate([ navUrl ]);
+    await fixture.whenStable();
     fixture.detectChanges();
-    tick(100);
     expect(location.path()).toBe(`/${navUrl}`);
     // routerDict contains the title of each router path.
     expect(component.titleOfRoute).toBe(component['_routerDict'][navUrl]);
-    
-    flush();
   }));
 
-  it('should get titleOfRoute for /weekly route', fakeAsync(() => {
-    spyOn(router, 'navigate').and.callThrough();
+  it('should get titleOfRoute for /weekly route', waitForAsync(async () => {
     component.ngOnInit();
     
     const navUrl = 'weekly';
     router.navigate([ navUrl ]);
+    await fixture.whenStable();
     fixture.detectChanges();
-    tick(100);
     expect(location.path()).toBe(`/${navUrl}`);
     // routerDict contains the title of each router path.
     expect(component.titleOfRoute).toBe(component['_routerDict'][navUrl]);
-    
-    flush();
   }));
 });
