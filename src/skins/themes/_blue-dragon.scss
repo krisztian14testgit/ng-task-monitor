@@ -20,61 +20,138 @@ $app-blue-dragon: mat.m2-define-light-theme((
 ));
 
 @mixin body($componentBackground, $textColor) {
-  background: rgba(0, 55, 125, 0.89);;
-  background-image: url('../../assets/pictures/blueDragon.jpg');
+  background: rgba(0, 55, 125, 0.89);
+  background-image:
+    linear-gradient(rgba(0, 33, 76, 0.35), rgba(0, 55, 125, 0.30)),
+    url('../../assets/pictures/blueDragon.jpg');
   background-repeat: repeat-y;
   background-size: cover;
   color: $textColor;
 
   .header-title {
-    background: $componentBackground !important;
+    background: linear-gradient(135deg,
+      rgba(0, 186, 237, 0.88),
+      rgba(112, 224, 255, 0.72)) !important;
+    border: 2px solid rgba(0, 28, 112, 0.95);
+    border-radius: 10px;
+    box-shadow:
+      0 8px 18px rgba(0, 20, 82, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(2px);
+
+    h1 {
+      margin: 0;
+      letter-spacing: 0.03em;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
   }
 }
 
-@mixin task-card($background, $textColor) {
-  $input-color:  lightskyblue;
-  $input-bgColor: #005773;
+@mixin location-card($validColor) {
+  app-change-location .input-valid {
+    color: $validColor !important;
+  }
+}
+
+@mixin form-field($background, $textColor, $accentColor) {
+  .mat-mdc-form-field {
+    --mdc-filled-text-field-container-color: #{$background};
+    --mdc-filled-text-field-focus-active-indicator-color: #{$accentColor};
+    --mdc-filled-text-field-hover-active-indicator-color: #{$accentColor};
+    --mdc-filled-text-field-active-indicator-color: #{rgba($textColor, 0.55)};
+    --mdc-filled-text-field-label-text-color: #{rgba($textColor, 0.82)};
+    --mdc-filled-text-field-input-text-color: #{$textColor};
+    --mat-select-enabled-trigger-text-color: #{$textColor};
+    --mat-select-enabled-arrow-color: #{$textColor};
+
+    .mat-mdc-text-field-wrapper,
+    .mdc-text-field--filled:not(.mdc-text-field--disabled),
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
+      background: $background;
+    }
+
+    .mat-mdc-form-field-focus-overlay {
+      background: transparent;
+    }
+
+    .mdc-floating-label,
+    .mat-mdc-select-placeholder,
+    .mat-mdc-select-value,
+    .mat-mdc-select-arrow,
+    input.mat-mdc-input-element,
+    textarea.mat-mdc-input-element {
+      color: $textColor !important;
+    }
+
+    .mdc-line-ripple::before,
+    .mdc-line-ripple::after {
+      border-bottom-color: rgba($textColor, 0.60);
+    }
+
+    &.mat-focused {
+      .mdc-line-ripple::before,
+      .mdc-line-ripple::after {
+        border-bottom-color: $accentColor;
+      }
+    }
+  }
+}
+
+@mixin task-card($background, $textColor, $inputBackground, $inputColor, $buttonBackground, $progressColor, $progressTrackColor) {
   .task-container {
     border-color: black !important;
   }
 
-  .mat-card {
+  mat-card,
+  .mat-mdc-card {
     background: $background;
     color: $textColor;
   }
 
-  // add new task button
-  .mat-card > .task-new > button {
-    background: rgb(101 175 214);
+  .task-card-default-border {
+    border-color: rgba(0, 12, 60, 0.85);
   }
 
-  .mat-card-title input {
-    @include form.input-field-color($input-bgColor, $input-color);
+  // add new task button
+  .task-new > button,
+  .task-new > button.mat-mdc-raised-button,
+  .task-new > button.mat-mdc-unelevated-button {
+    background: $buttonBackground;
+  }
+
+  .edit-card-title input {
+    @include form.input-field-color($inputBackground, $inputColor);
   }
 
   // edit button
-  .card-title-button{
+  .card-title-button {
     border: 2px solid $textColor !important;
   }
 
-  .mat-card-content {
+  .edit-card-content {
     textarea {
-      @include form.input-field-color($input-bgColor, $input-color);
+      @include form.input-field-color($inputBackground, $inputColor);
     }
-    
 
     .edit-card-timer input {
-      @include form.input-field-color($input-bgColor, $input-color);
+      @include form.input-field-color($inputBackground, $inputColor);
     }
   }
 
   // status button
+  .mat-mdc-card-actions,
   .mat-card-actions {
     button {
       color: $textColor;
-      background-color: lightblue;
+      background-color: rgba(173, 216, 230, 0.88);
       border: 1px solid $textColor;
     }
+  }
+
+  .mat-mdc-progress-bar,
+  mat-progress-bar {
+    --mdc-linear-progress-active-indicator-color: #{$progressColor};
+    --mdc-linear-progress-track-color: #{$progressTrackColor};
   }
 
   .task-card-highlight {
@@ -83,18 +160,19 @@ $app-blue-dragon: mat.m2-define-light-theme((
 }
 
 // selection input tag
-@mixin comboBox {
-  .mat-select-panel {
-    background-color: rgb(10, 80, 142);
+@mixin comboBox($panelBackground, $textColor, $selectedColor) {
+  .mat-mdc-select-panel {
+    background-color: $panelBackground !important;
   }
 
-  .mat-option {
-    color: aqua;
+  .mat-mdc-option .mdc-list-item__primary-text {
+    color: $textColor;
   }
 
   // selected option
-  .mat-selected {
-    color: snow !important;
+  .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
+    color: $selectedColor !important;
+    font-weight: 600;
   }
 }
 
@@ -131,20 +209,45 @@ $app-blue-dragon: mat.m2-define-light-theme((
 
 // It will be applay if you add it into body class
 .blue-dragon-theme {
-    $blueText: darkblue;
-    $compBackground: rgba(0, 186, 237, 0.9);
-    
-    $menu-bgColor: #4dcef2eb;
+    $blueText: #001c70;
+    $compBackground: rgba(0, 186, 237, 0.72);
+    $fieldBackground: rgba(0, 168, 219, 0.26);
+    $inputBackground: rgba(0, 87, 115, 0.92);
+    $inputColor: #c8f3ff;
+    $buttonBackground: rgba(155, 220, 248, 0.78);
+    $progressColor: #0074ff;
+    $progressTrackColor: rgba(240, 248, 255, 0.72);
+    $validColor: rgb(110, 255, 170);
+
+    $menu-bgColor: rgba(77, 206, 242, 0.92);
     $menu-label-background: rgba(10, 38, 62, 0.45);
     $menu-hover-color: rgb(8, 50, 92);
     $mneu-activated-color: darkblue;
-    
+
+    --app-body-background: rgba(0, 55, 125, 0.89);
+    --app-foreground-color: #{$blueText};
+    --app-input-background: #{$inputBackground};
+    --app-input-color: #{$inputColor};
+    --app-input-border-color: rgba(110, 255, 170, 0.9);
+
     @include mat.all-component-colors($app-blue-dragon);
     @include body($compBackground, $blueText);
-    @include comboBox();
-    @include task-card($compBackground, $blueText);
+    @include location-card($validColor);
+    @include form-field($fieldBackground, $blueText, $validColor);
+    @include comboBox(rgb(10, 80, 142), aqua, snow);
+    @include task-card($compBackground, $blueText, $inputBackground, $inputColor,
+                       $buttonBackground, $progressColor, $progressTrackColor);
     @include menu.container($menu-label-background, $menu-hover-color,
                             $mneu-activated-color, $menu-bgColor);
     @include menu.button(rgb(101 175 214));
     @include alert-message($app-blue-dragon);
+
+    .input-valid {
+      color: $validColor;
+      box-shadow: inset 0 0 0 3px rgba(110, 255, 170, 0.95);
+    }
+
+    .input-invalid {
+      box-shadow: inset 0 0 0 3px rgba(255, 99, 71, 0.95);
+    }
 }

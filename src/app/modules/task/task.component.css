@@ -1,3 +1,8 @@
+.task-header-card {
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
 .task-container {
     width: auto;
     height: auto;
