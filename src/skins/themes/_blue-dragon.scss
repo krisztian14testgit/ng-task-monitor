@@ -229,6 +229,15 @@ $app-blue-dragon: mat.m2-define-light-theme((
     --app-input-background: #{$inputBackground};
     --app-input-color: #{$inputColor};
     --app-input-border-color: rgba(110, 255, 170, 0.9);
+    --app-chart-text-color: rgba(0, 22, 86, 0.96);
+    --app-chart-grid-color: rgba(0, 30, 92, 0.24);
+    --app-chart-line-color: rgb(74, 102, 194);
+    --app-chart-line-point-color: rgb(42, 76, 168);
+    --app-chart-fill-color: rgba(74, 102, 194, 0.18);
+    --app-chart-status-start: rgb(96, 96, 176);
+    --app-chart-status-progress: rgb(214, 128, 0);
+    --app-chart-status-completed: rgb(0, 118, 0);
+    --app-chart-border-color: rgba(0, 22, 86, 0.26);
 
     @include mat.all-component-colors($app-blue-dragon);
     @include body($compBackground, $blueText);
