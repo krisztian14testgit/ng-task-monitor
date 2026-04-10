@@ -45,7 +45,7 @@ $app-dark-theme: mat.m2-define-dark-theme((
   }
 
   .task-card-default-border {
-    border-color: gold;
+    border-color: gold !important;
   }
 
   .edit-card-title input {

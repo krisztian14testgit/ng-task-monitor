@@ -1,4 +1,4 @@
-// The menu label, mouse hover and activated(visited link) colors are changale via the container.
+// The menu label, mouse hover and activated(visited link) colors are changeable via the container.
 @mixin container($labelColor, $hoverColor, $activatedColor, $background: 'inherit') {
     .mat-mdc-menu-panel,
     .mat-mdc-menu-content {
