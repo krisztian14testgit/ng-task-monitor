@@ -32,25 +32,30 @@ $app-dark-theme: mat.m2-define-dark-theme((
 
 @mixin task-card($textColor) {
   $input-color: $textColor;
-  $input-bgColor: black;
+  $input-bgColor: rgba(0, 0, 0, 0.9);
 
   .task-container {
     border-color: gold !important;
   }
 
-  .mat-card {
+  mat-card,
+  .mat-mdc-card {
+    background: rgb(69, 69, 69);
     color: $textColor;
   }
 
-  .mat-card-title input {
+  .task-card-default-border {
+    border-color: gold;
+  }
+
+  .edit-card-title input {
     @include form.input-field-color($input-bgColor, $input-color);
   }
 
-  .mat-card-content {
+  .edit-card-content {
     textarea {
       @include form.input-field-color($input-bgColor, $input-color);
     }
-    
 
     .edit-card-timer input {
       @include form.input-field-color($input-bgColor, $input-color);
@@ -58,10 +63,22 @@ $app-dark-theme: mat.m2-define-dark-theme((
   }
 
   // status button
+  .mat-mdc-card-actions,
   .mat-card-actions {
     button {
       color: lightblue;
       border: 1px solid lightblue;
+    }
+  }
+
+  .edit-card-timer-progress {
+    .mat-green,
+    .mat-mdc-raised-button.mat-green,
+    .mat-mdc-unelevated-button.mat-green {
+      background: transparent !important;
+      color: lightblue !important;
+      border: 1px solid lightblue !important;
+      box-shadow: none;
     }
   }
 
@@ -89,9 +106,16 @@ $app-dark-theme: mat.m2-define-dark-theme((
     $text-valid: rgb(0, 200, 11);
     $menu-label-background: rgba(0, 0, 0, 0.33);
 
+    --app-body-background: rgba(0, 0, 0, 0.85);
+    --app-foreground-color: #{$textWhite};
+    --app-input-background: rgba(0, 0, 0, 0.9);
+    --app-input-color: #{$textWhite};
+    --app-input-border-color: rgba(255, 255, 255, 0.55);
+
     @include mat.all-component-colors($app-dark-theme);
     @include body($textWhite);
-    @include menu.container($menu-label-background, lightblue, darkgray);
+    @include menu.container($menu-label-background, lightblue, darkgray, #3f3f3f);
+    @include menu.button(#3f3f3f);
     @include location-card($text-valid);
     @include task-card($textWhite);
     @include alert-message();
