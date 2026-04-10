@@ -120,7 +120,7 @@ jobs:
 
       - name: Install agent dependencies
         working-directory: .github/ai/agent
-        run: npm ci --ignore-scripts
+        run: npm install --ignore-scripts
 
       # ── 3. Resolve inputs ─────────────────────────────────
       - name: Resolve agent inputs
