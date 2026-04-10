@@ -9,12 +9,12 @@
     padding: 3px;
 }
 
-.taks-filter {
+.task-filter {
     display: grid;
     gap: 8px;
 }
 
-.taks-filter mat-form-field {
+.task-filter mat-form-field {
     width: 100%;
 }
 
