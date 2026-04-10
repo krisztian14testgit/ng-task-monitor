@@ -1,10 +1,12 @@
 .task-card {
-    width: inherit;
+    width: 100%;
     margin-bottom: 10px;
+    box-sizing: border-box;
 }
 
 .task-card-default-border {
-    border: 1px solid black;
+    border: 2px solid black;
+    box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.3);
 }
 
 .task-card-highlight {
@@ -12,25 +14,36 @@
 }
 
 mat-card-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
     font-size: 20px;
-    height: 20px;
+    height: auto;
+    margin-bottom: 12px;
+    padding: 0 16px;
+    box-sizing: border-box;
 }
 
 mat-card-title > div {
-    width: 83%;
-    float: left;
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 mat-card-title > .card-title-button-box {
-    width: 15%;
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .card-title-button {
     width: initial;
+    min-width: 72px;
     border: 1px solid black;
     border-radius: 10px;
     box-shadow: 0 3px 1px -2px #0003, 0 2px 2px #00000024, 0 1px 5px #0000001f;
-    padding: 5px 0px 5px 0px;
+    padding: 5px 12px;
     text-align: center;
     cursor: pointer;
 }
@@ -42,23 +55,47 @@ mat-card-title > .card-title-button-box {
 mat-card-content {
     height: auto;
     width: 100%;
-    float: left;
+    float: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 0 16px 16px;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .card-description {
-    float: left;
-    width: 60%;
-    height: fit-content;
+    float: none;
+    width: auto;
+    flex: 1 1 60%;
+    min-width: 220px;
     word-wrap: break-word;
 }
 
 .card-timer {
-    float: right;
-    width: 38%;
+    float: none;
+    width: auto;
+    flex: 1 1 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .card-divider-line {
-    float: left;
+    float: none;
+    width: 100%;
+    flex: 0 0 100%;
+    min-width: 0;
+}
+
+.card-divider-line hr {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+mat-card-actions:not(.edit-card-timer-progress) > div {
     width: 100%;
 }
 
@@ -66,22 +103,64 @@ mat-card-content {
 
 
 /*#region editable card */
+.edit-card-title {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
 .edit-card-title > input {
-    width: -webkit-fill-available;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.edit-card-title > input,
+.edit-card-content > .card-description,
+.edit-card-timer > input {
+    background-color: var(--app-input-background, transparent);
+    color: var(--app-input-color, inherit);
+    border: 1px solid var(--app-input-border-color, rgba(0, 0, 0, 0.38));
+    border-radius: 2px;
+    padding: 4px 6px;
+    font-family: inherit;
 }
 
 .edit-card-content {
-    height: 80px;
+    height: auto;
+    min-height: 80px;
+    align-items: flex-start;
 }
 
 .edit-card-content > .card-description {
-    height: 80px;
+    height: auto;
+    min-height: 80px;
+    box-sizing: border-box;
+    resize: vertical;
 }
 
 .edit-card-timer > input {
     width: 100%;
+    box-sizing: border-box;
 }
+
 .edit-card-timer-progress {
-    padding-left: 45%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+    padding: 8px 0 0;
+}
+
+.edit-card-timer-progress > div {
+    width: auto;
+    text-align: center;
 }
 /*#endregion*/
+
+@media (max-width: 640px) {
+    .card-description,
+    .card-timer {
+        flex-basis: 100%;
+    }
+}
