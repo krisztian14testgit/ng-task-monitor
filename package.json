@@ -1,6 +1,6 @@
 {
   "name": "ng-task-monitor",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "This version is built in ElectronJs with Angular 21",
   "license": "MIT",
   "author": {
@@ -71,6 +71,8 @@
     "@typescript-eslint/eslint-plugin": "^8.56.0",
     "@typescript-eslint/parser": "^8.56.0",
     "electron": "^41.2.0",
+    "electron-installer-debian": "^3.2.0",
+    "electron-installer-redhat": "^3.4.0",
     "eslint": "^9.39.3",
     "globals": "^17.3.0",
     "jasmine-core": "~6.0.1",

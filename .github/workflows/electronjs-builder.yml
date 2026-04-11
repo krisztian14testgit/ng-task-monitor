@@ -27,6 +27,9 @@ jobs:
         env:
           PUPPETEER_SKIP_DOWNLOAD: 'true'
 
+      - name: Install system build tools
+        run: sudo apt-get update -y && sudo apt-get install -y rpm fakeroot
+
       - name: Run lint
         run: npm run lint
 
