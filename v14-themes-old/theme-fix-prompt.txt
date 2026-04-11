@@ -1,0 +1,27 @@
+App theme displaying is broken.
+You will help me to investigate and fix the design of the themes, they will display well again inside the application.
+The broken theme dispalying happens after the angular version 21 upgrading.
+
+Instruction:
+- Look at the history changes of the style.css and custom-theme.scss files
+- There is src/skins folder which contains the different themes, Look them what have been changed during the anuglar updating to version 21.
+- Fetch the changes logs from angular material from v14 to v21, npm link: https://github.com/angular/components/blob/main/CHANGELOG.md
+- Try to fix the displaying html elements on the DOM, they will display well again from the each themes, what they had before.
+- There is v14-theme folder which contains the images from different view of the application, where the components and html element were displayed well, and looks likes great for each skins (light, dark, blue-dragon)
+
+Themes/skins:
+- Light theme will be the first to fix it.
+- After that dark theme will be the next
+- skip the blue-dragon theme
+
+What happened after updating:
+- The light and dark themes are broken, not every html element fit well.
+- Task cards styles and border display in the wrong
+- Creating new task the border of fields cover each others. That is also wrong.
+- The input field are not transparent well, they have white background that is wrong.
+- Menu points are spread apart, they are not underneath each other well.
+
+Theme appears well in the past(light, dark, blueDragon):
+- There is branch where the different theme style displayed well.
+- Branch name: FE-ng-v14.28
+- You can also invistage the styles for the better understanding.
