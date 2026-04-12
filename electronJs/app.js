@@ -8,7 +8,7 @@
  */
 
 const {app, BrowserWindow} = require('electron');
-const url = require("url");
+const { pathToFileURL } = require('node:url');
 const path = require("path");
 const IpcLocation = require('./ipc/ipc-location');
 const IpcTaskList = require('./ipc/ipc-task-list');
@@ -17,10 +17,7 @@ const IpcTaskList = require('./ipc/ipc-task-list');
 let mainWindow = undefined;
 const startedPage = '../dist/ng-task-monitor/index.html';
 
-const indexUrl = url.format(path.join(__dirname, startedPage), {
-    protocol: 'file',
-    slashes: true,
-});
+const indexUrl = pathToFileURL(path.join(__dirname, startedPage)).toString();
 /** Contains true if one instance is already running of window. */
 const isAppInstanceLocked = app.requestSingleInstanceLock();
 
