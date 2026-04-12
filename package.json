@@ -8,6 +8,9 @@
     "email": "",
     "url": ""
   },
+  "engines": {
+    "node": ">=24"
+  },
   "main": "./electronJs/app.js",
   "scripts": {
     "ng": "ng",
@@ -74,8 +77,6 @@
     "@typescript-eslint/eslint-plugin": "^8.56.0",
     "@typescript-eslint/parser": "^8.56.0",
     "electron": "^41.2.0",
-    "electron-installer-debian": "^3.2.0",
-    "electron-installer-redhat": "^3.4.0",
     "eslint": "^9.39.3",
     "globals": "^17.3.0",
     "jasmine-core": "~6.0.1",
