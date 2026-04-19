@@ -15,11 +15,6 @@ describe('BrowserStorageService', () => {
     localStorage.clear();
   });
 
-  afterEach(() => {
-    // Clean up after each test
-    localStorage.clear();
-  });
-
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
