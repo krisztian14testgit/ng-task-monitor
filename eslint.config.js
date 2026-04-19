@@ -117,6 +117,13 @@ module.exports = [
     },
   },
   {
+    // Web worker file – disable no-useless-assignment (variables reset before each loop iteration intentionally)
+    files: ['src/app/web-workers/countdown-timer.worker.ts'],
+    rules: {
+      'no-useless-assignment': 'off',
+    },
+  },
+  {
     // HTML template files configuration
     files: ['**/*.html'],
     languageOptions: {

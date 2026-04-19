@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, from } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -164,9 +165,8 @@ export class TaskService {
    * @returns boolean
    */
   public delete(...taskIdArgs: string[]): Observable<boolean> {
-    let taskIndex = -1;
     for (const taskId of taskIdArgs) {
-      taskIndex = this._taskList.findIndex(task => task.id === taskId);
+        const taskIndex = this._taskList.findIndex(task => task.id === taskId);
       if (taskIndex > -1) {
         this._taskList.splice(taskIndex, 1);
       }
@@ -198,7 +198,10 @@ export class TaskService {
       try {
         (window as any).electronAPI.ipcTaskList.save(taskList);
       } catch (error: unknown) {
-        throw Error(error instanceof Error ? error.message : 'Unknown error occurred');
+        throw new Error(
+          error instanceof Error ? error.message : 'Unknown error occurred',
+          { cause: error }
+        );
       }
     }
   }

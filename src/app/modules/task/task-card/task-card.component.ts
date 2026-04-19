@@ -5,7 +5,6 @@ import { exhaustMap } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormValidator } from 'src/app/validators/my-validator';
@@ -23,7 +22,7 @@ import { TaskTimerComponent } from '../task-timer/task-timer.component';
     templateUrl: './task-card.component.html',
     styleUrls: ['./task-card.component.css'],
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatButtonModule, MatDividerModule, MatFormFieldModule, MatInputModule, CardHighlightDirective, InputBorderDirective, TaskTimerComponent]
+    imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatButtonModule, MatFormFieldModule, MatInputModule, CardHighlightDirective, InputBorderDirective, TaskTimerComponent]
 })
 export class TaskCardComponent implements OnChanges, AfterViewInit {
   /** The current task reference which is given. */

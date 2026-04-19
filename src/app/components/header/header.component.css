@@ -1,8 +1,24 @@
 .header-title {
     color: inherit;
     background: inherit;
-    width: 35%;
+    width: clamp(220px, 35vw, 420px);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
     border-radius: 4px;
     text-align: center;
-    padding-top: 10px;
+    padding: 12px 20px;
+}
+
+.header-title h1 {
+    margin: 0;
+    line-height: 1.2;
+    font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+    font-style: normal;
+}
+
+.moved-padding-left {
+    padding-left: 2rem;
 }

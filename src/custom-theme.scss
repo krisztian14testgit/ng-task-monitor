@@ -26,5 +26,20 @@
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include mat.all-component-themes(light.$app-light-theme);
+
+body {
+  --app-body-background: #f5f5f5;
+  --app-foreground-color: rgba(0, 0, 0, 0.87);
+  --app-input-background: transparent;
+  --app-input-color: rgba(0, 0, 0, 0.87);
+  --app-input-border-color: rgba(0, 0, 0, 0.4);
+
+  .mat-mdc-card {
+    background: #f3f3f3;
+    color: var(--app-foreground-color);
+  }
+}
+
 // set menu: background style
-@include menu.container(lightgray, '', darkblue);
+@include menu.container(#d3d3d3, darkblue, darkblue, #ececec);
+@include menu.button(#f1f1f1);

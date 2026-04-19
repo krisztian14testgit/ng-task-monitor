@@ -1,0 +1,919 @@
+
+
+Here is a comprehensive, production-ready template covering the full GitHub Actions workflow, the Python agent script, and example guideline Markdown files. Everything is designed around the inputs and outputs you described.
+
+---
+
+## Project Structure
+
+```
+.github/
+├── workflows/
+│   └── ai-code-review.yml          # GitHub Actions workflow
+├── ai/
+│   ├── guidelines/
+│   │   ├── general-coding.md        # Guideline file 1
+│   │   ├── security-rules.md        # Guideline file 2
+│   │   └── refactor-playbook.md     # Guideline file 3
+│   └── agent/
+│       ├── requirements.txt         # Python dependencies
+│       ├── main.py                  # Agent entry point
+│       ├── scanner.py               # Diff / full-scan logic
+│       ├── reviewer.py              # LLM-based review engine
+│       ├── reporter.py              # Report formatter + PR commenter
+│       └── fixer.py                 # Auto-fix branch + PR creator
+```
+
+---
+
+## 1. GitHub Actions Workflow
+
+```yaml name=.github/workflows/ai-code-review.yml
+# ============================================================
+# AI Code Review Agent — GitHub Actions Workflow
+# ============================================================
+# Triggers on pull requests targeting configurable branches.
+# Supports two modes:
+#   • report-only  (default) — posts a review comment
+#   • auto-fix     (opt-in)  — opens a fix PR into the source branch
+# ============================================================
+
+name: "AI Code Review Agent"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    # The workflow fires for PRs targeting these branches.
+    # The actual "target branch to scan" is an input to the agent.
+    branches:
+      - main
+      - develop
+      - "release/**"
+
+  # Allow manual dispatch (e.g. for full-repo scans on a schedule)
+  workflow_dispatch:
+    inputs:
+      scan_mode:
+        description: "Scan mode: 'changes' (PR diff only) or 'full' (entire repo)"
+        required: true
+        default: "changes"
+        type: choice
+        options:
+          - changes
+          - full
+      agent_mode:
+        description: "Agent output mode: 'report' or 'autofix'"
+        required: true
+        default: "report"
+        type: choice
+        options:
+          - report
+          - autofix
+      target_branch:
+        description: "Branch to scan (used in full-scan mode)"
+        required: false
+        default: "main"
+        type: string
+
+# ── Permissions ───────────────────────────────────────────────
+permissions:
+  contents: write        # push fix branches
+  pull-requests: write   # post comments & open PRs
+  issues: write          # (optional) open issues for critical findings
+
+# ── Concurrency guard ────────────────────────────────────────
+concurrency:
+  group: ai-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+# ── Environment variables (shared) ───────────────────────────
+env:
+  PYTHON_VERSION: "3.12"
+  # Comma-separated list of guideline files (array input)
+  GUIDELINE_FILES: ".github/ai/guidelines/general-coding.md,.github/ai/guidelines/security-rules.md,.github/ai/guidelines/refactor-playbook.md"
+
+jobs:
+  # ────────────────────────────────────────────────────────────
+  # Gate: skip if the PR was created by the bot (prevent loops)
+  # ────────────────────────────────────────────────────────────
+  guard:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - id: check
+        run: |
+          ACTOR="${{ github.actor }}"
+          HEAD_REF="${{ github.head_ref }}"
+          # Skip bot-created PRs and ai-fix branches
+          if [[ "$ACTOR" == "github-actions[bot]" ]] || [[ "$HEAD_REF" == ai-fix/* ]]; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  # ────────────────────────────────────────────────────────────
+  # Main: run the AI agent
+  # ────────────────────────────────────────────────────────────
+  ai-review:
+    needs: guard
+    if: needs.guard.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # ── 1. Checkout ────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history needed for diff
+
+      # ── 2. Python setup ────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: pip install -r .github/ai/agent/requirements.txt
+
+      # ── 3. Resolve inputs ─────────────────────────────────
+      - name: Resolve agent inputs
+        id: inputs
+        run: |
+          # --- scan_mode ---
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "scan_mode=${{ inputs.scan_mode }}" >> "$GITHUB_OUTPUT"
+            echo "agent_mode=${{ inputs.agent_mode }}" >> "$GITHUB_OUTPUT"
+            echo "target_branch=${{ inputs.target_branch }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "scan_mode=changes" >> "$GITHUB_OUTPUT"
+            echo "agent_mode=report" >> "$GITHUB_OUTPUT"
+            echo "target_branch=${{ github.base_ref }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ── 4. Run agent ──────────────────────────────────────
+      - name: Run AI Code Review Agent
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # --- Agent configuration ---
+          SCAN_MODE: ${{ steps.inputs.outputs.scan_mode }}
+          AGENT_MODE: ${{ steps.inputs.outputs.agent_mode }}
+          TARGET_BRANCH: ${{ steps.inputs.outputs.target_branch }}
+          GUIDELINE_FILES: ${{ env.GUIDELINE_FILES }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO_FULL_NAME: ${{ github.repository }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python .github/ai/agent/main.py
+```
+
+---
+
+## 2. Agent — Python Source Files
+
+### 2a. Dependencies
+
+```txt name=.github/ai/agent/requirements.txt
+openai>=1.30.0
+PyGithub>=2.3.0
+```
+
+### 2b. Entry Point
+
+```python name=.github/ai/agent/main.py
+"""
+AI Code Review Agent — Entry Point
+===================================
+Orchestrates: scan → review → report (→ auto-fix).
+"""
+
+import os
+import sys
+
+from scanner import scan_changes, scan_full
+from reviewer import review
+from reporter import post_report
+from fixer import create_fix_pr
+
+
+def main() -> None:
+    # ── Read environment ────────────────────────────────────
+    scan_mode: str = os.environ["SCAN_MODE"]          # "changes" | "full"
+    agent_mode: str = os.environ["AGENT_MODE"]         # "report"  | "autofix"
+    target_branch: str = os.environ["TARGET_BRANCH"]
+    guideline_paths: list[str] = os.environ["GUIDELINE_FILES"].split(",")
+    pr_number: str | None = os.environ.get("PR_NUMBER")
+    repo: str = os.environ["REPO_FULL_NAME"]
+    head_ref: str | None = os.environ.get("HEAD_REF")
+    head_sha: str | None = os.environ.get("HEAD_SHA")
+
+    print(f"[agent] scan_mode={scan_mode}  agent_mode={agent_mode}")
+    print(f"[agent] target_branch={target_branch}")
+    print(f"[agent] guidelines={guideline_paths}")
+
+    # ── 1. Load guidelines ──────────────────────────────────
+    guidelines: list[dict[str, str]] = []
+    for path in guideline_paths:
+        path = path.strip()
+        if os.path.isfile(path):
+            with open(path, "r", encoding="utf-8") as fh:
+                guidelines.append({"path": path, "content": fh.read()})
+        else:
+            print(f"[agent] WARNING: guideline file not found → {path}")
+
+    if not guidelines:
+        print("[agent] ERROR: no guideline files loaded. Exiting.")
+        sys.exit(1)
+
+    # ── 2. Scan ─────────────────────────────────────────────
+    if scan_mode == "full":
+        files = scan_full(target_branch)
+    else:
+        files = scan_changes(target_branch)
+
+    if not files:
+        print("[agent] No files to review. Exiting cleanly.")
+        return
+
+    print(f"[agent] {len(files)} file(s) to review.")
+
+    # ── 3. Review ───────────────────────────────────────────
+    findings = review(files=files, guidelines=guidelines)
+
+    if not findings:
+        print("[agent] ✅ No issues found.")
+        # Still post a clean report so the author knows it ran
+        if pr_number:
+            post_report(
+                repo=repo,
+                pr_number=int(pr_number),
+                findings=[],
+                scan_mode=scan_mode,
+            )
+        return
+
+    print(f"[agent] {len(findings)} finding(s).")
+
+    # ── 4. Report ───────────────────────────────────────────
+    if pr_number:
+        post_report(
+            repo=repo,
+            pr_number=int(pr_number),
+            findings=findings,
+            scan_mode=scan_mode,
+        )
+
+    # ── 5. Auto-fix (optional, gated) ──────────────────────
+    if agent_mode == "autofix" and head_ref:
+        create_fix_pr(
+            repo=repo,
+            source_branch=head_ref,
+            findings=findings,
+            guidelines=guidelines,
+        )
+
+
+if __name__ == "__main__":
+    main()
+```
+
+### 2c. Scanner (Diff & Full)
+
+```python name=.github/ai/agent/scanner.py
+"""
+scanner.py — Collects files for the agent to review.
+=====================================================
+Two modes:
+  • changes : only files changed vs. the target branch (PR diff)
+  • full    : every tracked file on the target branch
+"""
+
+import subprocess
+from dataclasses import dataclass
+
+
+@dataclass
+class FileToReview:
+    """Represents a single file the agent should inspect."""
+
+    path: str
+    content: str
+    diff: str | None = None  # unified diff (None for full scans)
+
+
+def _run(cmd: list[str]) -> str:
+    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    return result.stdout.strip()
+
+
+# ── File-extension allow-list (expand as needed) ────────────
+_EXTENSIONS = {
+    ".py", ".js", ".ts", ".tsx", ".jsx",
+    ".java", ".kt", ".go", ".rs", ".rb",
+    ".cs", ".cpp", ".c", ".h", ".hpp",
+    ".swift", ".vue", ".svelte",
+    ".yaml", ".yml", ".json", ".toml",
+}
+
+
+def _is_reviewable(path: str) -> bool:
+    return any(path.endswith(ext) for ext in _EXTENSIONS)
+
+
+# ── Changed-files mode ──────────────────────────────────────
+def scan_changes(target_branch: str) -> list[FileToReview]:
+    """Return only files that differ from *target_branch*."""
+    merge_base = _run(["git", "merge-base", f"origin/{target_branch}", "HEAD"])
+    diff_names = _run(["git", "diff", "--name-only", "--diff-filter=ACMR", merge_base, "HEAD"])
+
+    files: list[FileToReview] = []
+    for path in diff_names.splitlines():
+        path = path.strip()
+        if not path or not _is_reviewable(path):
+            continue
+        try:
+            content = _run(["git", "show", f"HEAD:{path}"])
+            diff = _run(["git", "diff", merge_base, "HEAD", "--", path])
+            files.append(FileToReview(path=path, content=content, diff=diff))
+        except subprocess.CalledProcessError:
+            continue
+    return files
+
+
+# ── Full-scan mode ──────────────────────────────────────────
+def scan_full(target_branch: str) -> list[FileToReview]:
+    """Return every tracked file on *target_branch*."""
+    all_files = _run(["git", "ls-tree", "-r", "--name-only", f"origin/{target_branch}"])
+
+    files: list[FileToReview] = []
+    for path in all_files.splitlines():
+        path = path.strip()
+        if not path or not _is_reviewable(path):
+            continue
+        try:
+            content = _run(["git", "show", f"origin/{target_branch}:{path}"])
+            files.append(FileToReview(path=path, content=content, diff=None))
+        except subprocess.CalledProcessError:
+            continue
+    return files
+```
+
+### 2d. Reviewer (LLM-Based)
+
+```python name=.github/ai/agent/reviewer.py
+"""
+reviewer.py — Sends code + guidelines to an LLM and parses findings.
+=====================================================================
+Returns a structured list of findings the reporter/fixer can consume.
+"""
+
+import json
+import os
+from dataclasses import dataclass, asdict
+
+from openai import OpenAI
+
+from scanner import FileToReview
+
+# ── Data model ──────────────────────────────────────────────
+
+
+@dataclass
+class Finding:
+    """A single issue discovered by the agent."""
+
+    file: str
+    line_start: int
+    line_end: int
+    severity: str           # "critical" | "warning" | "info"
+    category: str           # e.g. "naming", "security", "complexity"
+    description: str        # human-readable explanation
+    suggestion: str         # what the code *should* look like
+    guideline_ref: str      # which guideline triggered this
+
+
+# ── Prompt construction ─────────────────────────────────────
+
+_SYSTEM_PROMPT = """\
+You are an expert code reviewer acting as a CI agent.
+Your job is to analyse source code against a set of coding guidelines
+and produce a JSON array of findings.
+
+Each finding MUST have these keys:
+  file, line_start, line_end, severity, category, description, suggestion, guideline_ref
+
+severity is one of: "critical", "warning", "info".
+
+Rules:
+• Only report genuine issues backed by the guidelines provided.
+• Prefer precision over recall — do NOT invent issues.
+• When a diff is provided, focus primarily on changed lines, but you
+  may flag pre-existing issues in the same function if they are critical.
+• Keep suggestions minimal — change only what is necessary.
+• Return an empty JSON array [] if there are no issues.
+
+Respond with ONLY the raw JSON array. No markdown fences, no commentary.
+"""
+
+
+def _build_user_message(
+    files: list[FileToReview],
+    guidelines: list[dict[str, str]],
+) -> str:
+    parts: list[str] = []
+
+    # Guidelines
+    parts.append("=== CODING GUIDELINES ===\n")
+    for g in guidelines:
+        parts.append(f"--- {g['path']} ---\n{g['content']}\n")
+
+    # Files
+    parts.append("\n=== FILES TO REVIEW ===\n")
+    for f in files:
+        parts.append(f"--- {f.path} ---")
+        if f.diff:
+            parts.append(f"[DIFF]\n{f.diff}\n")
+        parts.append(f"[FULL FILE]\n{f.content}\n")
+
+    return "\n".join(parts)
+
+
+# ── Chunk helpers ───────────────────────────────────────────
+
+_MAX_FILES_PER_CHUNK = 8  # keep under context-window limits
+
+
+def _chunk(files: list[FileToReview]) -> list[list[FileToReview]]:
+    """Split large file lists into manageable chunks."""
+    return [
+        files[i : i + _MAX_FILES_PER_CHUNK]
+        for i in range(0, len(files), _MAX_FILES_PER_CHUNK)
+    ]
+
+
+# ── Main review function ───────────────────────────────────
+
+
+def review(
+    files: list[FileToReview],
+    guidelines: list[dict[str, str]],
+) -> list[Finding]:
+    """Send files + guidelines to the LLM and return parsed findings."""
+
+    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+    model = os.environ.get("OPENAI_MODEL", "gpt-4o")
+
+    all_findings: list[Finding] = []
+
+    for chunk in _chunk(files):
+        user_msg = _build_user_message(chunk, guidelines)
+
+        response = client.chat.completions.create(
+            model=model,
+            temperature=0.0,
+            messages=[
+                {"role": "system", "content": _SYSTEM_PROMPT},
+                {"role": "user", "content": user_msg},
+            ],
+            response_format={"type": "json_object"},
+        )
+
+        raw = response.choices[0].message.content or "[]"
+
+        try:
+            parsed = json.loads(raw)
+            # Handle both {"findings": [...]} and bare [...]
+            items = parsed if isinstance(parsed, list) else parsed.get("findings", [])
+            for item in items:
+                all_findings.append(Finding(**item))
+        except (json.JSONDecodeError, TypeError, KeyError) as exc:
+            print(f"[reviewer] WARNING: failed to parse LLM response — {exc}")
+            continue
+
+    return all_findings
+```
+
+### 2e. Reporter (PR Comment)
+
+```python name=.github/ai/agent/reporter.py
+"""
+reporter.py — Formats findings and posts them as a PR comment.
+==============================================================
+"""
+
+import os
+from github import Github
+
+from reviewer import Finding
+
+
+def _format_report(findings: list[Finding], scan_mode: str) -> str:
+    """Build a Markdown report from the findings list."""
+
+    mode_label = "🔍 Full Repository Scan" if scan_mode == "full" else "🔎 Changed Files Scan"
+
+    lines: list[str] = [
+        "## 🤖 AI Code Review Report",
+        "",
+        f"**Mode:** {mode_label}",
+        f"**Findings:** {len(findings)}",
+        "",
+    ]
+
+    if not findings:
+        lines += [
+            "✅ **No issues found!** The code looks good.",
+            "",
+            "---",
+            "_This report was generated automatically by the AI Code Review Agent._",
+        ]
+        return "\n".join(lines)
+
+    # ── Summary table ───────────────────────────────────────
+    critical = sum(1 for f in findings if f.severity == "critical")
+    warning = sum(1 for f in findings if f.severity == "warning")
+    info = sum(1 for f in findings if f.severity == "info")
+
+    lines += [
+        "### Summary",
+        "",
+        "| Severity | Count |",
+        "|----------|-------|",
+        f"| 🔴 Critical | {critical} |",
+        f"| 🟡 Warning  | {warning} |",
+        f"| 🔵 Info     | {info} |",
+        "",
+        "---",
+        "",
+    ]
+
+    # ── Detailed findings ───────────────────────────────────
+    lines.append("### Detailed Findings\n")
+
+    severity_icons = {"critical": "🔴", "warning": "🟡", "info": "🔵"}
+
+    for idx, f in enumerate(findings, start=1):
+        icon = severity_icons.get(f.severity, "⚪")
+        lines += [
+            f"#### {icon} #{idx} — {f.category}",
+            "",
+            f"**File:** `{f.file}` · Lines {f.line_start}–{f.line_end}",
+            f"**Severity:** {f.severity} · **Guideline:** {f.guideline_ref}",
+            "",
+            f"**Issue:** {f.description}",
+            "",
+            "<details>",
+            "<summary>💡 Suggested fix</summary>",
+            "",
+            "```suggestion",
+            f"{f.suggestion}",
+            "```",
+            "",
+            "</details>",
+            "",
+            "---",
+            "",
+        ]
+
+    lines.append("_This report was generated automatically by the AI Code Review Agent._")
+    return "\n".join(lines)
+
+
+def post_report(
+    repo: str,
+    pr_number: int,
+    findings: list[Finding],
+    scan_mode: str,
+) -> None:
+    """Post the Markdown report as a PR comment."""
+
+    gh = Github(os.environ["GITHUB_TOKEN"])
+    pr = gh.get_repo(repo).get_pull(pr_number)
+
+    body = _format_report(findings, scan_mode)
+
+    # ── Upsert: edit the previous bot comment if it exists ──
+    BOT_MARKER = "<!-- ai-code-review-agent -->"
+    body_with_marker = f"{BOT_MARKER}\n{body}"
+
+    for comment in pr.get_issue_comments():
+        if BOT_MARKER in (comment.body or ""):
+            comment.edit(body_with_marker)
+            print(f"[reporter] Updated existing comment #{comment.id}")
+            return
+
+    pr.create_issue_comment(body_with_marker)
+    print("[reporter] Posted new review comment.")
+```
+
+### 2f. Fixer (Auto-Fix PR)
+
+```python name=.github/ai/agent/fixer.py
+"""
+fixer.py — Creates a fix branch and opens a PR with suggested changes.
+=====================================================================
+Only runs when agent_mode == "autofix".
+"""
+
+import json
+import os
+import subprocess
+
+from github import Github
+
+from reviewer import Finding
+
+
+def _apply_fixes(findings: list[Finding]) -> list[str]:
+    """
+    Apply suggestions to local files. Returns list of modified paths.
+    Only applies findings that have a non-empty suggestion.
+    """
+    modified: list[str] = []
+
+    for f in findings:
+        if not f.suggestion or f.severity == "info":
+            continue
+        if not os.path.isfile(f.file):
+            continue
+
+        with open(f.file, "r", encoding="utf-8") as fh:
+            lines = fh.readlines()
+
+        # Replace the line range with the suggestion
+        start = max(f.line_start - 1, 0)
+        end = min(f.line_end, len(lines))
+        suggestion_lines = f.suggestion.rstrip("\n").split("\n")
+        suggestion_lines = [line + "\n" for line in suggestion_lines]
+
+        lines[start:end] = suggestion_lines
+
+        with open(f.file, "w", encoding="utf-8") as fh:
+            fh.writelines(lines)
+
+        modified.append(f.file)
+
+    return list(set(modified))
+
+
+def _run(cmd: list[str]) -> str:
+    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    return result.stdout.strip()
+
+
+def create_fix_pr(
+    repo: str,
+    source_branch: str,
+    findings: list[Finding],
+    guidelines: list[dict[str, str]],
+) -> None:
+    """Apply fixes, push a new branch, and open a PR into source_branch."""
+
+    modified = _apply_fixes(findings)
+    if not modified:
+        print("[fixer] No auto-fixable findings. Skipping PR creation.")
+        return
+
+    fix_branch = f"ai-fix/{source_branch}"
+
+    # ── Git operations ──────────────────────────────────────
+    _run(["git", "config", "user.name", "github-actions[bot]"])
+    _run(["git", "config", "user.email", "github-actions[bot]@users.noreply.github.com"])
+    _run(["git", "checkout", "-b", fix_branch])
+
+    for path in modified:
+        _run(["git", "add", path])
+
+    _run(["git", "commit", "-m", "refactor: AI agent auto-fix based on coding guidelines"])
+    _run(["git", "push", "--force", "origin", fix_branch])
+
+    # ── Open PR via GitHub API ──────────────────────────────
+    gh = Github(os.environ["GITHUB_TOKEN"])
+    gh_repo = gh.get_repo(repo)
+
+    # Build PR body
+    body_parts = [
+        "## 🤖 AI Auto-Fix PR",
+        "",
+        "This PR was created automatically by the AI Code Review Agent.",
+        "",
+        "### Changes Applied",
+        "",
+        "| File | Category | Severity |",
+        "|------|----------|----------|",
+    ]
+    for f in findings:
+        if f.file in modified:
+            body_parts.append(f"| `{f.file}` | {f.category} | {f.severity} |")
+
+    body_parts += [
+        "",
+        "### Guidelines Referenced",
+        "",
+    ]
+    for g in guidelines:
+        body_parts.append(f"- `{g['path']}`")
+
+    body_parts += [
+        "",
+        "---",
+        "⚠️ **Please review these changes carefully before merging.**",
+        "_Auto-generated fixes are suggestions — they may require manual adjustments._",
+    ]
+
+    pr_body = "\n".join(body_parts)
+
+    # Check if PR already exists
+    existing_prs = gh_repo.get_pulls(state="open", head=f"{repo.split('/')[0]}:{fix_branch}")
+    for existing in existing_prs:
+        existing.edit(body=pr_body)
+        print(f"[fixer] Updated existing fix PR #{existing.number}")
+        return
+
+    new_pr = gh_repo.create_pull(
+        title=f"🤖 AI Auto-Fix: {source_branch}",
+        body=pr_body,
+        head=fix_branch,
+        base=source_branch,
+        draft=True,  # always open as draft for safety
+    )
+
+    # Add label for loop-prevention
+    try:
+        new_pr.add_to_labels("ai-generated")
+    except Exception:
+        pass  # label may not exist yet
+
+    print(f"[fixer] Created fix PR #{new_pr.number} (draft)")
+```
+
+---
+
+## 3. Example Guideline Files
+
+### 3a. General Coding Guidelines
+
+````markdown name=.github/ai/guidelines/general-coding.md
+# General Coding Guidelines
+
+## Naming Conventions
+- Use `snake_case` for Python functions and variables.
+- Use `camelCase` for JavaScript/TypeScript functions and variables.
+- Use `PascalCase` for class names in all languages.
+- Avoid single-letter variable names except in loops (`i`, `j`, `k`).
+- Boolean variables should start with `is_`, `has_`, `can_`, `should_`.
+
+## Function Design
+- Functions should do **one thing** and do it well (Single Responsibility).
+- Maximum function length: **50 lines** (excluding docstrings/comments).
+- Maximum cyclomatic complexity: **10**.
+- Avoid more than **3 parameters**; use an options object/dataclass instead.
+
+## Error Handling
+- Never use bare `except:` — always catch specific exceptions.
+- Always provide meaningful error messages.
+- Use early returns to reduce nesting depth.
+- Maximum nesting depth: **4 levels**.
+
+## Code Duplication
+- Flag any code block duplicated more than **twice**.
+- Suggest extracting to a shared utility function.
+
+## Comments & Documentation
+- All public functions must have docstrings/JSDoc.
+- Remove commented-out code — use version control instead.
+- TODOs must include a ticket reference: `# TODO(PROJ-123): ...`
+````
+
+### 3b. Security Rules
+
+````markdown name=.github/ai/guidelines/security-rules.md
+# Security Rules
+
+## Critical — Must Block
+
+| Rule | Description |
+|------|-------------|
+| SEC-001 | No hardcoded secrets, API keys, passwords, or tokens. |
+| SEC-002 | No `eval()`, `exec()`, or equivalent dynamic code execution. |
+| SEC-003 | All SQL queries must use parameterised statements (no string concatenation). |
+| SEC-004 | No `dangerouslySetInnerHTML` or equivalent without sanitisation. |
+| SEC-005 | No disabled SSL/TLS certificate verification. |
+
+## Warning — Should Fix
+
+| Rule | Description |
+|------|-------------|
+| SEC-010 | User input must be validated before use. |
+| SEC-011 | Use constant-time comparison for secrets (`hmac.compare_digest`). |
+| SEC-012 | File paths from user input must be canonicalised to prevent traversal. |
+| SEC-013 | HTTP responses should include security headers (CSP, X-Frame-Options). |
+| SEC-014 | Dependencies with known CVEs must be flagged. |
+````
+
+### 3c. Refactor Playbook
+
+````markdown name=.github/ai/guidelines/refactor-playbook.md
+# Refactor Playbook
+
+## When to Suggest a Refactor
+
+Only suggest a refactor when **at least one** of these conditions is true:
+
+1. **Complexity** — Cyclomatic complexity > 10 or nesting > 4 levels.
+2. **Duplication** — Same logic appears in 3+ places.
+3. **Long function** — Function exceeds 50 lines.
+4. **God class** — Class has more than 10 public methods or 300 lines.
+5. **Feature envy** — Function accesses another class's data more than its own.
+
+## How to Suggest Fixes
+
+- Provide the **minimal** change required.
+- Do NOT reformat untouched code.
+- Do NOT change variable names unless they violate naming guidelines.
+- Preserve existing tests — never remove or weaken assertions.
+- If a refactor requires a new file, note it but do NOT create it automatically.
+
+## What NOT to Refactor
+
+- Working code that is readable and meets guidelines.
+- Test files (unless they have security issues).
+- Generated code or vendored dependencies.
+- Configuration files (unless there is a security issue).
+````
+
+---
+
+## 4. How it all fits together
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                     PR opened → main                             │
+└──────────┬───────────────────────────────────────────────────────┘
+           │
+           ▼
+┌──────────────────────┐     ┌──────────────────────────────────┐
+│  Guard Job            │────▶│ Is actor bot or ai-fix/* branch? │
+│  (loop prevention)    │     │  YES → skip    NO → continue     │
+└──────────────────────┘     └──────────────────────────────────┘
+           │
+           ▼
+┌──────────────────────┐
+│  scanner.py           │  Collects changed files (diff mode)
+│                       │  or all files (full mode)
+└──────────┬───────────┘
+           │  List[FileToReview]
+           ▼
+┌──────────────────────┐
+│  reviewer.py          │  Sends files + guidelines → LLM
+│                       │  Returns List[Finding]
+└──────────┬───────────┘
+           │
+     ┌─────┴─────┐
+     ▼           ▼
+┌──────────┐ ┌────────────┐
+│ reporter │ │   fixer    │  (only if agent_mode == "autofix")
+│  .py     │ │   .py      │
+│          │ │            │
+│ Posts PR │ │ Creates    │
+│ comment  │ │ ai-fix/*   │
+│ with     │ │ branch +   │
+│ findings │ │ draft PR   │
+└──────────┘ └────────────┘
+```
+
+---
+
+## 5. Key Safety Features Built In
+
+| Feature | How |
+|---|---|
+| **Loop prevention** | Guard job skips `github-actions[bot]` actor and `ai-fix/*` branches |
+| **Label guard** | Fix PRs get `ai-generated` label |
+| **Draft PRs** | Auto-fix PRs always open as drafts |
+| **Comment upsert** | Re-runs update the same comment instead of spamming |
+| **Chunked review** | Large diffs are split into ≤8-file chunks to stay within LLM context limits |
+| **Concurrency** | Only one agent run per PR at a time (`cancel-in-progress`) |
+| **Extension allow-list** | Only code files are reviewed (skip binaries, images, etc.) |
+
+---
+
+## 6. Configuration Checklist
+
+Before first use, make sure to:
+
+1. **Add repository secrets:**
+   - `OPENAI_API_KEY` — your LLM API key
+   - `GITHUB_TOKEN` is automatically provided by Actions
+
+2. **Create the `ai-generated` label** in your repository (optional but recommended for filtering).
+
+3. **Adjust `GUIDELINE_FILES`** in the workflow env to match your actual guideline file paths.
+
+4. **Adjust `_EXTENSIONS`** in `scanner.py` to match your project's languages.
+
+5. **Set `OPENAI_MODEL`** environment variable if you want a different model than `gpt-4o`.
+
+This template gives you a fully functional starting point. You can extend it incrementally — for example, adding test-execution gating before the fix PR merges, or adding per-directory guideline overrides.

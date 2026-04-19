@@ -49,6 +49,13 @@ export class TaskCountChartComponent implements OnChanges, IBaseChart {
   private _indexOfChartLabel = 0;
 
   constructor() {
+    const chartTextColor = this.getThemeColor('--app-chart-text-color', 'rgba(0, 0, 0, 0.78)');
+    const sliceColors = [
+      this.getThemeColor('--app-chart-status-start', ChartBackGroundColor.Purple),
+      this.getThemeColor('--app-chart-status-progress', ChartBackGroundColor.Orange),
+      this.getThemeColor('--app-chart-status-completed', ChartBackGroundColor.DarkGreen)
+    ];
+
     this.currentChartType = 'pie';
     this.currentChartOptions = {
       responsive: true,
@@ -56,6 +63,12 @@ export class TaskCountChartComponent implements OnChanges, IBaseChart {
         legend: {
           display: true,
           position: 'top',
+          labels: {
+            color: chartTextColor,
+            font: {
+              weight: 'bold'
+            }
+          }
         }
       }
     };
@@ -64,22 +77,25 @@ export class TaskCountChartComponent implements OnChanges, IBaseChart {
       datasets: [ {
         label: 'Empty label of the chart',
         data: [],
-        backgroundColor: [
-          ChartBackGroundColor.Purple,
-          ChartBackGroundColor.Orange,
-          ChartBackGroundColor.DarkGreen
-        ],
-        hoverBackgroundColor: [
-          ChartBackGroundColor.Purple,
-          ChartBackGroundColor.Orange,
-          ChartBackGroundColor.DarkGreen
-        ]
+        backgroundColor: sliceColors,
+        hoverBackgroundColor: sliceColors,
+        borderColor: this.getThemeColor('--app-chart-border-color', 'rgba(0, 0, 0, 0.2)'),
+        borderWidth: 2
       } ]
     };
     this._chartLabels = [
       'Counts of Task statuses today',
       'Counts of task statuses in weekly'
     ];
+  }
+
+  private getThemeColor(cssVariable: string, fallbackColor: string): string {
+    if (typeof document === 'undefined' || !document.body) {
+      return fallbackColor;
+    }
+
+    const themeColor = getComputedStyle(document.body).getPropertyValue(cssVariable).trim();
+    return themeColor || fallbackColor;
   }
 
   /**
