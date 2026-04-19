@@ -39,5 +39,3 @@ jobs:
       - name: Package ElectronJS app
         run: npm run package
 
-      - name: Make ElectronJS distributables
-        run: npm run make
