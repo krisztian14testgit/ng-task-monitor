@@ -5,13 +5,14 @@ import { Task } from '../../modules/task/services/task.model';
 
 describe('BrowserStorageService', () => {
   let service: BrowserStorageService;
+  let consoleErrorSpy: jasmine.Spy;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [BrowserStorageService]
     });
     service = TestBed.inject(BrowserStorageService);
-    spyOn(console, 'error');
+    consoleErrorSpy = spyOn(console, 'error');
     // Clear localStorage before each test
     localStorage.clear();
   });
@@ -200,6 +201,7 @@ describe('BrowserStorageService', () => {
         const result = service.save('circular', circular);
         
         expect(result).toBe(false); // Should fail due to circular reference
+        expect(consoleErrorSpy).toHaveBeenCalled();
       });
 
       it('should handle save when localStorage is full', () => {
@@ -209,6 +211,7 @@ describe('BrowserStorageService', () => {
         const result = service.save('key', 'value');
         
         expect(result).toBe(false);
+        expect(consoleErrorSpy).toHaveBeenCalled();
       });
 
       it('should handle save when localStorage throws error', () => {
@@ -217,6 +220,7 @@ describe('BrowserStorageService', () => {
         const result = service.save('key', 'value');
         
         expect(result).toBe(false);
+        expect(consoleErrorSpy).toHaveBeenCalled();
       });
     });
 
@@ -230,6 +234,7 @@ describe('BrowserStorageService', () => {
         localStorage.setItem('badKey', 'invalid json');
         const result = service.get('badKey');
         expect(result).toBeNull();
+        expect(consoleErrorSpy).toHaveBeenCalled();
       });
 
       it('should return null when localStorage throws error', () => {
@@ -238,6 +243,7 @@ describe('BrowserStorageService', () => {
         const result = service.get('key');
         
         expect(result).toBeNull();
+        expect(consoleErrorSpy).toHaveBeenCalled();
       });
 
       it('should handle malformed JSON gracefully', () => {
@@ -246,6 +252,7 @@ describe('BrowserStorageService', () => {
         const result = service.get('malformed');
         
         expect(result).toBeNull();
+        expect(consoleErrorSpy).toHaveBeenCalled();
       });
 
       it('should handle empty string as valid JSON', () => {
@@ -269,6 +276,7 @@ describe('BrowserStorageService', () => {
         const result = service.remove('key');
         
         expect(result).toBe(false);
+        expect(consoleErrorSpy).toHaveBeenCalled();
       });
 
       it('should successfully remove existing key', () => {
@@ -296,6 +304,7 @@ describe('BrowserStorageService', () => {
           const testService = new BrowserStorageService();
           const result = testService.save('key', 'value');
           expect(result).toBe(false);
+          expect(consoleErrorSpy).toHaveBeenCalled();
         } finally {
           // Restore localStorage
           Object.defineProperty(window, 'localStorage', {
