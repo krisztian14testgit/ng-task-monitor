@@ -18,10 +18,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: 22.12
+          node-version: 24.15.0
 
       - name: Run Angular Style Guide Checker
         run: node .github/scripts/angular-style-checker.js
