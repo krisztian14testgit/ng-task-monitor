@@ -15,6 +15,7 @@ describe('BrowserStorageService', () => {
     consoleErrorSpy = spyOn(console, 'error');
     // Clear localStorage before each test
     localStorage.clear();
+    consoleErrorSpy.calls.reset();
   });
 
   it('should be created', () => {
