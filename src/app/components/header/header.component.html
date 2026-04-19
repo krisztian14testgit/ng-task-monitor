@@ -1,9 +1,9 @@
 <mat-grid-list cols="8" rowHeight="">
-    <mat-grid-tile colspan="7" rowspan="2">
+    <mat-grid-tile colspan="6" rowspan="2">
         <div class="header-title"><h1>{{titleOfRoute}}</h1></div>
     </mat-grid-tile>
     <!-- options menu -->
-    <mat-grid-tile colspan="1" rowspan="1">
+    <mat-grid-tile class="moved-padding-left" colspan="2" rowspan="1">
         <app-menu-item [title]="optionMenus.title"
                         [mainMenuIcon]="optionMenus.icon"
                         [menuItems_dict]="optionMenus.menuItemsWithLabel"
@@ -11,7 +11,7 @@
         </app-menu-item>
     </mat-grid-tile>
     <!-- app menu -->
-    <mat-grid-tile colspan="1" rowspan="1">
+    <mat-grid-tile class="moved-padding-left" colspan="2" rowspan="1">
         <app-menu-item [title]="appMenus.title"
                         [mainMenuIcon]="appMenus.icon"
                         [menuItems_dict]="appMenus.menuItemsWithLabel"

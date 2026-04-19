@@ -1,0 +1,36 @@
+coding style
+	1. angular style guide + best practice
+	2. RxJs best practice, version, code example
+	3. SonarQube - cognitive complexity rules, code snippet
+
+
+Your job is that you make angular guideline md file based on the sources section.
+
+Before tasks:
+* Add Angular v21 version
+* Create new PR from the main branch.
+* Furthermore you create a new 'coding-guideline' folder.
+* Sources:
+Best practice: https://angular.dev/ai/develop-with-ai
+Angular style guideline: https://angular.dev/style-guide
+	
+---	
+[RxJs]
+Create RxJs v7 best practice guideline by the following instructions. That will md file in 'coding-guideline' folder.
+* RxJs version number will included.
+* Every section will have code examples with wrong and good codes snippet.
+* Look at the links that contain the hints and practice guidelines. Use them for the guideline generation. Avoid duplication topics or sections inside the articles:
+* * RxJs in Angular: https://medium.com/@benjamin.canape/best-practices-when-using-rxjs-in-angular-e1e3e210b304
+* * best practices: https://medium.com/@taira.seal/rxjs-and-angular-best-practices-47cbd9b63a56, https://dev.to/nyagarcia/rxjs-best-practices-bhb
+* RxJs Error handling: That will be the separated sub-section inside the generated md file. Link: https://blog.angular-university.io/rxjs-error-handling/
+* The given source links will be inside the md file.
+
+---
+[SQ-cognitive complexity]
+Create reducing Cognitive Complexity guideline. That will md file in 'coding-guideline' folder.
+* Reducing Cognitive Complexity by SonarQube, Look at the article and you refer it and using the hints for the generated md file.
+* Every section will have code examples with wrong and good codes snippet. Which solve the cognitive complexity issue.
+* SonarQube link: https://www.sonarsource.com/blog/5-clean-code-tips-for-reducing-cognitive-complexity/
+* axify 
+* * link https://axify.io/blog/cognitive-complexity
+* * That article gives well detailed information about what is cognitive complexity, what causes them, how to measure that, how to fix cognitive complexity,

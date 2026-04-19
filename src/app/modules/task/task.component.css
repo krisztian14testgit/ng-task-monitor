@@ -1,27 +1,47 @@
-.task-container {
-    border: 1px solid red;
-    border-radius: 6px 6px;
-    width: auto;
-    height: auto;
+.task-header-card {
+    margin-right: 5px;
+    margin-left: 5px;
 }
 
-.taks-filter mat-form-field {
+.task-container {
+    width: auto;
+    height: auto;
+    padding: 3px;
+}
+
+.task-filter {
+    display: grid;
+    gap: 8px;
+}
+
+.task-filter mat-form-field {
     width: 100%;
 }
 
+.task-new {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
 .task-new > div {
-    float: left;
-    width: 30%;
+    flex: 1 1 180px;
+    width: auto;
 }
 
 /* new-button style */
-.mat-raised-button {
-    color: inherit;
-    border: 1px solid snow;
+.task-new > button {
+    margin-left: auto;
+    width: 35%;
 }
 
-.task-new > button {
-    float: right;
+.task-new > button.mat-mdc-raised-button,
+.task-new > button.mat-mdc-unelevated-button {
+    color: inherit;
+    border: 1px solid currentColor;
     font-weight: bold;
-    width: 35%;
+    min-width: 140px;
 }

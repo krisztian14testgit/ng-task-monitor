@@ -1,4 +1,4 @@
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, inject, TestBed } from '@angular/core/testing';
 import { throwError } from 'rxjs';
 
@@ -12,9 +12,15 @@ describe('TaskService', () => {
   let service: TaskService;
 
   beforeEach(() => {
+    const browserStorageSpy = jasmine.createSpyObj('BrowserStorageService', ['get', 'save', 'remove']);
+    
     TestBed.configureTestingModule({
     imports: [],
-    providers: [TaskService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+    providers: [
+      TaskService,
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting()
+    ]
 });
 
     service = TestBed.inject(TaskService);
@@ -70,6 +76,7 @@ describe('TaskService', () => {
     const updatedTask = new Task(originTask.id, 'alma', 'modifed description', originTask.timeMinutes);
 
     service.update(updatedTask).subscribe(task => {
+    service.update(updatedTask).subscribe(task => {
       expect(task).toBeDefined();
       expect(task.title).toBe('alma');
       expect(task.description).toBe('modifed description');
@@ -79,6 +86,11 @@ describe('TaskService', () => {
   it('shoud remove the taks by id', fakeAsync(() => {
     service['_taskList'] = [...FakedTask.list];
     const removedTaskId = FakedTask.list[0].id;
+    // Mock browserStorage to return FakedTask.list
+    browserStorageService.get.and.returnValue(FakedTask.list);
+    
+    // First call getAll to populate the internal _taskList
+    service.getAll().subscribe();
     
     service.delete(removedTaskId).subscribe(isDeleted => {
       expect(isDeleted).toBeTrue();

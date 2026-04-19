@@ -45,13 +45,55 @@ export class LineChartComponent implements OnChanges, IBaseChart {
   public readonly _chartDataCallBack: ((taskList: Task[]) => number[])[];
 
   constructor() {
+    const chartTextColor = this.getThemeColor('--app-chart-text-color', 'rgba(0, 0, 0, 0.78)');
+    const chartGridColor = this.getThemeColor('--app-chart-grid-color', 'rgba(0, 0, 0, 0.15)');
+    const chartLineColor = this.getThemeColor('--app-chart-line-color', 'rgb(125, 125, 200)');
+    const chartPointColor = this.getThemeColor('--app-chart-line-point-color', chartLineColor);
+    const chartFillColor = this.getThemeColor('--app-chart-fill-color', 'rgba(125, 125, 200, 0.15)');
+
     this.currentChartType = 'line';
     this.currentChartOptions = {
+      responsive: true,
       elements: {
         line: {
-          tension: 0.5
+          tension: 0.5,
+          borderWidth: 3
+        },
+        point: {
+          radius: 4,
+          hoverRadius: 6,
+          backgroundColor: chartPointColor,
+          borderColor: chartPointColor
         }
       },
+      plugins: {
+        legend: {
+          labels: {
+            color: chartTextColor,
+            font: {
+              weight: 'bold'
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: chartTextColor
+          },
+          grid: {
+            color: chartGridColor
+          }
+        },
+        y: {
+          ticks: {
+            color: chartTextColor
+          },
+          grid: {
+            color: chartGridColor
+          }
+        }
+      }
     };
     this.currentChartData = {
       labels: [],
@@ -59,6 +101,10 @@ export class LineChartComponent implements OnChanges, IBaseChart {
         label: 'Empty label of the chart',
         data: [],
         fill: false,
+        borderColor: chartLineColor,
+        backgroundColor: chartFillColor,
+        pointBackgroundColor: chartPointColor,
+        pointBorderColor: chartPointColor,
       }]
     };
     this._chartLabels = [
@@ -69,6 +115,15 @@ export class LineChartComponent implements OnChanges, IBaseChart {
       this.getCompletedTaskCounts,
       this.getSpentTimesOfWorkingOnTasks
     ];
+  }
+
+  private getThemeColor(cssVariable: string, fallbackColor: string): string {
+    if (typeof document === 'undefined' || !document.body) {
+      return fallbackColor;
+    }
+
+    const themeColor = getComputedStyle(document.body).getPropertyValue(cssVariable).trim();
+    return themeColor || fallbackColor;
   }
   
   /**

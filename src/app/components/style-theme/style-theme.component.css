@@ -3,9 +3,8 @@
     background-color: inherit;
 }
 
-.style-themes .mat-radio-button {
+.style-themes .mat-mdc-radio-button {
     display: block;
     width: 100%;
-    float:left;
     margin-bottom: 5px;
 }

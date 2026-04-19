@@ -1,5 +1,5 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { Location } from "@angular/common";
 import { RouterTestingModule } from '@angular/router/testing';
@@ -20,8 +20,8 @@ describe('HeaderComponent', () => {
   let location: Location;
   const routeTable: any[] =  [
     {path: 'tasks/all', component: FakedRouteComponent },
-    {path: 'tasks/inprogress', component: FakedRouteComponent },
-    {path: 'weekly', component: FakedRouteComponent },
+    {path: 'tasks/finished', component: FakedRouteComponent },
+    {path: 'statistic/weekly', component: FakedRouteComponent },
     {path: '', redirectTo: '/tasks/all', pathMatch: 'full'}
   ];
 
@@ -92,33 +92,27 @@ describe('HeaderComponent', () => {
     flush();
   }));
 
-  it('should get titleOfRoute for /tasks/inprogress route', fakeAsync(() => {
-    spyOn(router, 'navigate').and.callThrough();
+  it('should get titleOfRoute for /tasks/finished route', waitForAsync(async () => {
     component.ngOnInit();
-    
-    const navUrl = 'tasks/inprogress';
+
+    const navUrl = 'tasks/finished';
     router.navigate([ navUrl ]);
+    await fixture.whenStable();
     fixture.detectChanges();
-    tick(100);
     expect(location.path()).toBe(`/${navUrl}`);
     // routerDict contains the title of each router path.
     expect(component.titleOfRoute).toBe(component['_routerDict'][navUrl]);
-    
-    flush();
   }));
 
-  it('should get titleOfRoute for /weekly route', fakeAsync(() => {
-    spyOn(router, 'navigate').and.callThrough();
+  it('should get titleOfRoute for /statistic/weekly route', waitForAsync(async () => {
     component.ngOnInit();
-    
-    const navUrl = 'weekly';
+
+    const navUrl = 'statistic/weekly';
     router.navigate([ navUrl ]);
+    await fixture.whenStable();
     fixture.detectChanges();
-    tick(100);
     expect(location.path()).toBe(`/${navUrl}`);
     // routerDict contains the title of each router path.
     expect(component.titleOfRoute).toBe(component['_routerDict'][navUrl]);
-    
-    flush();
   }));
 });
