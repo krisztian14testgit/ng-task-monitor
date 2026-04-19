@@ -11,6 +11,7 @@ describe('BrowserStorageService', () => {
       providers: [BrowserStorageService]
     });
     service = TestBed.inject(BrowserStorageService);
+    spyOn(console, 'error');
     // Clear localStorage before each test
     localStorage.clear();
   });
