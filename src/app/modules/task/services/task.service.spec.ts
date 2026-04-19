@@ -86,8 +86,6 @@ describe('TaskService', () => {
   it('shoud remove the taks by id', fakeAsync(() => {
     service['_taskList'] = [...FakedTask.list];
     const removedTaskId = FakedTask.list[0].id;
-    // Mock browserStorage to return FakedTask.list
-    browserStorageService.get.and.returnValue(FakedTask.list);
     
     // First call getAll to populate the internal _taskList
     service.getAll().subscribe();
