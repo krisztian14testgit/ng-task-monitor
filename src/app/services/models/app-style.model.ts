@@ -6,5 +6,5 @@ export enum StyleThemes {
     /** Blue theme with dragon. */
     BlueDragon = 'blue-dragon-theme',
     /** Fire theme with phoenix. */
-    firePhoenix = 'fire-phoenix-theme'
+    FirePhoenix = 'fire-phoenix-theme'
 }

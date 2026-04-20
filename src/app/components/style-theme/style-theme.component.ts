@@ -50,6 +50,15 @@ export class StyleThemeComponent {
   }
 
   /**
+   * Returns display name for the given theme key.
+   * @param themeKey key of StyleThemes enum.
+   * @returns formatted theme name for UI.
+   */
+  public getThemeDisplayName(themeKey: string): string {
+    return themeKey === 'FirePhoenix' ? 'firePhoenix' : themeKey;
+  }
+
+  /**
    * Returns the stored style theme of the App which was applied.
    * @returns StyleThemes value.
    */

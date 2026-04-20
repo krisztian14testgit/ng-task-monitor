@@ -70,7 +70,7 @@ describe('StyleThemeComponent', () => {
 
     // checking the value of the each raido buttons, we have all.
     for (let i = 0; i < radioButtonItems.length; i++) {
-      expect(radioButtonItems[i].innerText).toBe(themeKeys[i]);
+      expect(radioButtonItems[i].innerText).toBe(component.getThemeDisplayName(themeKeys[i]));
     }
   });
 
