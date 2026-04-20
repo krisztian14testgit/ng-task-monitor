@@ -20,9 +20,9 @@ $app-fire-phoenix: mat.m2-define-light-theme((
 ));
 
 @mixin body($componentBackground, $textColor) {
-  background: rgba(75, 20, 8, 0.90);
+  background: rgba(56, 22, 15, 0.90);
   background-image:
-    linear-gradient(rgba(51, 15, 6, 0.36), rgba(105, 36, 10, 0.28)),
+    linear-gradient(rgba(24, 8, 6, 0.52), rgba(99, 34, 18, 0.34)),
     url('../../assets/pictures/firePhoenix-v2.png');
   background-repeat: repeat-y;
   background-size: cover;
@@ -30,19 +30,19 @@ $app-fire-phoenix: mat.m2-define-light-theme((
 
   .header-title {
     background: linear-gradient(135deg,
-      rgba(255, 127, 42, 0.90),
-      rgba(255, 184, 77, 0.74)) !important;
-    border: 2px solid rgba(87, 21, 7, 0.96);
+      rgba(221, 92, 32, 0.92),
+      rgba(242, 160, 59, 0.76)) !important;
+    border: 2px solid rgba(63, 19, 12, 0.96);
     border-radius: 10px;
     box-shadow:
-      0 8px 18px rgba(59, 15, 5, 0.32),
-      inset 0 1px 0 rgba(255, 232, 210, 0.22);
+      0 8px 18px rgba(38, 12, 8, 0.36),
+      inset 0 1px 0 rgba(255, 224, 176, 0.22);
     backdrop-filter: blur(2px);
 
     h1 {
       margin: 0;
       letter-spacing: 0.03em;
-      text-shadow: 0 1px 0 rgba(255, 239, 224, 0.25);
+      text-shadow: 0 1px 0 rgba(255, 227, 190, 0.24);
     }
   }
 }
@@ -109,7 +109,7 @@ $app-fire-phoenix: mat.m2-define-light-theme((
   }
 
   .task-card-default-border {
-    border-color: rgba(87, 21, 7, 0.86);
+    border-color: rgba(63, 19, 12, 0.88);
   }
 
   // add new task button
@@ -143,7 +143,7 @@ $app-fire-phoenix: mat.m2-define-light-theme((
   .mat-card-actions {
     button {
       color: $textColor;
-      background-color: rgba(255, 179, 102, 0.90);
+      background-color: rgba(242, 160, 59, 0.90);
       border: 1px solid $textColor;
     }
   }
@@ -207,53 +207,53 @@ $app-fire-phoenix: mat.m2-define-light-theme((
   }
 }
 
-// It will be apply if you add it into body class
+// It will be applied if you add it into body class
 .fire-phoenix-theme {
-    $fireText: #571507;
-    $compBackground: rgba(255, 127, 42, 0.74);
-    $fieldBackground: rgba(255, 119, 34, 0.30);
-    $inputBackground: rgba(87, 28, 12, 0.93);
-    $inputColor: #ffe6cf;
-    $buttonBackground: rgba(255, 197, 132, 0.78);
-    $progressColor: #ff6a00;
-    $progressTrackColor: rgba(255, 235, 204, 0.74);
-    $validColor: rgb(255, 210, 110);
+    $fireText: #3f130c;
+    $compBackground: rgba(196, 77, 30, 0.74);
+    $fieldBackground: rgba(160, 60, 24, 0.32);
+    $inputBackground: rgba(43, 16, 11, 0.94);
+    $inputColor: #ffd9aa;
+    $buttonBackground: rgba(242, 160, 59, 0.80);
+    $progressColor: #e86e18;
+    $progressTrackColor: rgba(255, 214, 156, 0.74);
+    $validColor: rgb(255, 193, 96);
 
-    $menu-bgColor: rgba(255, 156, 77, 0.92);
-    $menu-label-background: rgba(73, 20, 8, 0.50);
-    $menu-hover-color: rgb(94, 27, 8);
-    $menu-activated-color: rgb(117, 14, 0);
+    $menu-bgColor: rgba(214, 103, 41, 0.92);
+    $menu-label-background: rgba(56, 22, 15, 0.54);
+    $menu-hover-color: rgb(73, 24, 15);
+    $menu-activated-color: rgb(95, 17, 7);
 
-    --app-body-background: rgba(75, 20, 8, 0.90);
+    --app-body-background: rgba(56, 22, 15, 0.90);
     --app-foreground-color: #{$fireText};
     --app-input-background: #{$inputBackground};
     --app-input-color: #{$inputColor};
-    --app-input-border-color: rgba(255, 210, 110, 0.92);
-    --app-chart-text-color: rgba(79, 17, 6, 0.96);
-    --app-chart-grid-color: rgba(92, 26, 8, 0.24);
-    --app-chart-line-color: rgb(180, 70, 18);
-    --app-chart-line-point-color: rgb(150, 50, 14);
-    --app-chart-fill-color: rgba(180, 70, 18, 0.18);
-    --app-chart-status-start: rgb(158, 74, 35);
+    --app-input-border-color: rgba(255, 193, 96, 0.92);
+    --app-chart-text-color: rgba(58, 17, 11, 0.96);
+    --app-chart-grid-color: rgba(83, 26, 15, 0.24);
+    --app-chart-line-color: rgb(172, 69, 26);
+    --app-chart-line-point-color: rgb(145, 52, 20);
+    --app-chart-fill-color: rgba(172, 69, 26, 0.18);
+    --app-chart-status-start: rgb(136, 56, 28);
     --app-chart-status-progress: rgb(214, 128, 0);
     --app-chart-status-completed: rgb(0, 118, 0);
-    --app-chart-border-color: rgba(79, 17, 6, 0.26);
+    --app-chart-border-color: rgba(58, 17, 11, 0.26);
 
     @include mat.all-component-colors($app-fire-phoenix);
     @include body($compBackground, $fireText);
     @include location-card($validColor);
     @include form-field($fieldBackground, $fireText, $validColor);
-    @include comboBox(rgb(111, 33, 10), rgb(255, 226, 193), snow);
+    @include comboBox(rgb(64, 20, 13), rgb(255, 217, 170), snow);
     @include task-card($compBackground, $fireText, $inputBackground, $inputColor,
                        $buttonBackground, $progressColor, $progressTrackColor);
     @include menu.container($menu-label-background, $menu-hover-color,
                             $menu-activated-color, $menu-bgColor);
-    @include menu.button(rgb(255 184 122));
+    @include menu.button(rgb(238 154 78));
     @include alert-message($app-fire-phoenix);
 
     .input-valid {
       color: $validColor;
-      box-shadow: inset 0 0 0 3px rgba(255, 210, 110, 0.95);
+      box-shadow: inset 0 0 0 3px rgba(255, 193, 96, 0.95);
     }
 
     .input-invalid {
