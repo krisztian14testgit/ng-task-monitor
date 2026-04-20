@@ -74,6 +74,14 @@ describe('StyleThemeComponent', () => {
     }
   });
 
+  it('should transform FirePhoenix display name to firePhoenix', () => {
+    expect(component.getThemeDisplayName('FirePhoenix')).toBe('firePhoenix');
+  });
+
+  it('should keep regular theme names unchanged on display', () => {
+    expect(component.getThemeDisplayName('Dark')).toBe('Dark');
+  });
+
   it('should clicked on the radio button to change theme', fakeAsync(() => {
     spyOn(component as any, 'changeTheme').and.callThrough();
 

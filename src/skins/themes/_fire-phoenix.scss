@@ -248,7 +248,7 @@ $app-fire-phoenix: mat.m2-define-light-theme((
                        $buttonBackground, $progressColor, $progressTrackColor);
     @include menu.container($menu-label-background, $menu-hover-color,
                             $menu-activated-color, $menu-bgColor);
-    @include menu.button(rgb(238 154 78));
+    @include menu.button(rgb(238, 154, 78));
     @include alert-message($app-fire-phoenix);
 
     .input-valid {
