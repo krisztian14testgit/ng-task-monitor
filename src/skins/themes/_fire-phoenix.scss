@@ -207,7 +207,7 @@ $app-fire-phoenix: mat.m2-define-light-theme((
   }
 }
 
-// It will be applay if you add it into body class
+// It will be apply if you add it into body class
 .fire-phoenix-theme {
     $fireText: #571507;
     $compBackground: rgba(255, 127, 42, 0.74);
@@ -222,7 +222,7 @@ $app-fire-phoenix: mat.m2-define-light-theme((
     $menu-bgColor: rgba(255, 156, 77, 0.92);
     $menu-label-background: rgba(73, 20, 8, 0.50);
     $menu-hover-color: rgb(94, 27, 8);
-    $mneu-activated-color: rgb(117, 14, 0);
+    $menu-activated-color: rgb(117, 14, 0);
 
     --app-body-background: rgba(75, 20, 8, 0.90);
     --app-foreground-color: #{$fireText};
@@ -247,7 +247,7 @@ $app-fire-phoenix: mat.m2-define-light-theme((
     @include task-card($compBackground, $fireText, $inputBackground, $inputColor,
                        $buttonBackground, $progressColor, $progressTrackColor);
     @include menu.container($menu-label-background, $menu-hover-color,
-                            $mneu-activated-color, $menu-bgColor);
+                            $menu-activated-color, $menu-bgColor);
     @include menu.button(rgb(255 184 122));
     @include alert-message($app-fire-phoenix);
 
