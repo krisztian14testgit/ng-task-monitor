@@ -209,7 +209,7 @@ $app-fire-phoenix: mat.m2-define-light-theme((
 
 // It will be applied if you add it into body class
 .fire-phoenix-theme {
-    $fireText: #3f130c;
+    $fireText: #210a06;
     $compBackground: rgba(196, 77, 30, 0.74);
     $fieldBackground: rgba(160, 60, 24, 0.32);
     $inputBackground: rgba(43, 16, 11, 0.94);
@@ -229,14 +229,14 @@ $app-fire-phoenix: mat.m2-define-light-theme((
     --app-input-background: #{$inputBackground};
     --app-input-color: #{$inputColor};
     --app-input-border-color: rgba(255, 193, 96, 0.92);
-    --app-chart-text-color: rgba(58, 17, 11, 0.96);
+    --app-chart-text-color: #{$fireText};
     --app-chart-grid-color: rgba(83, 26, 15, 0.24);
-    --app-chart-line-color: rgb(172, 69, 26);
+    --app-chart-line-color: rgb(77, 29, 9);
     --app-chart-line-point-color: rgb(145, 52, 20);
     --app-chart-fill-color: rgba(172, 69, 26, 0.18);
-    --app-chart-status-start: rgb(136, 56, 28);
-    --app-chart-status-progress: rgb(214, 128, 0);
-    --app-chart-status-completed: rgb(0, 118, 0);
+    --app-chart-status-start: rgb(107, 46, 24);
+    --app-chart-status-progress: rgb(255, 155, 4);
+    --app-chart-status-completed: rgb(0, 206, 0);
     --app-chart-border-color: rgba(58, 17, 11, 0.26);
 
     @include mat.all-component-colors($app-fire-phoenix);
