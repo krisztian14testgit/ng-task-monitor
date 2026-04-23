@@ -1,0 +1,262 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+@use "../components/menu" as menu;
+@use "../components/form" as form;
+
+$app-fire-primary: mat.m2-define-palette(mat.$m2-deep-orange-palette, 900);
+$app-fire-accent: mat.m2-define-palette(mat.$m2-orange-palette, A200, A100, A400);
+$app-fire-warn: mat.m2-define-palette(mat.$m2-red-palette, 900);
+
+// define the fire theme
+$app-fire-phoenix: mat.m2-define-light-theme((
+    color: (
+      // primary: the color that appears most frequently throughout your application
+      primary: $app-fire-primary,
+      // accent palette used to selectively highlight key parts of your UI
+      accent: $app-fire-accent,
+      // error, palette used for warnings and error states
+      warn: $app-fire-warn,
+    )
+));
+
+@mixin body($componentBackground, $textColor) {
+  background: rgba(56, 22, 15, 0.90);
+  background-image:
+    linear-gradient(rgba(24, 8, 6, 0.52), rgba(99, 34, 18, 0.34)),
+    url('../../assets/pictures/firePhoenix-v2.png');
+  background-repeat: repeat-y;
+  background-size: cover;
+  color: $textColor;
+
+  .header-title {
+    background: linear-gradient(135deg,
+      rgba(221, 92, 32, 0.92),
+      rgba(242, 160, 59, 0.76)) !important;
+    border: 2px solid rgba(63, 19, 12, 0.96);
+    border-radius: 10px;
+    box-shadow:
+      0 8px 18px rgba(38, 12, 8, 0.36),
+      inset 0 1px 0 rgba(255, 224, 176, 0.22);
+    backdrop-filter: blur(2px);
+
+    h1 {
+      margin: 0;
+      letter-spacing: 0.03em;
+      text-shadow: 0 1px 0 rgba(255, 227, 190, 0.24);
+    }
+  }
+}
+
+@mixin location-card($validColor) {
+  app-change-location .input-valid {
+    color: $validColor !important;
+  }
+}
+
+@mixin form-field($background, $textColor, $accentColor) {
+  .mat-mdc-form-field {
+    --mdc-filled-text-field-container-color: #{$background};
+    --mdc-filled-text-field-focus-active-indicator-color: #{$accentColor};
+    --mdc-filled-text-field-hover-active-indicator-color: #{$accentColor};
+    --mdc-filled-text-field-active-indicator-color: #{rgba($textColor, 0.55)};
+    --mdc-filled-text-field-label-text-color: #{rgba($textColor, 0.82)};
+    --mdc-filled-text-field-input-text-color: #{$textColor};
+    --mat-select-enabled-trigger-text-color: #{$textColor};
+    --mat-select-enabled-arrow-color: #{$textColor};
+
+    .mat-mdc-text-field-wrapper,
+    .mdc-text-field--filled:not(.mdc-text-field--disabled),
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
+      background: $background;
+    }
+
+    .mat-mdc-form-field-focus-overlay {
+      background: transparent;
+    }
+
+    .mdc-floating-label,
+    .mat-mdc-select-placeholder,
+    .mat-mdc-select-value,
+    .mat-mdc-select-arrow,
+    input.mat-mdc-input-element,
+    textarea.mat-mdc-input-element {
+      color: $textColor !important;
+    }
+
+    .mdc-line-ripple::before,
+    .mdc-line-ripple::after {
+      border-bottom-color: rgba($textColor, 0.60);
+    }
+
+    &.mat-focused {
+      .mdc-line-ripple::before,
+      .mdc-line-ripple::after {
+        border-bottom-color: $accentColor;
+      }
+    }
+  }
+}
+
+@mixin task-card($background, $textColor, $inputBackground, $inputColor, $buttonBackground, $progressColor, $progressTrackColor) {
+  .task-container {
+    border-color: black !important;
+  }
+
+  mat-card,
+  .mat-mdc-card {
+    background: $background;
+    color: $textColor;
+  }
+
+  .task-card-default-border {
+    border-color: rgba(63, 19, 12, 0.88);
+  }
+
+  // add new task button
+  .task-new > button,
+  .task-new > button.mat-mdc-raised-button,
+  .task-new > button.mat-mdc-unelevated-button {
+    background: $buttonBackground;
+  }
+
+  .edit-card-title input {
+    @include form.input-field-color($inputBackground, $inputColor);
+  }
+
+  // edit button
+  .card-title-button {
+    border: 2px solid $textColor !important;
+  }
+
+  .edit-card-content {
+    textarea {
+      @include form.input-field-color($inputBackground, $inputColor);
+    }
+
+    .edit-card-timer input {
+      @include form.input-field-color($inputBackground, $inputColor);
+    }
+  }
+
+  // status button
+  .mat-mdc-card-actions,
+  .mat-card-actions {
+    button {
+      color: $textColor;
+      background-color: rgba(242, 160, 59, 0.90);
+      border: 1px solid $textColor;
+    }
+  }
+
+  .mat-mdc-progress-bar,
+  mat-progress-bar {
+    --mdc-linear-progress-active-indicator-color: #{$progressColor};
+    --mdc-linear-progress-track-color: #{$progressTrackColor};
+  }
+
+  .task-card-highlight {
+    border-color: snow !important;
+  }
+}
+
+// selection input tag
+@mixin comboBox($panelBackground, $textColor, $selectedColor) {
+  .mat-mdc-select-panel {
+    background-color: $panelBackground !important;
+  }
+
+  .mat-mdc-option .mdc-list-item__primary-text {
+    color: $textColor;
+  }
+
+  // selected option
+  .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
+    color: $selectedColor !important;
+    font-weight: 600;
+  }
+}
+
+@mixin alert-message($theme) {
+  // Get the color config from the theme.
+  $color-config: mat.m2-get-color-config($theme);
+
+  // Get the warn color palette from the color-config.
+  $warn-palette: map.get($color-config, "warn");
+  $primary-palette: map.get($color-config, "primary");
+
+  .alert-info {
+    color: mat.m2-get-color-from-palette($primary-palette) !important;
+    background-color: mat.m2-get-color-from-palette($primary-palette, A100) !important;
+    border-color: mat.m2-get-color-from-palette($primary-palette) !important;
+  }
+
+  .alert-warning {
+    color: mat.m2-get-color-from-palette($warn-palette) !important;
+    background-color: mat.m2-get-color-from-palette($warn-palette, A100) !important;
+    border-color: mat.m2-get-color-from-palette($warn-palette) !important;
+  }
+
+  .alert-error {
+    color: maroon !important;
+    background-color: rgba(255, 0, 0, 0.9) !important;
+    border-color: maroon !important;
+  }
+
+  .alert-success {
+    background-color: rgba(0, 255, 0, 0.88) !important;
+  }
+}
+
+// It will be applied if you add it into body class
+.fire-phoenix-theme {
+    $fireText: #210a06;
+    $compBackground: rgba(196, 77, 30, 0.74);
+    $fieldBackground: rgba(160, 60, 24, 0.32);
+    $inputBackground: rgba(43, 16, 11, 0.94);
+    $inputColor: #ffd9aa;
+    $buttonBackground: rgba(242, 160, 59, 0.80);
+    $progressColor: #e86e18;
+    $progressTrackColor: rgba(255, 214, 156, 0.74);
+    $validColor: rgb(255, 193, 96);
+
+    $menu-bgColor: rgba(214, 103, 41, 0.92);
+    $menu-label-background: rgba(56, 22, 15, 0.54);
+    $menu-hover-color: rgb(73, 24, 15);
+    $menu-activated-color: rgb(95, 17, 7);
+
+    --app-body-background: rgba(56, 22, 15, 0.90);
+    --app-foreground-color: #{$fireText};
+    --app-input-background: #{$inputBackground};
+    --app-input-color: #{$inputColor};
+    --app-input-border-color: rgba(255, 193, 96, 0.92);
+    --app-chart-text-color: #{$fireText};
+    --app-chart-grid-color: rgba(83, 26, 15, 0.24);
+    --app-chart-line-color: rgb(77, 29, 9);
+    --app-chart-line-point-color: rgb(145, 52, 20);
+    --app-chart-fill-color: rgba(172, 69, 26, 0.18);
+    --app-chart-status-start: rgb(107, 46, 24);
+    --app-chart-status-progress: rgb(255, 155, 4);
+    --app-chart-status-completed: rgb(0, 206, 0);
+    --app-chart-border-color: rgba(58, 17, 11, 0.26);
+
+    @include mat.all-component-colors($app-fire-phoenix);
+    @include body($compBackground, $fireText);
+    @include location-card($validColor);
+    @include form-field($fieldBackground, $fireText, $validColor);
+    @include comboBox(rgb(64, 20, 13), rgb(255, 217, 170), snow);
+    @include task-card($compBackground, $fireText, $inputBackground, $inputColor,
+                       $buttonBackground, $progressColor, $progressTrackColor);
+    @include menu.container($menu-label-background, $menu-hover-color,
+                            $menu-activated-color, $menu-bgColor);
+    @include menu.button(rgb(238, 154, 78));
+    @include alert-message($app-fire-phoenix);
+
+    .input-valid {
+      color: $validColor;
+      box-shadow: inset 0 0 0 3px rgba(255, 193, 96, 0.95);
+    }
+
+    .input-invalid {
+      box-shadow: inset 0 0 0 3px rgba(255, 99, 71, 0.95);
+    }
+}

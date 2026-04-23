@@ -70,8 +70,16 @@ describe('StyleThemeComponent', () => {
 
     // checking the value of the each raido buttons, we have all.
     for (let i = 0; i < radioButtonItems.length; i++) {
-      expect(radioButtonItems[i].innerText).toBe(themeKeys[i]);
+      expect(radioButtonItems[i].innerText).toBe(component.getThemeDisplayName(themeKeys[i]));
     }
+  });
+
+  it('should transform FirePhoenix display name to firePhoenix', () => {
+    expect(component.getThemeDisplayName('FirePhoenix')).toBe('firePhoenix');
+  });
+
+  it('should keep regular theme names unchanged on display', () => {
+    expect(component.getThemeDisplayName('Dark')).toBe('Dark');
   });
 
   it('should clicked on the radio button to change theme', fakeAsync(() => {

@@ -5,8 +5,7 @@
     (change)="onChangeTheme($event)">
     @for (theme of styleThemes; track theme) {
       <mat-radio-button
-      [value]="theme">{{theme}}</mat-radio-button>
+      [value]="theme">{{getThemeDisplayName(theme)}}</mat-radio-button>
     }
   </mat-radio-group>
 </div>
-
