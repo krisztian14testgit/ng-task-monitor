@@ -3,19 +3,65 @@
 // chrome_bin setting: https://gist.github.com/kenvontucky/f5c4bdd2fa515f56a7ed0fe343984e95
 const process = require('process');
 const fs = require('fs');
-try {
-  const puppeteerPath = require('puppeteer').executablePath();
-  // Check if the puppeteer Chrome binary actually exists
-  if (fs.existsSync(puppeteerPath)) {
-    process.env.CHROME_BIN = puppeteerPath;
-  } else {
-    // Fallback to system Chrome if puppeteer binary doesn't exist
-    process.env.CHROME_BIN = process.env.CHROME_BIN || '/usr/bin/google-chrome';
+const path = require('path');
+
+function resolveWindowsPuppeteerChrome() {
+  const userProfile = process.env.USERPROFILE;
+  if (!userProfile) {
+    return null;
   }
-} catch (e) {
-  // Fallback to system Chrome if puppeteer is not available
-  process.env.CHROME_BIN = process.env.CHROME_BIN || '/usr/bin/google-chrome';
+
+  const chromeCacheRoot = path.join(userProfile, '.cache', 'puppeteer', 'chrome');
+  if (!fs.existsSync(chromeCacheRoot)) {
+    return null;
+  }
+
+  const candidates = fs
+    .readdirSync(chromeCacheRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && entry.name.startsWith('win64-'))
+    .map((entry) => path.join(chromeCacheRoot, entry.name, 'chrome-win64', 'chrome.exe'))
+    .filter((candidatePath) => fs.existsSync(candidatePath))
+    .sort()
+    .reverse();
+
+  return candidates.length > 0 ? candidates[0] : null;
 }
+
+function resolveChromeBin() {
+  if (process.env.CHROME_BIN && fs.existsSync(process.env.CHROME_BIN)) {
+    return process.env.CHROME_BIN;
+  }
+
+  try {
+    const puppeteer = require('puppeteer');
+    const maybePath = puppeteer.executablePath();
+
+    // Puppeteer < 25 returns string synchronously.
+    if (typeof maybePath === 'string' && fs.existsSync(maybePath)) {
+      return maybePath;
+    }
+  } catch (e) {
+    // Ignore and continue with fallbacks.
+  }
+
+  if (process.platform === 'win32') {
+    const winChrome = resolveWindowsPuppeteerChrome();
+    if (winChrome) {
+      return winChrome;
+    }
+  }
+
+  const linuxFallbacks = ['/usr/bin/google-chrome', '/usr/bin/chromium-browser', '/usr/bin/chromium'];
+  for (const fallbackPath of linuxFallbacks) {
+    if (fs.existsSync(fallbackPath)) {
+      return fallbackPath;
+    }
+  }
+
+  return process.env.CHROME_BIN || '/usr/bin/google-chrome';
+}
+
+process.env.CHROME_BIN = resolveChromeBin();
 
 module.exports = function (config) {
   config.set({
@@ -41,7 +87,7 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/ng-task-monitor'),
+      dir: path.join(__dirname, './coverage/ng-task-monitor'),
       subdir: '.',
       reporters: [
         { type: 'html' },
