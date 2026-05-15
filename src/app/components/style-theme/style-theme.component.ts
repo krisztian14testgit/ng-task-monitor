@@ -20,6 +20,10 @@ export class StyleThemeComponent {
   public styleThemes: string[];
   /** Stores the selected theme's key name. */
   public selectedTheme: string;
+  /** Maps internal theme keys to custom display names when UI text must differ from enum key casing. */
+  private readonly _displayNameMap: Readonly<Record<string, string>> = {
+    FirePhoenix: 'firePhoenix'
+  };
   private readonly STORAGE_KEY = 'savedTheme';
   /** Default theme is StyleThemes.Light, stored name: 'Light'. */
   private readonly _defaultTheme: string;
@@ -47,6 +51,15 @@ export class StyleThemeComponent {
     if (this.selectedTheme) {
       this.changeTheme(this.selectedTheme);
     }
+  }
+
+  /**
+   * Returns display name for the given theme key.
+   * @param themeKey key of StyleThemes enum.
+   * @returns formatted theme name for UI.
+   */
+  public getThemeDisplayName(themeKey: string): string {
+    return this._displayNameMap[themeKey] ?? themeKey;
   }
 
   /**
