@@ -25,9 +25,9 @@ import { TaskTimerComponent } from '../task-timer/task-timer.component';
 })
 export class TaskCardComponent {
   /** External input: the current task given by the parent. */
-  public readonly _taskInput = input<Task>(new Task(), { alias: 'task' });
+  public readonly taskInput = input<Task>(new Task(), { alias: 'task' });
   /** External input: whether the card is readonly (locked from editing). */
-  public readonly _isReadonlyInput = input(false, { alias: 'isReadonly' });
+  public readonly isReadonlyInput = input(false, { alias: 'isReadonly' });
   /** This switcher is true then Task-timer 'start' button is active, otherwise it is disabled. */
   public readonly isTimePeriodToday = input(true);
   public readonly newTaskCreationFailed = output<string>();
@@ -74,9 +74,9 @@ export class TaskCardComponent {
 
     // Sync input signals to local mutable signals and handle task change logic
     effect(() => {
-      const t = this._taskInput();
+      const t = this.taskInput();
       this.task.set(t);
-      this.isReadonly.set(this._isReadonlyInput());
+      this.isReadonly.set(this.isReadonlyInput());
 
       if (t.isNewTask()) {
         this.isEditable = true;
@@ -188,12 +188,14 @@ export class TaskCardComponent {
 
   /** Updates the editable properties(title, description, timeMinutes) of Task instance. */
   private updateTaskValuesByForm(): void {
-    this.task().title = this.taskForm.get('title')?.value;
-    this.task().description = this.taskForm.get('description')?.value;
-    this.task().timeMinutes = this.taskForm.get('timeMinutes')?.value;
+    const current = this.task();
+    current.title = this.taskForm.get('title')?.value;
+    current.description = this.taskForm.get('description')?.value;
+    current.timeMinutes = this.taskForm.get('timeMinutes')?.value;
     if (this.taskForm.get('timeMinutes')?.value > 0) {
-      this.task()['_initialTime'] = this.taskForm.get('timeMinutes')?.value;
+      current['_initialTime'] = this.taskForm.get('timeMinutes')?.value;
     }
+    this.task.set(current);
   }
 
   /**
@@ -202,8 +204,10 @@ export class TaskCardComponent {
    * @param taskStatus 
    */
   private updateTaskStatus(taskStatus: TaskStatus): void {
-    this.task().setStatus(taskStatus);
+    const current = this.task();
+    current.setStatus(taskStatus);
     this.statusLabel = TaskStatus[taskStatus];
+    this.task.set(current);
 
     if (taskStatus === TaskStatus.Completed) {
       const timeMinutesControl = this.taskForm.get('timeMinutes');
@@ -250,10 +254,12 @@ export class TaskCardComponent {
     }
 
     const propName = `timer${timerStateName}Date`;
-    if (this.task().isHasOwnPoperty(propName)) {
+    const current = this.task();
+    if (current.isHasOwnPoperty(propName)) {
       // Adjusts the timerStartedDate or timerFinishedDate with the system clock by the timer's state.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this.task() as any)[propName] = timerDate;
+      (current as any)[propName] = timerDate;
+      this.task.set(current);
     }
   }
 
