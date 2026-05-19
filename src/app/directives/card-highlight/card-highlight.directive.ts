@@ -1,4 +1,4 @@
-import { Directive, ElementRef, HostListener } from '@angular/core';
+import { Directive, ElementRef, HostListener, inject } from '@angular/core';
 
 /**
  * The directive highlight the border of the card with blue color.
@@ -14,7 +14,7 @@ export class CardHighlightDirective {
   /** Highlighted border of the class. The class definition in task-card.comp.css */
   private readonly _highlightBorderClass = 'task-card-highlight';
 
-  constructor(private readonly elementRef: ElementRef) { }
+  private readonly elementRef = inject(ElementRef);
 
   /**
    * It runs when the user clicks on the task-card.

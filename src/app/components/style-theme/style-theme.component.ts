@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatRadioChange, MatRadioModule } from '@angular/material/radio';
 import { StyleThemes } from 'src/app/services/models/app-style.model';
-import { CommonModule } from '@angular/common';
 
 import { StyleManagerService } from '../../services/style-manager/style-manager.service';
 
@@ -13,7 +12,7 @@ import { StyleManagerService } from '../../services/style-manager/style-manager.
     templateUrl: './style-theme.component.html',
     styleUrls: ['./style-theme.component.css'],
     standalone: true,
-    imports: [CommonModule, MatRadioModule]
+    imports: [MatRadioModule]
 })
 export class StyleThemeComponent {
   /** Contains the key names of the StyleThemes enum. */
@@ -28,7 +27,9 @@ export class StyleThemeComponent {
   /** Default theme is StyleThemes.Light, stored name: 'Light'. */
   private readonly _defaultTheme: string;
 
-  constructor(private readonly styleManagerService: StyleManagerService) {
+  private readonly styleManagerService = inject(StyleManagerService);
+
+  constructor() {
     this.styleThemes = Object.keys(StyleThemes);
     this._defaultTheme = this.styleThemes[0];
     this.selectedTheme = this.getStoredThemeFromLocalStorage();

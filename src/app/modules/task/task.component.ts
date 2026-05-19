@@ -1,12 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { TaskService } from './services/task.service';
 import { Task, TaskStatus, TaskTime } from './services/task.model';
@@ -22,7 +21,7 @@ import { TaskCardComponent } from './task-card/task-card.component';
     templateUrl: './task.component.html',
     styleUrls: ['./task.component.css'],
     standalone: true,
-    imports: [CommonModule, FormsModule, MatButtonModule, MatSelectModule, MatCardModule, MatFormFieldModule, TaskCardComponent]
+    imports: [FormsModule, MatButtonModule, MatSelectModule, MatCardModule, MatFormFieldModule, TaskCardComponent]
 })
 export class TaskComponent implements OnInit, OnDestroy {
   /** Stores task items. */
@@ -50,8 +49,6 @@ export class TaskComponent implements OnInit, OnDestroy {
   public isLockedTasks = false;
   public readonly MAX_LIMIT_TASKS = 10;
   public readonly TASK_TIME_YESTERDAY = String(TaskTime.Yesterday);
-  /** Stores the reference of task stream. */
-  private _taskSubscription!: Subscription;
   /**
    * Stores the all original task items which got from the service.
    * It is helping for the task filtering methods.
@@ -60,11 +57,14 @@ export class TaskComponent implements OnInit, OnDestroy {
   /** Stores those tasks which are filtered by the time period. Created: today/yesterday or in the week. */
   private _filteredTaskListByDate: Task[] = [];
 
-  constructor(private readonly taskService: TaskService,
-              private readonly taskTimerService: TaskTimerService,
-              private readonly alertMessageService: AlertMessageService,
-              private readonly timerWorkerService: CountdownTimerService,
-              private readonly router: Router) {
+  private readonly taskService = inject(TaskService);
+  private readonly taskTimerService = inject(TaskTimerService);
+  private readonly alertMessageService = inject(AlertMessageService);
+  private readonly timerWorkerService = inject(CountdownTimerService);
+  private readonly router = inject(Router);
+  private readonly _destroyRef = inject(DestroyRef);
+
+  constructor() {
     this.selectedTaskTime = TaskTime.Today.toString();
   }
 
@@ -75,9 +75,8 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.fillInStatusSelection();
   }
 
-  /** Unsubscribes the task stream if the task side is leaved. */
+  /** Terminates the countdown timer worker when leaving the task view. */
   ngOnDestroy(): void {
-    this._taskSubscription.unsubscribe();
     this.timerWorkerService.terminateWorker();
   }
 
@@ -223,27 +222,31 @@ export class TaskComponent implements OnInit, OnDestroy {
    */
   private getAllTask(): void {
     let inProgressTasks: Task[] = [];
-    this._taskSubscription = this.taskService.getAll()
-    .subscribe(tasks => {
-      this._preservedTaskList = [...tasks];
-      inProgressTasks = this.calculateRestTimeOfTasksByWebWorker(this._preservedTaskList);
+    this.taskService.getAll()
+    .pipe(takeUntilDestroyed(this._destroyRef))
+    .subscribe({
+      next: tasks => {
+        this._preservedTaskList = [...tasks];
+        inProgressTasks = this.calculateRestTimeOfTasksByWebWorker(this._preservedTaskList);
 
-      // Sleeping main thread a little, hence the sub-thread timer calculation to be executed.
-      const delayMilliSec = 500;
-      setTimeout(() => {
-        this.taskList = this.filterTasksByDate(TaskTime.Today);
-        // filters tasks by the selected status
-        this.selectedStatus = this.getStatusFromUrl();
-        this.onFilterStatus();
+        // Sleeping main thread a little, hence the sub-thread timer calculation to be executed.
+        const delayMilliSec = 500;
+        setTimeout(() => {
+          this.taskList = this.filterTasksByDate(TaskTime.Today);
+          // filters tasks by the selected status
+          this.selectedStatus = this.getStatusFromUrl();
+          this.onFilterStatus();
 
-        // If there is inProgress task, re-saved all changes, 
-        // because the web-worker changes inprogress Task data by reference
-        if (inProgressTasks.length > 0) {
-          this.saveAllTask(this._preservedTaskList);
-        }
-      }, delayMilliSec);
-    }, () => {
-      this.alertMessageService.sendMessage('Your task list is empty!', AlertType.Info);
+          // If there is inProgress task, re-saved all changes, 
+          // because the web-worker changes inprogress Task data by reference
+          if (inProgressTasks.length > 0) {
+            this.saveAllTask(this._preservedTaskList);
+          }
+        }, delayMilliSec);
+      },
+      error: () => {
+        this.alertMessageService.sendMessage('Your task list is empty!', AlertType.Info);
+      }
     });
   }
 
@@ -300,15 +303,18 @@ export class TaskComponent implements OnInit, OnDestroy {
   private saveAllTask(taskList: Task[]): void {
     if (taskList.length > 0) {
       this.taskService.saveAllTask(taskList)
-      .subscribe((isSaved: boolean) => {
-        if (isSaved) {
-          this.alertMessageService.sendMessage('Tasks are saved.', AlertType.Success);
+      .subscribe({
+        next: (isSaved: boolean) => {
+          if (isSaved) {
+            this.alertMessageService.sendMessage('Tasks are saved.', AlertType.Success);
+          }
+        },
+        error: (error: Error) => {
+          if (error) {
+            this.alertMessageService.sendMessage('Saving tasks is failed!', AlertType.Error);
+          }
         }
-      }, ((error: Error) => {
-        if (error) {
-          this.alertMessageService.sendMessage('Saving tasks is failed!', AlertType.Error);
-        }
-      }));
+      });
     }
   }
   

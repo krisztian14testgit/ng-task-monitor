@@ -1,7 +1,8 @@
-import { Component, effect, EventEmitter, input, OnDestroy, OnInit, Output, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, effect, inject, input, OnDestroy, output, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { TaskTimer, TimerState } from '../services/task-timer/task-timer.model';
 import { TaskTimerService } from '../services/task-timer/task-timer.service';
@@ -18,9 +19,9 @@ import { TaskStatus } from '../services/task.model';
     templateUrl: './task-timer.component.html',
     styleUrls: ['./task-timer.component.css'],
     standalone: true,
-    imports: [CommonModule, MatButtonModule, MatProgressBarModule]
+    imports: [DatePipe, MatButtonModule, MatProgressBarModule]
 })
-export class TaskTimerComponent implements OnInit, OnDestroy {
+export class TaskTimerComponent implements OnDestroy {
   public taskId = input('');
   /** The Task minutes of time. */
   public timerInMinutes = input(0);
@@ -36,7 +37,7 @@ export class TaskTimerComponent implements OnInit, OnDestroy {
    * * Started
    * * Interrupted
    */
-  @Output() public timerStatusEmitter: EventEmitter<[string, Date]> = new EventEmitter();
+  public readonly timerStatusEmitter = output<[string, Date]>();
 
   /** 
    * Rest milliSeconds of timer of task. Measuring time.
@@ -61,7 +62,9 @@ export class TaskTimerComponent implements OnInit, OnDestroy {
   /** Preserves the original value of the timerInMilliesc(when we got) of the task. */
   private _preTimerInMillisec = 0;
 
-  constructor(private readonly taskTimerService: TaskTimerService) {
+  private readonly taskTimerService = inject(TaskTimerService);
+
+  constructor() {
     // Effect to react to timerInMinutes input signal changes
     effect(() => {
       const minutes = this.timerInMinutes();
@@ -77,17 +80,11 @@ export class TaskTimerComponent implements OnInit, OnDestroy {
         }
       }
     });
-  }
 
-  /** 
-   * Subscribes on the taskTimer data stream to get emitted timer state.
-   * If the timer state is 'stopAll', it will terminate all task timer counting.
-   */
-  ngOnInit(): void {
     this.taskTimerService.onChangeState()
+      .pipe(takeUntilDestroyed())
       .subscribe(([timerState, interruptedTaskIds]: [number, string[]]) => {
         if (timerState === TimerState.Interrupted && interruptedTaskIds.includes(this.taskId())) {
-          // Interrupt the all counterdown clock
           this.emitsTimerState(TimerState.Interrupted);
         }
       });
