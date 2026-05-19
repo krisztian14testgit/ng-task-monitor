@@ -79,7 +79,6 @@ describe('HeaderComponent', () => {
 
   it('should get titleOfRoute for /tasks/all route', fakeAsync(() => {
     spyOn(router, 'navigate').and.callThrough();
-    component.ngOnInit();
     
     const navUrl = 'tasks/all';
     router.navigate([ navUrl ]);
@@ -93,8 +92,6 @@ describe('HeaderComponent', () => {
   }));
 
   it('should get titleOfRoute for /tasks/finished route', waitForAsync(async () => {
-    component.ngOnInit();
-
     const navUrl = 'tasks/finished';
     router.navigate([ navUrl ]);
     await fixture.whenStable();
@@ -105,8 +102,6 @@ describe('HeaderComponent', () => {
   }));
 
   it('should get titleOfRoute for /statistic/weekly route', waitForAsync(async () => {
-    component.ngOnInit();
-
     const navUrl = 'statistic/weekly';
     router.navigate([ navUrl ]);
     await fixture.whenStable();

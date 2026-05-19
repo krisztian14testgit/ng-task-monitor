@@ -56,6 +56,6 @@ export class TaskTimerService {
    * @returns tuple[number, string[]]
    */
   public onChangeState(): Observable<[number, string[]]> {
-    return this._timerState$.pipe(tuple => tuple);
+    return this._timerState$.asObservable();
   }
 }

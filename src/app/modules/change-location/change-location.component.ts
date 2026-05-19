@@ -1,8 +1,6 @@
-import { ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
-import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 
@@ -18,21 +16,23 @@ import { AlertType } from 'src/app/components/alert-window/alert.model';
     styleUrls: ['./change-location.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatInputModule]
+    imports: [ReactiveFormsModule, MatCardModule, MatInputModule]
 })
-export class ChangeLocationComponent implements OnInit, OnDestroy {
+export class ChangeLocationComponent {
   /** Stores the error message for the input is invalid. */
   public inputInvalidText = '';
   /** Stores the form validation behaviour. */
   private _locationForm!: FormGroup;
-  /** The subcription of the location service. */
-  private _locationService$!: Subscription;
   /**
    * The represent the saving process state.
    * * Saving finish: false
    * * Saving during: true
   */
   private _isSavingDone = false;
+
+  private readonly locationService = inject(LocationService);
+  private readonly alertMessageService = inject(AlertMessageService);
+  private readonly destroyRef = inject(DestroyRef);
 
   //#region Properties
   /** Returns the reference of taskData FormControl. */
@@ -46,20 +46,10 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   }
   //#endregion
 
-  constructor(private readonly locationService: LocationService,
-              private readonly alertMessageService: AlertMessageService) {
+  constructor() {
     this.createLocationFormValidation();
     this.inputInvalidText = 'Please enter a valid path! E.g.: C:/folder/...';
-  }
-
-  /** Sets saved tasks and appSetting paths. */
-  ngOnInit(): void {
     this.getlocationPathFromService();
-  }
-
-  /** Unsubscription from the API streams */
-  ngOnDestroy(): void {
-    this._locationService$.unsubscribe();
   }
 
   /**
@@ -76,7 +66,6 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
       // task path
       if (this.taskDataControl.dirty && this.taskDataControl.valid) {
         this._isSavingDone = true;
-        // update value to be checked
         this.taskDataControl.updateValueAndValidity();
         this.saveLocationPath(LocationPath.TaskPath, this.taskDataControl);
       }
@@ -84,7 +73,6 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
       // application path
       if (this.appSettingControl.dirty && this.appSettingControl.valid) {
         this._isSavingDone = true;
-        // update value to be checked
         this.appSettingControl.updateValueAndValidity();
         this.saveLocationPath(LocationPath.AppSettingPath, this.appSettingControl);
       }
@@ -117,27 +105,24 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
    * @param keyLocation It is enum type, value can be LocationPath(AppSettingPath, TaskPath)
    */
   private saveLocationPath(keyLocation: LocationPath, formControlRef: FormControl): void {
-    const waitSeconds = 2000;
-    
     this.locationService.saveLocation(keyLocation, formControlRef.value)
-    .pipe(
-      // drop previous request if it get new request in during 2 sec
-      debounceTime(waitSeconds))
-    .subscribe(() => {
-      // saving was success
-      this.alertMessageService.sendMessage('Path is saved!', AlertType.Success);
-    }, () => {
-      // saving was unccess
-      this.alertMessageService.sendMessage('Path saving is failed!', AlertType.Error);
-    }, () => {
-      // finally branch
-      this._isSavingDone = false;
-    });
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.alertMessageService.sendMessage('Path is saved!', AlertType.Success);
+          this._isSavingDone = false;
+        },
+        error: () => {
+          this.alertMessageService.sendMessage('Path saving is failed!', AlertType.Error);
+          this._isSavingDone = false;
+        }
+      });
   }
 
   /** Sets the location paths by the location service which come from the server. */
   private getlocationPathFromService(): void {
-    this._locationService$ = this.locationService.getLocationSetting()
+    this.locationService.getLocationSetting()
+    .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe((locSetting: LocationSetting) => {
       this.appSettingControl.setValue(locSetting.appSettingPath);
       this.taskDataControl.setValue(locSetting.taskPath);

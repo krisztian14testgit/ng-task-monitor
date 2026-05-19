@@ -1,5 +1,5 @@
-import { Component, effect, input, model, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, effect, inject, input, model, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AlertMessageService } from 'src/app/services/alert-message/alert-message.service';
 import { AlertLabel, AlertOptions, AlertType } from './alert.model';
@@ -10,9 +10,9 @@ import { tap } from 'rxjs';
     templateUrl: './alert-window.component.html',
     styleUrls: ['./alert-window.component.css'],
     standalone: true,
-    imports: [CommonModule]
+    imports: []
 })
-export class AlertWindowComponent implements OnInit {
+export class AlertWindowComponent {
   /** Two-way binding, it contains the given/adjusted alert message. */
   public alertMsg = model('');
   /** 
@@ -29,6 +29,7 @@ export class AlertWindowComponent implements OnInit {
   /** Alert message appears when it is true. */
   public isDisplayed = signal(false);
 
+  private readonly alertMessageService = inject(AlertMessageService);
   private readonly _options: AlertOptions;
   /** Stores the needle of the setTimeout. */
   private _timeoutRef!: NodeJS.Timeout;
@@ -37,7 +38,7 @@ export class AlertWindowComponent implements OnInit {
   /** Alert window closing secunds: 3sec  */
   private readonly _closeSec = 3000;
 
-  constructor(private readonly alertMessageService: AlertMessageService) {
+  constructor() {
     this._options = {
       alertTypeFitlerWords: {
         'success-words': ['success', 'successful','done'],
@@ -62,15 +63,16 @@ export class AlertWindowComponent implements OnInit {
         this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
       }
     });
-  }
 
-  /** Subscription on the alertMessage service to get multicasted message from other component. */
-  ngOnInit(): void {
+    // Subscription on the alertMessage service to get multicasted message from other component.
     this.alertMessageService.getMessage()
-    .pipe(tap(() => {
-      // clear the previous timeout process.
-      this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
-    }))
+    .pipe(
+      tap(() => {
+        // clear the previous timeout process.
+        this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
+      }),
+      takeUntilDestroyed()
+    )
     .subscribe(([message, alertType]: [string, AlertType | undefined]) => {
       if (alertType) {
         this._alertType = alertType;
@@ -78,7 +80,7 @@ export class AlertWindowComponent implements OnInit {
         this._alertType = this.getAlertTypeFromMessage(message);
       }
 
-      this.alertMsg.update(() =>message);
+      this.alertMsg.update(() => message);
       this.show();
       this.closeAutomatically(this._closeSec, [AlertType.Success, AlertType.Info]);
     });

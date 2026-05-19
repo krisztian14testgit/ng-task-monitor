@@ -43,9 +43,9 @@ describe('StatisticComponent', () => {
   });
 
   it('should get all tasks', () => {
-    component.ngOnInit();
+    fixture.detectChanges();
     expect(component.taskList).toBeDefined();
-    expect(component.taskList.length).toBeGreaterThan(0);
+    expect(component.taskList().length).toBeGreaterThan(0);
   });
   
   it('should get report type from the url, isDailyReport to be true', fakeAsync(() => {

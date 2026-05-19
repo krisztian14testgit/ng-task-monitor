@@ -1,8 +1,7 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, effect, inject, input, output, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { of } from 'rxjs';
-import { exhaustMap } from 'rxjs/operators';
-import { CommonModule } from '@angular/common';
+import { of, EMPTY } from 'rxjs';
+import { catchError, exhaustMap, finalize } from 'rxjs/operators';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,20 +21,21 @@ import { TaskTimerComponent } from '../task-timer/task-timer.component';
     templateUrl: './task-card.component.html',
     styleUrls: ['./task-card.component.css'],
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatButtonModule, MatFormFieldModule, MatInputModule, CardHighlightDirective, InputBorderDirective, TaskTimerComponent]
+    imports: [ReactiveFormsModule, MatCardModule, MatButtonModule, MatFormFieldModule, MatInputModule, CardHighlightDirective, InputBorderDirective, TaskTimerComponent]
 })
-export class TaskCardComponent implements OnChanges, AfterViewInit {
-  /** The current task reference which is given. */
-  @Input() public task: Task = new Task();
-  /** 
-   * The switcher of the Task card.
-   * If it is true, not display the 'edit' button of the card.
-   */
-  @Input() public isReadonly = false;
+export class TaskCardComponent {
+  /** External input: the current task given by the parent. */
+  public readonly taskInput = input<Task>(new Task(), { alias: 'task' });
+  /** External input: whether the card is readonly (locked from editing). */
+  public readonly isReadonlyInput = input(false, { alias: 'isReadonly' });
   /** This switcher is true then Task-timer 'start' button is active, otherwise it is disabled. */
-  @Input() public isTimePeriodToday = true;
-  @Output() public readonly newTaskCreationFailed: EventEmitter<string> = new EventEmitter();
-  
+  public readonly isTimePeriodToday = input(true);
+  public readonly newTaskCreationFailed = output<string>();
+
+  /** Local mutable task signal (synced from input, updated after save). */
+  public readonly task = signal<Task>(new Task());
+  /** Local mutable readonly state (synced from input, toggled by timer). */
+  public readonly isReadonly = signal(false);
   /** The switcher of the card is editable or not. */
   public isEditable = false;
   /** The name of TaskStatus. */
@@ -59,49 +59,40 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
   /**
    * Stores the initial value of the properties of task which are changeable.
    * This storer is used by the form reset.
-   * 
-   * @descripton property:
-   * Values available by the Task property names.
-   * * Task Properties: title, description, timeMinutes*/
+   */
   private readonly _defaultFormValues: {[property: string]: string | number} = {};
 
-  constructor(private readonly taskService: TaskService,
-              private readonly alertMessageService: AlertMessageService) { 
+  private readonly taskService = inject(TaskService);
+  private readonly alertMessageService = inject(AlertMessageService);
+
+  constructor() { 
     this.taskControls = {
       title: new FormControl(),
       description: new FormControl(),
       timeMinutes: new FormControl()
     };
-  }
 
-  /**
-   * The given task is new (not saved) then card will be editable.
-   * The task is defined (already exist) card mode will readonly.
-   * Generating a reactiveForm by the given task.
-   */
-  ngOnChanges(): void {
-    if (this.task.isNewTask()) {
-      // new taks with empty form
-      this.isEditable = true;
-    }
-    
-    if (this.task.id.length > 0) {
-      // Task is defined, get TaskStatus key as string
-      this.statusLabel = TaskStatus[this.task.status];
-      this.taskForm = this.generateReactiveForm(this.task);
-    }
-  }
+    // Sync input signals to local mutable signals and handle task change logic
+    effect(() => {
+      const t = this.taskInput();
+      this.task.set(t);
+      this.isReadonly.set(this.isReadonlyInput());
 
-  /**
-   * After the view initialization, taskControls get references from the taskForm by
-   * the control name.
-   */
-  ngAfterViewInit(): void {
-    if (this.taskForm) {
-      this.taskControls['title'] = this.taskForm.get('title') as FormControl;
-      this.taskControls['description'] = this.taskForm.get('description') as FormControl;
-      this.taskControls['timeMinutes'] = this.taskForm.get('timeMinutes') as FormControl;
-    }
+      if (t.isNewTask()) {
+        this.isEditable = true;
+      }
+
+      if (t.id.length > 0) {
+        this.statusLabel = TaskStatus[t.status];
+        this.taskForm = this.generateReactiveForm(t);
+        // Refresh form control references after form regeneration
+        if (this.taskForm) {
+          this.taskControls['title'] = this.taskForm.get('title') as FormControl;
+          this.taskControls['description'] = this.taskForm.get('description') as FormControl;
+          this.taskControls['timeMinutes'] = this.taskForm.get('timeMinutes') as FormControl;
+        }
+      }
+    });
   }
 
   /**
@@ -110,7 +101,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * @event Click
    */
   public onClickMatCard(): void {
-    this.selectedTaskId = this.task.id;
+    this.selectedTaskId = this.task().id;
     this.isSelected = true;
   }
 
@@ -155,9 +146,9 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     this.isEditable = !this.isEditable;
 
     // new empty task card is closed without SAVING
-    if (!this.isEditable && this.task.isNewTask()) {
+    if (!this.isEditable && this.task().isNewTask()) {
       // notice the taskContainer component to remove the empty card.
-      this.newTaskCreationFailed.next(this.task.id);
+      this.newTaskCreationFailed.emit(this.task().id);
     }
     
     // it is closed, reset task values to initial.
@@ -174,41 +165,37 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     if (this.taskForm.valid) {
       // updating Task object by the taksForm
       this.updateTaskValuesByForm();
-      const isNewTask = !this.taskService.isTaskAlreadyExist(this.task);
+      const isNewTask = !this.taskService.isTaskAlreadyExist(this.task());
       const serviceMethod = isNewTask ? 'add': 'update';
 
-      // updated task by the reference in this.task
-      const saving$ = of(this.task);
+      // updated task by the reference in this.task()
+      const saving$ = of(this.task());
       saving$.pipe(
         // ignore new request(insert, update) when the previous one is not completed!
-        exhaustMap(task =>  this.taskService[serviceMethod](task))
-        ).subscribe(savedTask => {
-          // success branch
-          this.task = savedTask;
-          this.savingInitialFormValues(savedTask);
-          const successText = 'Saving has been success!';
-          this.alertMessageService.sendMessage(successText);
-        },
-        () => {
-          // error branch
-          const errorText = 'Updating/saving has been failed, server error!';
-          this.alertMessageService.sendMessage(errorText);
-        },
-        () => {
-          // finally branch, Close the edit mode
-          this.isEditable = false;
-        });
+        exhaustMap(task => this.taskService[serviceMethod](task)),
+        catchError(() => {
+          this.alertMessageService.sendMessage('Updating/saving has been failed, server error!');
+          return EMPTY;
+        }),
+        finalize(() => { this.isEditable = false; })
+      ).subscribe(savedTask => {
+        this.task.set(savedTask);
+        this.savingInitialFormValues(savedTask);
+        this.alertMessageService.sendMessage('Saving has been success!');
+      });
     }
   }
 
   /** Updates the editable properties(title, description, timeMinutes) of Task instance. */
   private updateTaskValuesByForm(): void {
-    this.task.title = this.taskForm.get('title')?.value;
-    this.task.description = this.taskForm.get('description')?.value;
-    this.task.timeMinutes = this.taskForm.get('timeMinutes')?.value;
+    const current = this.task();
+    current.title = this.taskForm.get('title')?.value;
+    current.description = this.taskForm.get('description')?.value;
+    current.timeMinutes = this.taskForm.get('timeMinutes')?.value;
     if (this.taskForm.get('timeMinutes')?.value > 0) {
-      this.task['_initialTime'] = this.taskForm.get('timeMinutes')?.value;
+      current['_initialTime'] = this.taskForm.get('timeMinutes')?.value;
     }
+    this.task.set(current);
   }
 
   /**
@@ -217,8 +204,10 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * @param taskStatus 
    */
   private updateTaskStatus(taskStatus: TaskStatus): void {
-    this.task.setStatus(taskStatus);
+    const current = this.task();
+    current.setStatus(taskStatus);
     this.statusLabel = TaskStatus[taskStatus];
+    this.task.set(current);
 
     if (taskStatus === TaskStatus.Completed) {
       const timeMinutesControl = this.taskForm.get('timeMinutes');
@@ -238,7 +227,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
    * @param timerStateName It can be: Started, Finished, Interrupted
    */
   private updateTaskStatusBy(timerStateName: string): void {
-    this.isReadonly = false;
+    this.isReadonly.set(false);
     // converts string to enum value
     const timerState = TimerState[timerStateName as keyof typeof TimerState];
     let taskStatusValue = TaskStatus.Completed;
@@ -246,7 +235,7 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     if (timerState > 0) {
       taskStatusValue = TaskStatus.Inprogress;
       // Inprogress task is not editable
-      this.isReadonly = true;
+      this.isReadonly.set(true);
     }
     
     this.updateTaskStatus(taskStatusValue);
@@ -265,10 +254,12 @@ export class TaskCardComponent implements OnChanges, AfterViewInit {
     }
 
     const propName = `timer${timerStateName}Date`;
-    if (this.task.isHasOwnPoperty(propName)) {
+    const current = this.task();
+    if (current.isHasOwnPoperty(propName)) {
       // Adjusts the timerStartedDate or timerFinishedDate with the system clock by the timer's state.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this.task as any)[propName] = timerDate;
+      (current as any)[propName] = timerDate;
+      this.task.set(current);
     }
   }
 

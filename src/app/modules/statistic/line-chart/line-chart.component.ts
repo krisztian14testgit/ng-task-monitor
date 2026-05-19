@@ -1,5 +1,5 @@
 import { WeekDay } from '@angular/common';
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, effect, input } from '@angular/core';
 import { ChartType, ChartConfiguration, ChartData } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 
@@ -20,15 +20,15 @@ import { LineChartReport } from '../services/chart.model';
     standalone: true,
     imports: [BaseChartDirective]
 })
-export class LineChartComponent implements OnChanges, IBaseChart {
+export class LineChartComponent implements IBaseChart {
   /** The tasks elements. */
-  @Input() taskList: Task[] = [];
+  public readonly taskList = input<Task[]>([]);
   /** 
    * The line-chart type has two types: 
    * * CompletedTask: Showing the count of the completed tasks.
    * * SpentTime: Showing the spent times on the completed tasks.
    */
-  @Input() lineType: LineChartReport = LineChartReport.CompletedTask;
+  public readonly lineType = input<LineChartReport>(LineChartReport.CompletedTask);
 
   /** The chartjs types: line, pie, bar, ... */
   public readonly currentChartType: ChartType;
@@ -115,6 +115,13 @@ export class LineChartComponent implements OnChanges, IBaseChart {
       this.getCompletedTaskCounts,
       this.getSpentTimesOfWorkingOnTasks
     ];
+
+    effect(() => {
+      const tasks = this.taskList();
+      if (tasks && tasks.length > 0) {
+        this._setCurrentChartDataBy(tasks);
+      }
+    });
   }
 
   private getThemeColor(cssVariable: string, fallbackColor: string): string {
@@ -124,17 +131,6 @@ export class LineChartComponent implements OnChanges, IBaseChart {
 
     const themeColor = getComputedStyle(document.body).getPropertyValue(cssVariable).trim();
     return themeColor || fallbackColor;
-  }
-  
-  /**
-   * It triggers when the taskList input field is changed.
-   * 
-   * Setting the labels and datasets of the line-chart.
-   */
-  ngOnChanges(): void {
-    if (this.taskList && this.taskList.length > 0) {
-      this._setCurrentChartDataBy(this.taskList);
-    }
   }
 
   /**
@@ -150,8 +146,8 @@ export class LineChartComponent implements OnChanges, IBaseChart {
     // Set labels
     this.currentChartData.labels = this.getChartLabelDays(taskList);
     // Set datasets (label-title, data)
-    this.currentChartData.datasets[0].label = this._chartLabels[this.lineType];
-    this.currentChartData.datasets[0].data = this._chartDataCallBack[this.lineType](taskList);
+    this.currentChartData.datasets[0].label = this._chartLabels[this.lineType()];
+    this.currentChartData.datasets[0].data = this._chartDataCallBack[this.lineType()](taskList);
   }
 
   /**

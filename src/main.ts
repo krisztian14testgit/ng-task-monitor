@@ -1,4 +1,3 @@
-import 'zone.js';  // Included with Angular CLI.
 import { bootstrapApplication } from '@angular/platform-browser';
 
 import { AppComponent } from './app/app.component';
