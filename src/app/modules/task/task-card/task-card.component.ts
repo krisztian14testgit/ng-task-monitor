@@ -74,17 +74,17 @@ export class TaskCardComponent {
 
     // Sync input signals to local mutable signals and handle task change logic
     effect(() => {
-      const t = this.taskInput();
-      this.task.set(t);
+      const task = this.taskInput();
+      this.task.set(task);
       this.isReadonly.set(this.isReadonlyInput());
 
-      if (t.isNewTask()) {
+      if (task.isNewTask()) {
         this.isEditable = true;
       }
 
-      if (t.id.length > 0) {
-        this.statusLabel = TaskStatus[t.status];
-        this.taskForm = this.generateReactiveForm(t);
+      if (task.id.length > 0) {
+        this.statusLabel = TaskStatus[task.status];
+        this.taskForm = this.generateReactiveForm(task);
         // Refresh form control references after form regeneration
         if (this.taskForm) {
           this.taskControls['title'] = this.taskForm.get('title') as FormControl;
@@ -115,7 +115,7 @@ export class TaskCardComponent {
    */
   public onSaveCard(): void {
     this.updateTaskStatus(TaskStatus.Start);
-    this.saveTaskService();
+    this.saveTaskByTaskService();
   }
 
   /**
@@ -130,7 +130,7 @@ export class TaskCardComponent {
     this.updateTaskStatusBy(timerStateName);
     this.updateTaskTimerDateBy(timerStateName, timerDate);
     // saving modified task the reference
-    this.saveTaskService();
+    this.saveTaskByTaskService();
   }
 
   /**
@@ -160,7 +160,7 @@ export class TaskCardComponent {
   /**
    * Saving/updating the task by the taskService if the taskForm is valid.
    */
-  private saveTaskService(): void {
+  private saveTaskByTaskService(): void {
     this.taskForm.updateValueAndValidity();
     if (this.taskForm.valid) {
       // updating Task object by the taksForm
