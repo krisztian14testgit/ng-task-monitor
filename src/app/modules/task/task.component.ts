@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
@@ -63,6 +63,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   private readonly timerWorkerService = inject(CountdownTimerService);
   private readonly router = inject(Router);
   private readonly _destroyRef = inject(DestroyRef);
+  private readonly _cdr = inject(ChangeDetectorRef);
 
   constructor() {
     this.selectedTaskTime = TaskTime.Today.toString();
@@ -240,6 +241,10 @@ export class TaskComponent implements OnInit, OnDestroy {
           // If there is inProgress task, re-saved all changes, 
           // because the web-worker changes inprogress Task data by reference
           if (inProgressTasks.length > 0) {
+            // Force CD to record the updated filteredTaskCount before saveAllTask
+            // triggers signal updates in AlertWindowComponent, which would otherwise
+            // cause ExpressionChangedAfterItHasBeenCheckedError (NG0100).
+            this._cdr.detectChanges();
             this.saveAllTask(this._preservedTaskList);
           }
         }, delayMilliSec);
