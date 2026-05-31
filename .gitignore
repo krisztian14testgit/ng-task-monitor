@@ -50,3 +50,4 @@ Thumbs.db
 
 # Ignored files
 ~$TaskTracingApp.pptx
+package-lock.json

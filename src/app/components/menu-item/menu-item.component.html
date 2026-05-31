@@ -24,7 +24,7 @@
           <span>
             <a mat-menu-item [routerLink]="['/' + menuItem.linkKey]" routerLinkActive="activated-route">
               @if (menuItem.icon) {
-                <mat-icon [ngStyle]="{'color':'inherit'}">{{menuItem.icon}}</mat-icon>
+                <mat-icon style="color: inherit">{{menuItem.icon}}</mat-icon>
               }
               {{menuItem.title}}
             </a>

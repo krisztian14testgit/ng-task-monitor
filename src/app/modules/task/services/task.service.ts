@@ -116,6 +116,7 @@ export class TaskService {
       return newTask;
     }));*/
 
+    task.removeNewMarkFromID();
     this._taskList.push(task);
     this.browserStorage.save(this.STORAGE_KEY, this._taskList);
     this.taskList$.next(this._taskList);

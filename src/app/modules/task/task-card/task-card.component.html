@@ -1,31 +1,31 @@
-@if (!isEditable && task) {
+@if (!isEditable && task()) {
   <mat-card
     dirCardHighlight
     class="task-card task-card-default-border"
-    [id]="task.id"
+    [id]="task().id"
     (click)="onClickMatCard()">
     <mat-card-title>
-      <div>{{task.title}}</div>
+      <div>{{task().title}}</div>
       <div class="card-title-button-box">
-        @if (!isReadonly && isSelected) {
+        @if (!isReadonly() && isSelected) {
           <div class="card-title-button"
           (click)="onEdit_colseCard()">edit</div>
         }
       </div>
     </mat-card-title>
     <mat-card-content>
-      <div class="card-description">{{task.description}}</div>
+      <div class="card-description">{{task().description}}</div>
       <div class="card-timer">
-        <div>Planed time(min): {{task.timeMinutes}}</div>
+        <div>Planed time(min): {{task().timeMinutes}}</div>
       </div>
       <div class="card-divider-line"><hr></div>
     </mat-card-content>
     <mat-card-actions>
       <div>
-        <app-task-timer [taskId]="task.id"
-          [timerInMinutes]="task.timeMinutes"
+        <app-task-timer [taskId]="task().id"
+          [timerInMinutes]="task().timeMinutes"
           [statusLabel]="statusLabel"
-          [isTimePeriodToday]="isTimePeriodToday"
+          [isTimePeriodToday]="isTimePeriodToday()"
         (timerStatusEmitter)="onTimerStatus($event)"></app-task-timer>
       </div>
     </mat-card-actions>

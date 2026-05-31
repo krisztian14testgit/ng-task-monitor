@@ -132,8 +132,8 @@ describe('AlertWindowComponent', () => {
     // initial values
     expect(component.alertMsg()).toBe('');
     expect(component['_alertType']).toBe(AlertType.Info);
-    // subscribe on the alertService by ngOnInit
-    component.ngOnInit();
+    // subscribe on the alertService is now set up in constructor
+    // component.ngOnInit() no longer needed
 
     // emits error text
     let text = 'Error text';

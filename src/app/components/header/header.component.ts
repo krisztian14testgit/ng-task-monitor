@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { NavigationEnd, NavigationStart, Router, Event } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { AppMenu, MenuItem } from 'src/app/services/models/app-menu.model';
 import { MenuItemComponent } from '../menu-item/menu-item.component';
@@ -10,9 +11,9 @@ import { MenuItemComponent } from '../menu-item/menu-item.component';
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.css'],
     standalone: true,
-    imports: [CommonModule, MatGridListModule, MenuItemComponent]
+    imports: [MatGridListModule, MenuItemComponent]
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   /** Stores the title of the side by url navigation. */
   public titleOfRoute: string;
   /** Contains the structure of the menu with labels. */
@@ -29,7 +30,9 @@ export class HeaderComponent implements OnInit {
    */
   private _routerDict: {[routerKey: string]: string} = {};
 
-  constructor(private readonly router: Router) {
+  private readonly router = inject(Router);
+
+  constructor() {
     this.appMenus = new AppMenu();
     this.appMenus.title = 'Menu';
     this.appMenus.icon = 'menu'
@@ -61,24 +64,13 @@ export class HeaderComponent implements OnInit {
     this.fillInRouterDictFrom(this.appMenus.menuItemsWithLabel);
     this.fillInRouterDictFrom(this.optionMenus.menuItemsWithLabel);
 
-  }
-
-  /** Subscribes on the url chaging event to get info url change detection.  */
-  ngOnInit(): void {
-    this.router.events.subscribe((event: Event) => {
-      if (event instanceof NavigationStart) {
-        // Show progress spinner or progress bar
-        console.log('Route change detected');
-      }
-
-      if (event instanceof NavigationEnd) {
-        // Hide progress spinner or progress bar 
-        console.log('Navigated route:', event.url);
-        // remove slash sign
-        const urlKey = event.url.substring(1);
-        if (urlKey) {
-          this.titleOfRoute = this._routerDict[urlKey];
-        }
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      takeUntilDestroyed()
+    ).subscribe(event => {
+      const urlKey = event.url.substring(1);
+      if (urlKey) {
+        this.titleOfRoute = this._routerDict[urlKey];
       }
     });
   }

@@ -1,5 +1,4 @@
 import { Component, effect, input, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -15,7 +14,7 @@ import { StyleThemeComponent } from '../style-theme/style-theme.component';
     templateUrl: './menu-item.component.html',
     styleUrls: ['./menu-item.component.css'],
     standalone: true,
-    imports: [CommonModule, RouterModule, MatButtonModule, MatMenuModule, MatIconModule, StyleThemeComponent]
+    imports: [RouterModule, MatButtonModule, MatMenuModule, MatIconModule, StyleThemeComponent]
 })
 export class MenuItemComponent {
   /** The title of the menu. */

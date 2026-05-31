@@ -1,7 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { CommonModule } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
@@ -18,11 +17,9 @@ import { LineChartComponent } from './line-chart/line-chart.component';
     styleUrls: ['./statistic.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [CommonModule, FormsModule, MatCardModule, MatSelectModule, MatFormFieldModule, TaskCountChartComponent, LineChartComponent]
+    imports: [FormsModule, MatCardModule, MatSelectModule, MatFormFieldModule, TaskCountChartComponent, LineChartComponent]
 })
-export class StatisticComponent implements OnInit, OnDestroy {
-  /** Contains the task instance from the task Service. */
-  public taskList: Task[] = [];
+export class StatisticComponent implements OnInit {
   /**
    * This a switcher of the report. 
    * If it is true showing daily report, otherwise weekly report.
@@ -42,34 +39,20 @@ export class StatisticComponent implements OnInit, OnDestroy {
   private readonly _dailyReportCharts: string[];
   /** Contains the weekly report selection items. */
   private readonly _weeklyReportCharts: string[];
-  /** The subcription of the task service. */
-  private _taskService$!: Subscription;
 
-  constructor(private readonly taskService: TaskService,
-              private readonly router: Router,
-              private readonly changeDetectorRef: ChangeDetectorRef) {
+  private readonly taskService = inject(TaskService);
+  private readonly router = inject(Router);
+
+  /** Contains the task instance from the task Service as a signal. */
+  public readonly taskList = toSignal(this.taskService.getAll(), { initialValue: [] as Task[] });
+
+  constructor() {
     this._dailyReportCharts = ['Task status counts'];
     this._weeklyReportCharts = ['Task Status counts', 'Completed tasks in week', 'Spent time on tasks'];
   }
 
-  /** Gets all tasks from the service. */
   ngOnInit(): void {
     this.setReportTypeFromUrl();
-    this.getAllTasks();
-  }
-
-  /** Unsubscription from the task data streams */
-  ngOnDestroy(): void {
-    this._taskService$.unsubscribe();
-  }
-
-  private getAllTasks(): void {
-    this._taskService$ = this.taskService.getAll()
-      .subscribe((tasks: Task[]) => {
-        this.taskList = tasks;
-        // triggers change detection manually to re-render view
-        this.changeDetectorRef.markForCheck();
-      });
   }
 
   /**
