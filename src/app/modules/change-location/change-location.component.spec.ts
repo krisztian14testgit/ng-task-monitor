@@ -40,7 +40,6 @@ describe('ChangeLocationComponent', () => {
   });
 
   it('should check the default location path in the form', () => {
-    component.ngOnInit();
     // appSetting input field controler
     expect(component.appSettingControl).toBeDefined();
     expect(component.appSettingControl.value).toBe(mockLocService.defaultPath);

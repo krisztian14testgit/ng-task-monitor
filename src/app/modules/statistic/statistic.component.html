@@ -14,14 +14,14 @@
         </mat-select>
       </mat-form-field>
     </div>
-    @if (taskList.length > 0) {
+    @if (taskList().length > 0) {
       <div class="chart">
         <!-- Daily report charts -->
         @if (isDailyReport()) {
           <!-- pie-chart: task counts  -->
           @if (selectedChartType() === 0) {
             <app-task-count-chart
-              [taskList]="taskList"
+              [taskList]="taskList()"
             [isShowedTodayDate]="isDailyReport()"></app-task-count-chart>
           }
         }
@@ -30,13 +30,13 @@
           <!-- pie-chart: task counts  -->
           @if (selectedChartType() === 0) {
             <app-task-count-chart
-              [taskList]="taskList"
+              [taskList]="taskList()"
             [isShowedTodayDate]="isDailyReport()"></app-task-count-chart>
           }
           <!-- line-chart: completed task count, spent time on -->
           @if (selectedChartType() > 0 && selectedChartType() < loadedReportCharts.length) {
             <app-line-chart
-              [taskList]="taskList"
+              [taskList]="taskList()"
             [lineType]="selectedChartType() -1"></app-line-chart>
           }
         }

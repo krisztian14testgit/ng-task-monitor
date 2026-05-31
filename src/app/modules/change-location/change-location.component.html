@@ -6,7 +6,7 @@
   <hr>
     <mat-card-content>
       <mat-form-field class="fields-max-width" appearance="fill"
-        [ngClass]="{'input-valid': taskDataControl.valid}">
+        [class.input-valid]="taskDataControl.valid">
         <mat-label>Task folder path</mat-label>
         <input type="text" matInput [formControl]="taskDataControl"
           placeholder="C:/users/userName/Document/"
@@ -28,7 +28,7 @@
     <hr>
       <mat-card-content>
         <mat-form-field class="fields-max-width" appearance="fill"
-          [ngClass]="{'input-valid': appSettingControl.valid}">
+          [class.input-valid]="appSettingControl.valid">
           <mat-label>Default app folder</mat-label>
           <input type="text" matInput [formControl]="appSettingControl"
             placeholder="C:/users/userName/Document/"
