@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { AlertType } from 'src/app/components/alert-window/alert.model';
 
@@ -23,7 +22,7 @@ export class AlertMessageService {
    * @returns tuple: [alertMessage, AlertType]
    */
   public getMessage(): Observable<[string, AlertType | undefined]> {
-    return this._message$.pipe(map(tuple => tuple));
+    return this._message$.asObservable();
   }
 
   /**

@@ -214,4 +214,16 @@ export class Task {
         
         return retTask;
     }
+
+    /**
+     * Returns true if the 'new' mark is removed from the task id, if the task is new. 
+     * That means the task is saved or updated.
+     */
+    public removeNewMarkFromID(): boolean {
+        if (this.isNewTask()) {
+            this._id = this._id.replace('new', 'updated'); 
+            return true;
+        }
+        return false;
+    }
 }

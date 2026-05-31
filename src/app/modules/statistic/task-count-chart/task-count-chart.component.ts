@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, effect, input } from '@angular/core';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 
@@ -17,15 +17,15 @@ import { IBaseChart } from '../../../interfaces/base-chart.interface';
     standalone: true,
     imports: [BaseChartDirective]
 })
-export class TaskCountChartComponent implements OnChanges, IBaseChart {
+export class TaskCountChartComponent implements IBaseChart {
   /** The tasks elements. */
-  @Input() taskList: Task[] = [];
+  public readonly taskList = input<Task[]>([]);
   /** 
    * The boolen switcher of today. 
    * * If it is true, shows daily tasks.
    * * If it is false, shows weekly tasks.
    */
-  @Input() isShowedTodayDate = false;
+  public readonly isShowedTodayDate = input(false);
 
   /** Contains the filtered task elements by the creation date(today or weekly). */
   public filteredTaskList: Task[] = [];
@@ -87,6 +87,18 @@ export class TaskCountChartComponent implements OnChanges, IBaseChart {
       'Counts of Task statuses today',
       'Counts of task statuses in weekly'
     ];
+
+    effect(() => {
+      const todayReport = 0;
+      const weeklyReport = 1;
+      const isTodayDate = this.isShowedTodayDate();
+      this._indexOfChartLabel = isTodayDate ? todayReport : weeklyReport;
+
+      if (this.taskList().length > 0) {
+        this.filteredTaskList = this.filterTasksByCreationDate(isTodayDate);
+        this._setCurrentChartDataBy(this.filteredTaskList);
+      }
+    });
   }
 
   private getThemeColor(cssVariable: string, fallbackColor: string): string {
@@ -99,23 +111,6 @@ export class TaskCountChartComponent implements OnChanges, IBaseChart {
   }
 
   /**
-   * It triggers when taskList or isShowedTodayDate are changed.
-   * 
-   * Filtering tasks by the creation date if this.isShowedTodayDate is true.
-   * Setting the labels and datasets of the pie-chart.
-   */
-  ngOnChanges(): void {
-    const todayReport = 0;
-    const weeklyReport = 1;
-    this._indexOfChartLabel = this.isShowedTodayDate ? todayReport : weeklyReport;
-    
-    if (this.taskList.length > 0) {
-      this.filteredTaskList = this.filterTasksByCreationDate(this.isShowedTodayDate);
-      this._setCurrentChartDataBy(this.filteredTaskList);
-    }
-  }
-
-  /**
    * Return new array where task items are filterd by the creationDate.
    * If the 'isTodayCreation' is true, returns those tasks which are created today only,
    * otherwise returns the whole task items.
@@ -123,10 +118,10 @@ export class TaskCountChartComponent implements OnChanges, IBaseChart {
    * @returns Task[] array
    */
   private filterTasksByCreationDate(isTodayCreation: boolean): Task[] {
-    let filteredTaskList = this.taskList;
+    let filteredTaskList = this.taskList();
     
     if (isTodayCreation) {
-      filteredTaskList = this.filterByCreatedToday(this.taskList);
+      filteredTaskList = this.filterByCreatedToday(this.taskList());
     }
 
     return filteredTaskList;
